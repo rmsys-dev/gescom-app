@@ -15,7 +15,6 @@ export default function UnitDetailPage() {
       title={config.title}
       permissionLabel={config.permissionLabel}
       canConsult={perms.canConsultUnits}
-      backHref={config.basePath}
       useDetailData={useUnitDetailData}
       renderContent={(data) => (
         <DetailDl

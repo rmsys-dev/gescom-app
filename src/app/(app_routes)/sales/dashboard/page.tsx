@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react"
 
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
+import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import { SalesAgingChart } from "@/app/(app_routes)/sales/_components/sales-aging-chart"
 import { SalesByPaymentTypeChart } from "@/app/(app_routes)/sales/_components/sales-by-payment-type-chart"
 import { SalesBySellerChart } from "@/app/(app_routes)/sales/_components/sales-by-seller-chart"
@@ -226,6 +227,7 @@ export default function SalesDashboardPage() {
       loading={isInitialLoading ? <SalesDashboardLoading /> : null}
     >
       <div className="space-y-6">
+        <RouteBreadcrumb currentLabel="Relatórios de Vendas" />
         <SalesDashboardFilters
           draft={draftFilters}
           onChange={setDraftFilters}

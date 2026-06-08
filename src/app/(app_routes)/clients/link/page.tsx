@@ -1,10 +1,8 @@
 "use client"
 
-import Link from "next/link"
 import { LinkClientForm } from "@/app/(app_routes)/clients/_components/link-client-form"
-import { CLIENTS_BASE_PATH } from "@/app/(app_routes)/clients/_components/clients-constants"
 import { ClientFormContentLoading } from "@/app/(app_routes)/clients/_components/clients-route-loading"
-import { Button } from "@/components/ui/button"
+import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import {
   Card,
   CardDescription,
@@ -38,9 +36,7 @@ export default function LinkClientPage() {
             </CardDescription>
           </CardHeader>
         </Card>
-        <Button asChild variant="outline">
-          <Link href={CLIENTS_BASE_PATH}>Voltar</Link>
-        </Button>
+        <RouteBreadcrumb />
       </main>
     )
   }
@@ -50,6 +46,7 @@ export default function LinkClientPage() {
   if (!perms.canIncludeMembers) {
     return (
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6 p-4 md:p-8">
+        <RouteBreadcrumb />
         <Card>
           <CardHeader>
             <CardTitle>Sem permissão</CardTitle>
@@ -58,9 +55,6 @@ export default function LinkClientPage() {
             </CardDescription>
           </CardHeader>
         </Card>
-        <Button asChild variant="outline">
-          <Link href={CLIENTS_BASE_PATH}>Voltar</Link>
-        </Button>
       </main>
     )
   }
@@ -68,6 +62,7 @@ export default function LinkClientPage() {
   if (!perms.canConsultUsers) {
     return (
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6 p-4 md:p-8">
+        <RouteBreadcrumb />
         <Card>
           <CardHeader>
             <CardTitle>Sem permissão</CardTitle>
@@ -77,15 +72,13 @@ export default function LinkClientPage() {
             </CardDescription>
           </CardHeader>
         </Card>
-        <Button asChild variant="outline">
-          <Link href={CLIENTS_BASE_PATH}>Voltar</Link>
-        </Button>
       </main>
     )
   }
 
   return (
     <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
+      <RouteBreadcrumb />
       <LinkClientForm enterpriseId={enterpriseId} />
     </main>
   )

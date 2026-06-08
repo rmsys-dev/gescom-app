@@ -15,7 +15,6 @@ export default function TypeProductDetailPage() {
       title={config.title}
       permissionLabel={config.permissionLabel}
       canConsult={perms.canConsultTypesProduct}
-      backHref={config.basePath}
       useDetailData={useTypeProductDetailData}
       renderContent={(data) => (
         <DetailDl

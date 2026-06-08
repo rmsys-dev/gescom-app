@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
 
 import { CATALOG_CONFIGS } from "@/app/(app_routes)/products/_components/catalog-config"
 import {
@@ -9,8 +8,7 @@ import {
   PermissionsErrorCard,
   PaginatedListLayout,
 } from "@/app/(app_routes)/products/_components/paginated-list-shell"
-import { PRODUCTS_BASE_PATH } from "@/app/(app_routes)/products/_components/products-constants"
-import { Button } from "@/components/ui/button"
+import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import {
   Card,
   CardDescription,
@@ -38,13 +36,7 @@ export default function CatalogsHubPage() {
 
   return (
     <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
-      <div className="flex items-start gap-3">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href={PRODUCTS_BASE_PATH}>
-            <ArrowLeft className="size-4" />
-          </Link>
-        </Button>
-      </div>
+      <RouteBreadcrumb />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {visibleCatalogs.map((catalog) => (

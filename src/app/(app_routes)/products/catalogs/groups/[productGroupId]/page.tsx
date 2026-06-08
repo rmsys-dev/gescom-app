@@ -15,7 +15,6 @@ export default function GroupDetailPage() {
       title={config.title}
       permissionLabel={config.permissionLabel}
       canConsult={perms.canConsultProductGroups}
-      backHref={config.basePath}
       useDetailData={useProductGroupDetailData}
       renderContent={(data) => (
         <DetailDl

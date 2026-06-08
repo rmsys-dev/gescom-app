@@ -1,11 +1,7 @@
 "use client"
 
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
-
 import { ProductStatusBadge } from "@/app/(app_routes)/products/_components/product-status-badge"
-import { PRODUCTS_BASE_PATH } from "@/app/(app_routes)/products/_components/products-constants"
-import { Button } from "@/components/ui/button"
+import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import {
   Card,
   CardContent,
@@ -16,19 +12,6 @@ import {
 import type { ProductEnterprise } from "@/modules/products/products.schema"
 import type { Price, ProductApplication, ProductTaxation, PromotionalPrice } from "@/modules/products/products-tenant-extras.schema"
 
-export function ProductsListHeader({ total }: { total: number }) {
-  return (
-    <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-        Produtos
-      </h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        {total} produto(s) na empresa activa
-      </p>
-    </div>
-  )
-}
-
 export function ProductEnterpriseDetailHeader({
   description,
 }: {
@@ -36,21 +19,7 @@ export function ProductEnterpriseDetailHeader({
 }) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-start gap-3">
-        <Button variant="ghost" size="icon" asChild className="shrink-0">
-          <Link href={PRODUCTS_BASE_PATH} aria-label="Voltar à lista">
-            <ArrowLeft className="size-4" />
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            {description}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Produto da empresa
-          </p>
-        </div>
-      </div>
+      <RouteBreadcrumb currentLabel={description} />
     </div>
   )
 }

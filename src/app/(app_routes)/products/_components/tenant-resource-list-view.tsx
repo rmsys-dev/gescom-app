@@ -1,8 +1,6 @@
 "use client"
 
-import Link from "next/link"
 import { useCallback, useState } from "react"
-import { ArrowLeft } from "lucide-react"
 
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import {
@@ -18,8 +16,7 @@ import {
   type ResourceColumn,
 } from "@/app/(app_routes)/products/_components/paginated-resource-table"
 import { ProductsContentLoading } from "@/app/(app_routes)/products/_components/products-route-loading"
-import { PRODUCTS_BASE_PATH } from "@/app/(app_routes)/products/_components/products-constants"
-import { Button } from "@/components/ui/button"
+import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
 import { useOperatorPermissions } from "@/lib/permissions"
 import type { PaginationQuery } from "@/modules/products/products-query"
@@ -111,12 +108,8 @@ export function TenantResourceListView<T extends { id: string }>({
       {data && !isPending && (
         <div className="space-y-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-start gap-3">
-                  <Button variant="ghost" size="icon" asChild className="shrink-0">
-                    <Link href={PRODUCTS_BASE_PATH} aria-label="Voltar">
-                      <ArrowLeft className="size-4" />
-                    </Link>
-                  </Button>
+                <div className="flex flex-col gap-2">
+                  <RouteBreadcrumb />
                   <div>
                     <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
                     <p className="mt-1 text-sm text-muted-foreground">

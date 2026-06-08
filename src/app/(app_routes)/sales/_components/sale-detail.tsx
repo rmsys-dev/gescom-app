@@ -1,10 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
 
 import { SalesStatusBadge } from "@/app/(app_routes)/sales/_components/sales-status-badge"
 import { SalesTypeBadge } from "@/app/(app_routes)/sales/_components/sales-type-badge"
+import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -29,12 +29,7 @@ type SaleDetailViewProps = {
 export function SaleDetailView({ sale }: SaleDetailViewProps) {
   return (
     <div className="space-y-6">
-      <Button variant="ghost" size="sm" asChild className="w-fit">
-        <Link href={SALES_BASE_PATH}>
-          <ArrowLeft className="mr-2 size-4" />
-          Voltar à lista
-        </Link>
-      </Button>
+      <RouteBreadcrumb currentLabel={`Pedido #${sale.orderNumber}`} />
 
       <Card>
         <CardHeader>

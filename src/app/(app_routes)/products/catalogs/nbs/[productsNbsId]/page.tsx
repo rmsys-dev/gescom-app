@@ -15,7 +15,6 @@ export default function NbsDetailPage() {
       title={config.title}
       permissionLabel={config.permissionLabel}
       canConsult={perms.canConsultNbs}
-      backHref={config.basePath}
       useDetailData={useProductNbsDetailData}
       renderContent={(data) => (
         <DetailDl

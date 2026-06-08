@@ -15,7 +15,6 @@ export default function BrandDetailPage() {
       title={config.title}
       permissionLabel={config.permissionLabel}
       canConsult={perms.canConsultProductBrands}
-      backHref={config.basePath}
       useDetailData={useProductBrandDetailData}
       renderContent={(data) => (
         <DetailDl rows={[{ label: "Descrição", value: data.description }]} />

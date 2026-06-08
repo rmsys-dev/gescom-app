@@ -15,7 +15,6 @@ export default function IcmsDetailPage() {
       title={config.title}
       permissionLabel={config.permissionLabel}
       canConsult={perms.canConsultIcmsTaxation}
-      backHref={config.basePath}
       useDetailData={useIcmsTaxationDetailData}
       renderContent={(data) => (
         <DetailDl

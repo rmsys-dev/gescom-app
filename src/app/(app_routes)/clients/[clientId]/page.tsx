@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useCallback } from "react"
 import { z } from "zod"
@@ -13,11 +12,8 @@ import {
   ClientUserInfoCard,
 } from "@/app/(app_routes)/clients/_components/client-field"
 import { ClientDetailContentLoading } from "@/app/(app_routes)/clients/_components/clients-route-loading"
-import {
-  CLIENT_MEMBER_CLASS,
-  CLIENTS_BASE_PATH,
-} from "@/app/(app_routes)/clients/_components/clients-constants"
-import { Button } from "@/components/ui/button"
+import { CLIENT_MEMBER_CLASS } from "@/app/(app_routes)/clients/_components/clients-constants"
+import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import {
   Card,
   CardContent,
@@ -137,9 +133,7 @@ export default function ClientDetailPage() {
             <CardDescription>Identificador UUID inválido.</CardDescription>
           </CardHeader>
         </Card>
-        <Button asChild variant="outline">
-          <Link href={CLIENTS_BASE_PATH}>Voltar</Link>
-        </Button>
+        <RouteBreadcrumb />
       </main>
     )
   }
@@ -159,8 +153,11 @@ export default function ClientDetailPage() {
     )
   }
 
+  const clientDisplayName = data?.user.userName.trim() || undefined
+
   return (
     <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
+      <RouteBreadcrumb currentLabel={clientDisplayName} />
       {isPending && <ClientDetailContentLoading />}
 
       {error && data && (

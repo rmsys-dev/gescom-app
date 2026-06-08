@@ -16,7 +16,6 @@ export default function PriceDetailPage() {
       permissionLabel="consultar_precos"
       canConsult={perms.canConsultPrices}
       requiresEnterprise
-      backHref="/products/prices"
       useDetailData={usePriceDetailData}
       renderContent={(data) => (
         <DetailDl

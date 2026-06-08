@@ -16,7 +16,6 @@ export default function ProductTaxationDetailPage() {
       permissionLabel="consultar_tributacao_produto"
       canConsult={perms.canConsultProductTaxation}
       requiresEnterprise
-      backHref="/products/taxation"
       useDetailData={useProductTaxationDetailData}
       renderContent={(data) => (
         <DetailDl

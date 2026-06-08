@@ -16,7 +16,6 @@ export default function GlobalProductDetailPage() {
       title="Produto global"
       permissionLabel="consultar_produtos"
       canConsult={perms.canConsultProducts}
-      backHref="/products/global"
       useDetailData={useProductDetailData}
       renderContent={(data) => (
         <DetailDl

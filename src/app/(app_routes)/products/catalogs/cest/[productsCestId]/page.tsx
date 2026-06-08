@@ -15,7 +15,6 @@ export default function CestDetailPage() {
       title={config.title}
       permissionLabel={config.permissionLabel}
       canConsult={perms.canConsultCest}
-      backHref={config.basePath}
       useDetailData={useProductCestDetailData}
       renderContent={(data) => (
         <DetailDl

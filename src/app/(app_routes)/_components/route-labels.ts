@@ -2,7 +2,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   "/home": "Home",
   "/profile": "Perfil",
   "/enterprise": "Empresa",
-  "/members": "Membros	",
+  "/members": "Membros",
   "/members/new": "Novo membro",
   "/members/invite": "Convidar membro",
   "/notifications": "Notificações",
@@ -72,39 +72,54 @@ function isDynamicSegment(segment: string): boolean {
   return UUID_RE.test(segment) || /^\d+$/.test(segment)
 }
 
-function getNestedRouteLabel(segments: string[]): string {
-  for (let i = segments.length; i >= 2; i--) {
-    const path = `/${segments.slice(0, i).join("/")}`
-    const label = ROUTE_LABELS[path]
-    if (label) return label
+export function isNestedOrDynamicRoute(pathname: string): boolean {
+  const segments = pathname.split("/").filter(Boolean)
+  return segments.length > 1
+}
+
+function getDynamicSegmentLabel(segments: string[]): string {
+  const section = segments[0]
+  return NESTED_DYNAMIC_LABELS[section] ?? "Detalhes"
+}
+
+function getSegmentLabel(segments: string[], index: number): string | null {
+  const path = `/${segments.slice(0, index + 1).join("/")}`
+  const known = ROUTE_LABELS[path]
+  if (known) return known
+
+  const segment = segments[index]
+  const isLast = index === segments.length - 1
+
+  if (!isLast) return null
+
+  if (isDynamicSegment(segment)) {
+    return getDynamicSegmentLabel(segments)
   }
 
-  const last = segments.at(-1)
-  if (!last) return "Gescom"
-
-  if (isDynamicSegment(last)) {
-    const section = segments[0]
-    return NESTED_DYNAMIC_LABELS[section] ?? "Detalhes"
-  }
-
-  return last.charAt(0).toUpperCase() + last.slice(1)
+  return segment.charAt(0).toUpperCase() + segment.slice(1)
 }
 
 export function getBreadcrumbItems(pathname: string): BreadcrumbItem[] {
   const segments = pathname.split("/").filter(Boolean)
 
   if (segments.length <= 1) {
-    return [{ label: getRouteLabel(pathname) }]
+    return []
   }
 
-  const parentPath = `/${segments[0]}`
-  const parentLabel = ROUTE_LABELS[parentPath]
-  if (!parentLabel) {
-    return [{ label: getRouteLabel(pathname) }]
+  const items: BreadcrumbItem[] = []
+
+  for (let i = 0; i < segments.length; i++) {
+    const label = getSegmentLabel(segments, i)
+    if (!label) continue
+
+    const isLast = i === segments.length - 1
+    const path = `/${segments.slice(0, i + 1).join("/")}`
+
+    items.push({
+      href: isLast ? undefined : path,
+      label,
+    })
   }
 
-  return [
-    { href: parentPath, label: parentLabel },
-    { label: getNestedRouteLabel(segments) },
-  ]
+  return items
 }

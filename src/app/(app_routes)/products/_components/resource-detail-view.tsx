@@ -1,10 +1,8 @@
 "use client"
 
-import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useCallback } from "react"
 import { z } from "zod"
-import { ArrowLeft } from "lucide-react"
 
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import {
@@ -13,7 +11,7 @@ import {
   useListErrorState,
 } from "@/app/(app_routes)/products/_components/paginated-list-shell"
 import { ProductDetailContentLoading } from "@/app/(app_routes)/products/_components/products-route-loading"
-import { Button } from "@/components/ui/button"
+import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import {
   Card,
   CardContent,
@@ -32,7 +30,6 @@ type ResourceDetailViewProps<T> = {
   permissionLabel: string
   canConsult: boolean
   requiresEnterprise?: boolean
-  backHref: string
   useDetailData: (opts: { id: string | undefined; enabled: boolean }) => {
     data: T | undefined
     error: unknown
@@ -49,7 +46,6 @@ export function ResourceDetailView<T>({
   permissionLabel,
   canConsult,
   requiresEnterprise = false,
-  backHref,
   useDetailData,
   renderContent,
 }: ResourceDetailViewProps<T>) {
@@ -140,12 +136,8 @@ export function ResourceDetailView<T>({
 
       {data && !isPending && (
         <div className="space-y-6">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" asChild>
-              <Link href={backHref} aria-label="Voltar">
-                <ArrowLeft className="size-4" />
-              </Link>
-            </Button>
+          <div className="flex flex-col gap-2">
+            <RouteBreadcrumb currentLabel={title} />
             <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
           </div>
           {renderContent(data)}

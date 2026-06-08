@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useCallback, useMemo } from "react"
 import { z } from "zod"
@@ -14,9 +13,8 @@ import {
   MemberUserInfoCard,
 } from "@/app/(app_routes)/members/_components/member-field"
 import { MemberDetailContentLoading } from "@/app/(app_routes)/members/_components/members-route-loading"
-import { MEMBERS_BASE_PATH } from "@/app/(app_routes)/members/_components/members-constants"
 import { MemberPermissionsSection } from "@/app/(app_routes)/members/_components/member-permissions-section"
-import { Button } from "@/components/ui/button"
+import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import {
   Card,
   CardContent,
@@ -144,9 +142,7 @@ export default function MemberDetailPage() {
             <CardDescription>Identificador UUID inválido.</CardDescription>
           </CardHeader>
         </Card>
-        <Button asChild variant="outline">
-          <Link href={MEMBERS_BASE_PATH}>Voltar</Link>
-        </Button>
+        <RouteBreadcrumb />
       </main>
     )
   }
@@ -166,8 +162,11 @@ export default function MemberDetailPage() {
     )
   }
 
+  const memberDisplayName = data?.user.userName.trim() || undefined
+
   return (
     <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
+      <RouteBreadcrumb currentLabel={memberDisplayName} />
       {isPending && <MemberDetailContentLoading />}
 
       {error && data && (

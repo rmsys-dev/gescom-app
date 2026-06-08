@@ -16,7 +16,6 @@ export default function PromotionalPriceDetailPage() {
       permissionLabel="consultar_precos_promocionais"
       canConsult={perms.canConsultPromotionalPrices}
       requiresEnterprise
-      backHref="/products/promotional-prices"
       useDetailData={usePromotionalPriceDetailData}
       renderContent={(data) => (
         <DetailDl

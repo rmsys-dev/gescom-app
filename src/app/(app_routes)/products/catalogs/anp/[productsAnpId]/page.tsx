@@ -15,7 +15,6 @@ export default function AnpDetailPage() {
       title={config.title}
       permissionLabel={config.permissionLabel}
       canConsult={perms.canConsultAnp}
-      backHref={config.basePath}
       useDetailData={useProductAnpDetailData}
       renderContent={(data) => (
         <DetailDl

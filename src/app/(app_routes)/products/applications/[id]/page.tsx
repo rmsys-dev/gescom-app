@@ -16,7 +16,6 @@ export default function ProductApplicationDetailPage() {
       permissionLabel="consultar_aplicacoes_produto"
       canConsult={perms.canConsultProductApplications}
       requiresEnterprise
-      backHref="/products/applications"
       useDetailData={useProductApplicationDetailData}
       renderContent={(data) => (
         <DetailDl

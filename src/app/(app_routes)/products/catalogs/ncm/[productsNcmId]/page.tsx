@@ -15,7 +15,6 @@ export default function NcmDetailPage() {
       title={config.title}
       permissionLabel={config.permissionLabel}
       canConsult={perms.canConsultNcm}
-      backHref={config.basePath}
       useDetailData={useProductNcmDetailData}
       renderContent={(data) => (
         <DetailDl

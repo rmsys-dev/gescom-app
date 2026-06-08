@@ -15,7 +15,6 @@ export default function SubgroupDetailPage() {
       title={config.title}
       permissionLabel={config.permissionLabel}
       canConsult={perms.canConsultProductSubgroups}
-      backHref={config.basePath}
       useDetailData={useProductSubgroupDetailData}
       renderContent={(data) => (
         <DetailDl rows={[{ label: "Descrição", value: data.description }]} />

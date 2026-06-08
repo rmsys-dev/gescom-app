@@ -15,7 +15,6 @@ export default function PisCofinsDetailPage() {
       title={config.title}
       permissionLabel={config.permissionLabel}
       canConsult={perms.canConsultPisCofins}
-      backHref={config.basePath}
       useDetailData={usePisCofinsSituationDetailData}
       renderContent={(data) => (
         <DetailDl

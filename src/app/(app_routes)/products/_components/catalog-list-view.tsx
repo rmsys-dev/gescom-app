@@ -1,8 +1,6 @@
 "use client"
 
-import Link from "next/link"
 import { useCallback, useState } from "react"
-import { ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
@@ -24,7 +22,7 @@ import {
   type ResourceColumn,
 } from "@/app/(app_routes)/products/_components/paginated-resource-table"
 import { ProductsContentLoading } from "@/app/(app_routes)/products/_components/products-route-loading"
-import { PRODUCTS_BASE_PATH } from "@/app/(app_routes)/products/_components/products-constants"
+import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -144,12 +142,8 @@ export function CatalogListView<T extends { id: string }>({
       {data && !isPending && (
         <div className="space-y-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-start gap-3">
-                  <Button variant="ghost" size="icon" asChild className="shrink-0">
-                    <Link href={`${PRODUCTS_BASE_PATH}/catalogs`} aria-label="Voltar">
-                      <ArrowLeft className="size-4" />
-                    </Link>
-                  </Button>
+                <div className="flex flex-col gap-2">
+                  <RouteBreadcrumb />
                   <div>
                     <h1 className="text-2xl font-semibold tracking-tight">
                       {config.title}

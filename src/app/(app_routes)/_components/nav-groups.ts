@@ -1,8 +1,10 @@
 import {
   Bell,
+  BookOpen,
   Building2,
   DollarSign,
   Contact,
+  Globe,
   Handshake,
   HelpCircle,
   Home,
@@ -69,7 +71,11 @@ export const NAV_GROUPS: NavGroup[] = [
     key: "products",
     label: "Gestão de Produtos",
     icon: Package,
-    routes: [{ title: "Produtos", url: "/products", icon: Package }],
+    routes: [
+      { title: "Produtos", url: "/products", icon: Package },
+      { title: "Catálogo global", url: "/products/global", icon: Globe },
+      { title: "Catálogos", url: "/products/catalogs", icon: BookOpen },
+    ],
   },
   {
     key: "config",

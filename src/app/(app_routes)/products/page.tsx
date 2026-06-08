@@ -4,9 +4,7 @@ import { useCallback, useState } from "react"
 import { toast } from "sonner"
 
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
-import {
-  ProductsListHeader,
-} from "@/app/(app_routes)/products/_components/product-enterprise-field"
+
 import { ProductsContentLoading } from "@/app/(app_routes)/products/_components/products-route-loading"
 import {
   defaultProductsEnterprisesFilters,
@@ -101,7 +99,6 @@ export default function ProductsPage() {
       )}
       {data && !isPending && (
         <div className="space-y-6">
-          <ProductsListHeader total={data.total} />
           <form
             onSubmit={(e) => {
               e.preventDefault()

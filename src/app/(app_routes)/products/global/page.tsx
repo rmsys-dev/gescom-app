@@ -98,102 +98,96 @@ export default function GlobalProductsPage() {
       )}
       {data && !isPending && (
         <div className="space-y-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-start gap-3">
-                  <Button variant="ghost" size="icon" asChild>
-                    <Link href={PRODUCTS_BASE_PATH}>
-                      <ArrowLeft className="size-4" />
-                    </Link>
-                  </Button>
-                  <div>
-                    <h1 className="text-2xl font-semibold">Produtos globais</h1>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      Catálogo partilhado · {data.total} registo(s)
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-lg border bg-card p-4 shadow-sm">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <Field>
-                    <FieldLabel>Status</FieldLabel>
-                    <Select
-                      value={draftFilters.status ?? "all"}
-                      onValueChange={(v) =>
-                        setDraftFilters({
-                          ...draftFilters,
-                          status:
-                            v === "all"
-                              ? undefined
-                              : (v as ListProductsQuery["status"]),
-                        })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Todos" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos</SelectItem>
-                        <SelectItem value="ATIVO">Ativo</SelectItem>
-                        <SelectItem value="INATIVO">Inativo</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </Field>
-                  <Field>
-                    <FieldLabel>Pesquisa</FieldLabel>
-                    <Input
-                      value={draftFilters.search ?? ""}
-                      onChange={(e) =>
-                        setDraftFilters({
-                          ...draftFilters,
-                          search: e.target.value || undefined,
-                        })
-                      }
-                    />
-                  </Field>
-                </div>
-                <div className="mt-4 flex gap-2">
-                  <Button type="button" onClick={applyFilters}>
-                    Aplicar
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setDraftFilters(DEFAULT_FILTERS)
-                      setAppliedFilters(DEFAULT_FILTERS)
-                    }}
-                  >
-                    Limpar
-                  </Button>
-                </div>
-              </div>
-
-              <PaginatedResourceTable
-                items={data.items}
-                total={data.total}
-                limit={data.limit}
-                offset={data.offset}
-                onPageChange={(offset) =>
-                  setAppliedFilters((f) => ({ ...f, offset }))
-                }
-                basePath="/products/global"
-                emptyTitle="Nenhum produto encontrado"
-                emptyDescription="Ajuste os filtros."
-                columns={[
-                  { header: "Descrição", cell: (item) => item.description },
-                  { header: "Cód. barras", cell: (item) => item.barCode },
-                  {
-                    header: "Status",
-                    cell: (item) => <ProductStatusBadge status={item.status} />,
-                  },
-                ]}
-                mobileTitle={(item) => item.description}
-                mobileSubtitle={(item) => item.barCode}
-              />
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <Button variant="ghost" size="icon" asChild>
+                <Link href={PRODUCTS_BASE_PATH}>
+                  <ArrowLeft className="size-4" />
+                </Link>
+              </Button>
             </div>
-          )}
+          </div>
+
+          <div className="rounded-lg border bg-card p-4 shadow-sm">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field>
+                <FieldLabel>Status</FieldLabel>
+                <Select
+                  value={draftFilters.status ?? "all"}
+                  onValueChange={(v) =>
+                    setDraftFilters({
+                      ...draftFilters,
+                      status:
+                        v === "all"
+                          ? undefined
+                          : (v as ListProductsQuery["status"]),
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Todos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="ATIVO">Ativo</SelectItem>
+                    <SelectItem value="INATIVO">Inativo</SelectItem>
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field>
+                <FieldLabel>Pesquisa</FieldLabel>
+                <Input
+                  value={draftFilters.search ?? ""}
+                  onChange={(e) =>
+                    setDraftFilters({
+                      ...draftFilters,
+                      search: e.target.value || undefined,
+                    })
+                  }
+                />
+              </Field>
+            </div>
+            <div className="mt-4 flex gap-2">
+              <Button type="button" onClick={applyFilters}>
+                Aplicar
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setDraftFilters(DEFAULT_FILTERS)
+                  setAppliedFilters(DEFAULT_FILTERS)
+                }}
+              >
+                Limpar
+              </Button>
+            </div>
+          </div>
+
+          <PaginatedResourceTable
+            items={data.items}
+            total={data.total}
+            limit={data.limit}
+            offset={data.offset}
+            onPageChange={(offset) =>
+              setAppliedFilters((f) => ({ ...f, offset }))
+            }
+            basePath="/products/global"
+            emptyTitle="Nenhum produto encontrado"
+            emptyDescription="Ajuste os filtros."
+            columns={[
+              { header: "Descrição", cell: (item) => item.description },
+              { header: "Cód. barras", cell: (item) => item.barCode },
+              {
+                header: "Status",
+                cell: (item) => <ProductStatusBadge status={item.status} />,
+              },
+            ]}
+            mobileTitle={(item) => item.description}
+            mobileSubtitle={(item) => item.barCode}
+          />
+        </div>
+      )}
     </PaginatedListLayout>
   )
 }

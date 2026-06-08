@@ -18,23 +18,13 @@ import type { Price, ProductApplication, ProductTaxation, PromotionalPrice } fro
 
 export function ProductsListHeader({ total }: { total: number }) {
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          Produtos
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {total} produto(s) na empresa activa
-        </p>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        <Button variant="outline" size="sm" asChild>
-          <Link href={`${PRODUCTS_BASE_PATH}/global`}>Catálogo global</Link>
-        </Button>
-        <Button variant="outline" size="sm" asChild>
-          <Link href={`${PRODUCTS_BASE_PATH}/catalogs`}>Catálogos</Link>
-        </Button>
-      </div>
+    <div>
+      <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+        Produtos
+      </h1>
+      <p className="mt-1 text-sm text-muted-foreground">
+        {total} produto(s) na empresa activa
+      </p>
     </div>
   )
 }

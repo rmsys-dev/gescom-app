@@ -9,11 +9,6 @@ import {
   type NavGroupKey,
 } from "@/app/(app_routes)/_components/nav-groups"
 import { Button } from "@/components/ui/button"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
 type IconSidebarProps = {
@@ -59,48 +54,43 @@ export function IconSidebar({ activePanel, onPanelChange }: IconSidebarProps) {
           const buttonClassName = cn(
             "size-10 rounded-lg transition-colors",
             isHighlighted
-              ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground"
+              ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground aria-expanded:bg-sidebar-primary aria-expanded:text-sidebar-primary-foreground"
               : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
           )
 
+          const buttonProps = {
+            variant: "ghost" as const,
+            size: "icon" as const,
+            className: buttonClassName,
+            "aria-label": group.label,
+            tooltipSide: "right" as const,
+          }
+
           if (group.href) {
             return (
-              <Tooltip key={group.key}>
-                <TooltipTrigger asChild>
-                  <Button
-                    asChild
-                    variant="ghost"
-                    size="icon"
-                    className={buttonClassName}
-                    onClick={() => onPanelChange(null)}
-                  >
-                    <Link href={group.href} aria-label={group.label}>
-                      <group.icon className="size-5" />
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right">{group.label}</TooltipContent>
-              </Tooltip>
+              <Button
+                key={group.key}
+                {...buttonProps}
+                asChild
+                onClick={() => onPanelChange(null)}
+              >
+                <Link href={group.href}>
+                  <group.icon className="size-5" />
+                </Link>
+              </Button>
             )
           }
 
           return (
-            <Tooltip key={group.key}>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label={group.label}
-                  aria-expanded={isPanelOpen}
-                  className={buttonClassName}
-                  onClick={() => handleGroupClick(group.key, hasPanel)}
-                >
-                  <group.icon className="size-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">{group.label}</TooltipContent>
-            </Tooltip>
+            <Button
+              key={group.key}
+              {...buttonProps}
+              type="button"
+              aria-expanded={isPanelOpen}
+              onClick={() => handleGroupClick(group.key, hasPanel)}
+            >
+              <group.icon className="size-5" />
+            </Button>
           )
         })}
       </nav>

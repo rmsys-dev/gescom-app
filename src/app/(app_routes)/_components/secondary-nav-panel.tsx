@@ -3,7 +3,6 @@
 import { useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Pin } from "lucide-react"
 
 import {
   getActiveRouteUrl,
@@ -11,6 +10,7 @@ import {
   type NavGroupKey,
 } from "@/app/(app_routes)/_components/nav-groups"
 import { cn } from "@/lib/utils"
+import { Pin } from "lucide-react"
 
 type SecondaryNavPanelProps = {
   activePanel: NavGroupKey
@@ -46,11 +46,11 @@ export function SecondaryNavPanel({
       className="flex h-svh w-52 shrink-0 flex-col border-r border-border bg-sidebar"
       aria-label={`Menu ${group.label}`}
     >
-      <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-4">
-        <Pin className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-        <span className="truncate text-xs font-medium text-muted-foreground">
+      <div className="flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border px-4">
+        <span className="truncate text-sm font-medium text-muted-foreground">
           {group.label}
         </span>
+        <Pin className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
@@ -65,7 +65,7 @@ export function SecondaryNavPanel({
               className={cn(
                 "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
                 isActive
-                  ? "bg-sidebar-accent text-sidebar-primary font-medium"
+                  ? "text-sidebar-primary font-medium"
                   : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground"
               )}
             >

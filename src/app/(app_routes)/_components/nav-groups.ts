@@ -1,18 +1,19 @@
 import {
   Bell,
   Building2,
+  DollarSign,
+  Contact,
+  Handshake,
   HelpCircle,
   Home,
-  LayoutDashboard,
-  LifeBuoy,
-  Link2,
   Package,
-  Settings2,
   ShoppingCart,
   TrendingUp,
   User,
   Users,
   type LucideIcon,
+  Cog,
+  Info,
 } from "lucide-react"
 
 import { isSidebarPathActive } from "@/app/(app_routes)/_components/route-labels"
@@ -48,32 +49,32 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     key: "people",
-    label: "Pessoas",
+    label: "Gestão de Pessoas",
     icon: Users,
     routes: [
-      { title: "Clientes", url: "/clients", icon: Users },
-      { title: "Membros", url: "/members", icon: Link2 },
+      { title: "Clientes", url: "/clients", icon: Handshake },
+      { title: "Membros", url: "/members", icon: Contact },
     ],
   },
   {
     key: "sales",
-    label: "Vendas",
-    icon: TrendingUp,
+    label: "Gestão de Vendas",
+    icon: DollarSign,
     routes: [
-      { title: "Pedidos", url: "/sales", icon: ShoppingCart },
-      { title: "Dashboard", url: "/sales/dashboard", icon: LayoutDashboard },
+      { title: "Vendas", url: "/sales", icon: ShoppingCart },
+      { title: "Relatórios", url: "/sales/dashboard", icon: TrendingUp },
     ],
   },
   {
     key: "products",
-    label: "Produtos",
+    label: "Gestão de Produtos",
     icon: Package,
     routes: [{ title: "Produtos", url: "/products", icon: Package }],
   },
   {
     key: "config",
     label: "Configuração",
-    icon: Settings2,
+    icon: Cog,
     routes: [
       { title: "Meu perfil", url: "/profile", icon: User },
       { title: "Empresa", url: "/enterprise", icon: Building2 },
@@ -81,8 +82,8 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     key: "support",
-    label: "Suporte",
-    icon: LifeBuoy,
+    label: "Suporte Gescom",
+    icon: Info,
     routes: [
       { title: "Suporte", url: "/support", icon: HelpCircle },
       { title: "Notificações", url: "/notifications", icon: Bell },

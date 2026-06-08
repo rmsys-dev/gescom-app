@@ -1,9 +1,8 @@
 "use client"
 
 import { useCallback, useState } from "react"
-import Link from "next/link"
-import { BarChart3, RefreshCw } from "lucide-react"
 
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { SalesFilters } from "@/app/(app_routes)/sales/_components/sales-filters"
 import { SalesContentLoading } from "@/app/(app_routes)/sales/_components/sales-route-loading"
 import { SalesTable } from "@/app/(app_routes)/sales/_components/sales-table"
@@ -15,11 +14,9 @@ import {
   StaleDataBanner,
   useListErrorState,
 } from "@/app/(app_routes)/products/_components/paginated-list-shell"
-import { Button } from "@/components/ui/button"
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
 import { useOperatorPermissions } from "@/lib/permissions"
 import {
-  SALES_DASHBOARD_PATH,
   defaultSalesFilters,
 } from "@/modules/sales/sales-constants"
 import type { ListSalesQuery } from "@/modules/sales/sales.schema"
@@ -37,6 +34,16 @@ export default function SalesPage() {
   const { data, error, isPending, isFetching, refetch } = useSalesQuery({
     filters: appliedFilters,
     enabled: ready && perms.canConsultSales,
+  })
+
+  const handleRefresh = useCallback(() => {
+    void refetch()
+  }, [refetch])
+
+  useRegisterPageRefresh({
+    onRefresh: handleRefresh,
+    isFetching,
+    enabled: ready && perms.isReady && !perms.isError && perms.canConsultSales,
   })
 
   const applyFilters = useCallback(() => {
@@ -78,37 +85,6 @@ export default function SalesPage() {
       )}
       {data && !isPending && (
         <div className="space-y-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h1 className="font-heading text-2xl font-semibold tracking-tight">
-                Vendas e orçamentos
-              </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {data.total} registo(s) · consulta somente leitura
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <Link href={SALES_DASHBOARD_PATH}>
-                  <BarChart3 className="mr-2 size-4" />
-                  Dashboard
-                </Link>
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={isFetching}
-                onClick={() => void refetch()}
-              >
-                <RefreshCw
-                  className={`mr-2 size-4 ${isFetching ? "animate-spin" : ""}`}
-                />
-                Actualizar
-              </Button>
-            </div>
-          </div>
-
           <form
             onSubmit={(e) => {
               e.preventDefault()

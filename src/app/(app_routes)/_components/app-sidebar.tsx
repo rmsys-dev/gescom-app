@@ -15,7 +15,6 @@ import {
     SidebarFooter,
     SidebarHeader,
     SidebarRail,
-    SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { NavConfiguration } from "./nav-config"
 import { NavSystem } from "./nav-system"
@@ -115,18 +114,6 @@ const data = {
 
 
 
-export function SidebarToggleBar() {
-    return (
-        <>
-            <SidebarTrigger className="-ml-1 text-muted-foreground hover:bg-transparent dark:hover:bg-transparent hover:text-foreground dark:hover:text-foreground" />
-            <Separator
-                orientation="vertical"
-                className="mx-2 data-[orientation=vertical]:h-auto"
-            />
-        </>
-    )
-}
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { user } = useAuth()
 
@@ -134,7 +121,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const displayEmail = user?.email ?? user?.registration ?? ""
     return (
         <Sidebar collapsible="icon" {...props}>
-            <SidebarHeader className="shadow-sm shadow-muted-foreground/10">
+            <SidebarHeader className="border-b border-border h-14">
                 <div className="flex w-full flex-col items-center gap-2">
                     <div className="flex w-full items-center justify-center">
                         <Image

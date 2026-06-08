@@ -1,5 +1,5 @@
 export const ROUTE_LABELS: Record<string, string> = {
-  "/dashboard": "Dashboard",
+  "/home": "Home",
   "/profile": "Perfil",
   "/enterprise": "Empresa",
   "/members": "Membros	",

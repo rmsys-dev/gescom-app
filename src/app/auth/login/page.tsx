@@ -30,7 +30,7 @@ function LoginPageContent() {
       return
     }
 
-    router.replace("/dashboard")
+    router.replace("/home")
   }, [
     hydrated,
     isAuthenticated,

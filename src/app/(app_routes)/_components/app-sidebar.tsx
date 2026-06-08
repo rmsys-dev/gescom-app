@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import {
-    Bell, Building2, ChartArea, HelpCircle, Link2, Package, Settings, ShoppingCart, User,
+    Bell, Building2, HelpCircle, Home, Link2, Package, Settings, ShoppingCart, User,
     Users
 } from "lucide-react"
 
@@ -23,32 +23,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useAuth } from "@/components/providers/authentication/auth-store"
 
 const data = {
-    // navMain: [
-    //     {
-    //         title: "Telas",
-    //         url: "#",
-    //         icon: Home,
-    //         items: [
-    //             {
-    //                 title: ROUTE_LABELS["/dashboard"],
-    //                 url: "/dashboard",
-    //             },
-    //             {
-    //                 title: "Clientes",
-    //                 url: "/clients",
-    //             },
-    //             {
-    //                 title: "Membros",
-    //                 url: "/members",
-    //             },
-    //         ],
-    //     },
-    // ],
     navMain: [
         {
-            title: "Dashboard",
-            url: "/dashboard",
-            icon: ChartArea,
+            title: "Home",
+            url: "/home",
+            icon: Home,
         },
         {
             title: "Clientes",

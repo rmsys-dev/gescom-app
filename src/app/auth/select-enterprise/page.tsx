@@ -41,7 +41,7 @@ function SelectEnterprisePageContent() {
     }
     if (enterprises.length <= 1) {
       router.replace(
-        isSafeInternalReturnUrl(returnUrl) ? returnUrl : "/dashboard"
+        isSafeInternalReturnUrl(returnUrl) ? returnUrl : "/home"
       )
     }
   }, [hydrated, isAuthenticated, enterprises.length, returnUrl, router])
@@ -51,7 +51,7 @@ function SelectEnterprisePageContent() {
     try {
       await switchToEnterprise(enterprise)
       toast.success("Empresa selecionada.")
-      router.push(isSafeInternalReturnUrl(returnUrl) ? returnUrl : "/dashboard")
+      router.push(isSafeInternalReturnUrl(returnUrl) ? returnUrl : "/home")
     } catch (error) {
       if (error instanceof HttpError) {
         toastHttpError(error, "Não foi possível mudar de empresa.")

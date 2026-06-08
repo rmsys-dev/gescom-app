@@ -4,7 +4,7 @@ import { REFRESH_TOKEN_COOKIE } from "@/lib/auth/cookie-names"
 
 /** Rotas da área autenticada `(app_routes)` — o grupo não aparece na URL. */
 const PRIVATE_ROUTE_PREFIXES = [
-  "/dashboard",
+  "/home",
   "/profile",
   "/enterprise",
   "/members",
@@ -47,7 +47,7 @@ export function middleware(req: NextRequest) {
     hasSession &&
     (pathname === "/auth/login" || pathname === "/auth/select-enterprise")
   ) {
-    return NextResponse.redirect(new URL("/dashboard", req.url))
+    return NextResponse.redirect(new URL("/home", req.url))
   }
 
   return NextResponse.next()
@@ -55,7 +55,7 @@ export function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/dashboard/:path*",
+    "/home/:path*",
     "/profile/:path*",
     "/enterprise/:path*",
     "/members/:path*",

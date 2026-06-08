@@ -86,7 +86,7 @@ export function NotFoundView() {
 
             <div className="grid gap-2 sm:grid-cols-2">
               <Button asChild size="lg" tooltip="Ir para o início">
-                <Link href="/dashboard">
+                <Link href="/home">
                   <Home />
                   Ir para o início
                 </Link>

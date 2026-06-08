@@ -118,7 +118,7 @@ export function InvitationForm({
         return
       }
 
-      router.push("/dashboard")
+      router.push("/home")
     } catch (error) {
       if (error instanceof HttpError) {
         toastHttpError(error, "Nao foi possivel aceitar o convite.")
@@ -138,7 +138,7 @@ export function InvitationForm({
     try {
       const response = await declineMutation.mutateAsync()
       toast.success(response?.message ?? "Convite recusado.")
-      router.push("/dashboard")
+      router.push("/home")
     } catch (error) {
       if (error instanceof HttpError) {
         toastHttpError(error, "Nao foi possivel recusar o convite.")
@@ -301,7 +301,7 @@ export function InvitationForm({
                 </Link>
                 {" | "}
                 <Link
-                  href={isAuthenticated ? "/dashboard" : "/auth/login"}
+                  href={isAuthenticated ? "/home" : "/auth/login"}
                   className="underline-offset-2 hover:underline"
                 >
                   {isAuthenticated ? "Voltar ao painel" : "Voltar ao login"}

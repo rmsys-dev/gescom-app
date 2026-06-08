@@ -5,5 +5,5 @@ export function withReturnUrl(path: string, returnUrl: string) {
 }
 
 export function isSafeInternalReturnUrl(value: string | null): value is string {
-  return Boolean(value?.startsWith("/auth/") || value?.startsWith("/dashboard"))
+  return Boolean(value?.startsWith("/auth/") || value?.startsWith("/home"))
 }

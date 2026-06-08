@@ -107,7 +107,7 @@ export function FirstAccessVerifyForm({
         return
       }
 
-      router.push("/dashboard")
+      router.push("/home")
     } catch (error) {
       if (error instanceof HttpError) {
         toastHttpError(error, "Nao foi possivel concluir o primeiro acesso.")

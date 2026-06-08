@@ -88,7 +88,7 @@ export function LoginForm({
         router.push(returnUrl)
         return
       }
-      router.push("/dashboard")
+      router.push("/home")
     } catch (error) {
       if (error instanceof HttpError) {
         toastHttpError(error, "Nao foi possivel autenticar.")

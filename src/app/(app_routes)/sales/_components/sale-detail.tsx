@@ -197,18 +197,18 @@ function SalePaymentsSection({
                   {payment.paymentTypeDescription ?? payment.paymentTypeId}
                 </p>
                 <p className="font-semibold">
-                  {formatCurrency(payment.valuePayment)}
+                  {formatCurrency(payment.valueTotal)}
                 </p>
               </div>
               {payment.dues.length > 0 && (
                 <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
-                  {payment.dues.map((due) => (
+                  {payment.dues.map((due, index) => (
                     <li key={due.id} className="flex justify-between gap-2">
                       <span>
-                        Parcela {due.dueNumber} ·{" "}
+                        Parcela {index + 1} ·{" "}
                         {formatDateOnly(due.dueDate)}
                       </span>
-                      <span>{formatCurrency(due.valueDue)}</span>
+                      <span>{formatCurrency(due.valueInstallment)}</span>
                     </li>
                   ))}
                 </ul>

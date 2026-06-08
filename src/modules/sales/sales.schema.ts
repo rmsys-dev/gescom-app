@@ -37,14 +37,14 @@ export type SaleSummary = z.infer<typeof saleSummarySchema>
 
 export const saleItemSchema = z.object({
   id: z.uuid(),
-  saleId: z.uuid(),
+  saleId: z.uuid().optional(),
   productsEnterprisesId: z.uuid(),
   quantity: decimalSchema,
-  quantityReturned: decimalSchema.nullable(),
+  quantityReturned: decimalSchema.nullable().optional(),
   valueUnit: decimalSchema,
   valueTotal: decimalSchema,
-  percentageDiscount: decimalSchema.nullable(),
-  valueDiscount: decimalSchema.nullable(),
+  percentageDiscount: decimalSchema.nullable().optional(),
+  valueDiscount: decimalSchema.nullable().optional(),
   productDescription: z.string().nullable().optional(),
   unitDescription: z.string().nullable().optional(),
 })
@@ -53,22 +53,25 @@ export type SaleItem = z.infer<typeof saleItemSchema>
 
 export const saleDueSchema = z.object({
   id: z.uuid(),
-  salePaymentId: z.uuid(),
-  dueNumber: z.number().int(),
-  valueDue: decimalSchema,
+  salesPaymentId: z.uuid(),
+  salesId: z.uuid().optional(),
+  valueInstallment: decimalSchema,
   dueDate: z.string(),
-  status: z.string().nullable().optional(),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().nullable().optional(),
 })
 
 export type SaleDue = z.infer<typeof saleDueSchema>
 
 export const salePaymentSchema = z.object({
   id: z.uuid(),
-  saleId: z.uuid(),
+  salesId: z.uuid().optional(),
   paymentTypeId: z.uuid(),
   paymentTypeDescription: z.string().nullable().optional(),
-  valuePayment: decimalSchema,
+  valueTotal: decimalSchema,
   dues: z.array(saleDueSchema).default([]),
+  createdAt: z.string().optional(),
+  updatedAt: z.string().nullable().optional(),
 })
 
 export type SalePayment = z.infer<typeof salePaymentSchema>

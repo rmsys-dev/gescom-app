@@ -12,9 +12,12 @@ import {
 } from "@/components/ui/select"
 import type { SalesDateFilters } from "@/modules/sales/sales-constants"
 import type { ListSalesQuery } from "@/modules/sales/sales.schema"
-import { SALE_STATUS_LABELS } from "@/modules/sales/sales-labels"
+import {
+  BUDGET_CLOSURE_LABELS,
+  SALE_STATUS_LABELS,
+} from "@/modules/sales/sales-labels"
 
-export type SalesFiltersProps = {
+export type BudgetsFiltersProps = {
   filters: ListSalesQuery
   dateFilters: SalesDateFilters
   onChange: (filters: ListSalesQuery) => void
@@ -24,13 +27,13 @@ export type SalesFiltersProps = {
 
 const ALL = "all"
 
-export function SalesFilters({
+export function BudgetsFilters({
   filters,
   dateFilters,
   onChange,
   onApply,
   onClear,
-}: SalesFiltersProps) {
+}: BudgetsFiltersProps) {
   return (
     <div className="rounded-lg border bg-card p-4 shadow-sm">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -81,7 +84,7 @@ export function SalesFilters({
           />
         </Field>
         <Field>
-          <FieldLabel htmlFor="sale-status">Status</FieldLabel>
+          <FieldLabel htmlFor="budget-status">Status do documento</FieldLabel>
           <Select
             value={filters.status ?? ALL}
             onValueChange={(v) =>
@@ -91,12 +94,41 @@ export function SalesFilters({
               })
             }
           >
-            <SelectTrigger id="sale-status" className="w-full">
+            <SelectTrigger id="budget-status" className="w-full">
               <SelectValue placeholder="Todos" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>Todos</SelectItem>
               {Object.entries(SALE_STATUS_LABELS).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="budget-closure-situation">
+            Situação de fechamento
+          </FieldLabel>
+          <Select
+            value={filters.budgetClosureSituation ?? ALL}
+            onValueChange={(v) =>
+              onChange({
+                ...filters,
+                budgetClosureSituation:
+                  v === ALL
+                    ? undefined
+                    : (v as ListSalesQuery["budgetClosureSituation"]),
+              })
+            }
+          >
+            <SelectTrigger id="budget-closure-situation" className="w-full">
+              <SelectValue placeholder="Todos" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>Todos</SelectItem>
+              {Object.entries(BUDGET_CLOSURE_LABELS).map(([value, label]) => (
                 <SelectItem key={value} value={value}>
                   {label}
                 </SelectItem>

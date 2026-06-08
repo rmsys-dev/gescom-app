@@ -10,16 +10,17 @@ import type {
 } from "@/modules/sales/sales-analytics.schema"
 
 export const SALES_BASE_PATH = "/sales"
+export const SALES_BUDGETS_PATH = "/sales/budgets"
 export const SALES_DASHBOARD_PATH = "/sales/dashboard"
 
 export const DEFAULT_SALES_PAGE_SIZE = 20
 export const DEFAULT_ANALYTICS_TIMEZONE = "America/Sao_Paulo"
 
-export function defaultSalesFilters() {
+function defaultListFilters(type: SaleType) {
   return {
     limit: DEFAULT_SALES_PAGE_SIZE,
     offset: 0,
-    type: undefined as SaleType | undefined,
+    type,
     status: undefined as SaleStatus | undefined,
     budgetClosureSituation: undefined as BudgetClosureSituation | undefined,
     userId: undefined as string | undefined,
@@ -27,6 +28,14 @@ export function defaultSalesFilters() {
     seller: undefined as string | undefined,
     client: undefined as string | undefined,
   }
+}
+
+export function defaultSalesFilters() {
+  return defaultListFilters("VENDA")
+}
+
+export function defaultBudgetFilters() {
+  return defaultListFilters("ORCAMENTO")
 }
 
 export function defaultDashboardFilters() {
@@ -58,3 +67,4 @@ export function defaultSalesDateFilters(): SalesDateFilters {
 export function hasActiveSalesDateFilters(filters: SalesDateFilters): boolean {
   return Boolean(filters.dateFrom?.trim() || filters.dateTo?.trim())
 }
+

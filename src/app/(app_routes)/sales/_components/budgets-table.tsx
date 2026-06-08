@@ -3,17 +3,15 @@
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, Eye } from "lucide-react"
 
+import { BudgetClosureBadge } from "@/app/(app_routes)/sales/_components/budget-closure-badge"
 import { SalesStatusBadge } from "@/app/(app_routes)/sales/_components/sales-status-badge"
 import { Button } from "@/components/ui/button"
 import { formatDateOnly } from "@/lib/formatters"
 import { SALES_BASE_PATH } from "@/modules/sales/sales-constants"
-import {
-  RETURN_SITUATION_LABELS,
-  formatCurrency,
-} from "@/modules/sales/sales-labels"
+import { formatCurrency } from "@/modules/sales/sales-labels"
 import type { SaleSummary } from "@/modules/sales/sales.schema"
 
-type SalesTableProps = {
+type BudgetsTableProps = {
   items: SaleSummary[]
   total: number
   limit: number
@@ -23,15 +21,15 @@ type SalesTableProps = {
   onPageChange: (offset: number) => void
 }
 
-export function SalesTable({
+export function BudgetsTable({
   items,
   total,
   limit,
   offset,
   localFilterActive = false,
-  emptyMessage = "Nenhuma venda encontrada",
+  emptyMessage = "Nenhum orçamento encontrado",
   onPageChange,
-}: SalesTableProps) {
+}: BudgetsTableProps) {
   const page = Math.floor(offset / limit) + 1
   const totalPages = Math.max(1, Math.ceil(total / limit))
   const canPrev = offset > 0
@@ -93,11 +91,11 @@ export function SalesTable({
           <thead className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
             <tr>
               <th className="px-4 py-3 font-medium">Pedido</th>
-              <th className="px-4 py-3 font-medium">Status</th>
+              <th className="px-4 py-3 font-medium">Status do documento</th>
+              <th className="px-4 py-3 font-medium">Situação de fechamento</th>
               <th className="px-4 py-3 font-medium">Vendedor</th>
               <th className="px-4 py-3 font-medium">Cliente</th>
               <th className="px-4 py-3 font-medium">Valor líquido</th>
-              <th className="px-4 py-3 font-medium">Devolução</th>
               <th className="px-4 py-3 font-medium">Data</th>
               <th className="px-4 py-3 font-medium" />
             </tr>
@@ -111,16 +109,15 @@ export function SalesTable({
                 <td className="px-4 py-3">
                   <SalesStatusBadge status={item.status} />
                 </td>
+                <td className="px-4 py-3">
+                  <BudgetClosureBadge situation={item.budgetClosureSituation} />
+                </td>
                 <td className="px-4 py-3">{item.memberName ?? item.UserName}</td>
                 <td className="px-4 py-3 text-muted-foreground">
                   {item.memberName ? item.UserName : "—"}
                 </td>
                 <td className="px-4 py-3 font-medium">
                   {formatCurrency(item.valueLiquid)}
-                </td>
-                <td className="px-4 py-3 text-muted-foreground">
-                  {RETURN_SITUATION_LABELS[item.returnSituation] ??
-                    item.returnSituation}
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">
                   {formatDateOnly(item.completedionDate ?? item.createdAt)}
@@ -155,6 +152,7 @@ export function SalesTable({
               </div>
               <div className="flex flex-col items-end gap-1">
                 <SalesStatusBadge status={item.status} />
+                <BudgetClosureBadge situation={item.budgetClosureSituation} />
               </div>
             </div>
             <p className="mt-3 text-lg font-semibold">

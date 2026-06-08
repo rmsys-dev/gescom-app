@@ -15,6 +15,7 @@ import {
   Users,
   type LucideIcon,
   Cog,
+  FileText,
   Info,
 } from "lucide-react"
 
@@ -64,6 +65,7 @@ export const NAV_GROUPS: NavGroup[] = [
     icon: DollarSign,
     routes: [
       { title: "Vendas", url: "/sales", icon: ShoppingCart },
+      { title: "Orçamentos", url: "/sales/budgets", icon: FileText },
       { title: "Relatórios", url: "/sales/dashboard", icon: TrendingUp },
     ],
   },

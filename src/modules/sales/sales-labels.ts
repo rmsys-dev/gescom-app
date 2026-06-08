@@ -26,9 +26,15 @@ export const SALE_STATUS_LABELS: Record<SaleStatus, string> = {
 
 export const BUDGET_CLOSURE_LABELS: Record<BudgetClosureSituation, string> = {
   ABERTO: "Aberto",
-  PARCIAL: "Parcial",
+  PARCIAL: "Parcialmente convertido",
   FECHADO: "Fechado",
 }
+
+export const BUDGET_CONVERSION_KIND_LABELS: Record<"PARCIAL" | "TOTAL", string> =
+  {
+    PARCIAL: "Conversão parcial",
+    TOTAL: "Conversão total (fechamento orçamento)",
+  }
 
 export const RETURN_SITUATION_LABELS: Record<ReturnSituation, string> = {
   SEM_DEVOLUCAO: "Sem devolução",

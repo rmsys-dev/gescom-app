@@ -61,7 +61,7 @@ export function SaleDetailView({ sale }: SaleDetailViewProps) {
             </div>
             <div>
               <dt className="text-xs text-muted-foreground">
-                {sale.type === "ORCAMENTO" ? "Fecho orçamento" : "Finalização"}
+                {sale.type === "ORCAMENTO" ? "Fechamento orçamento" : "Finalização"}
               </dt>
               <dd>
                 {sale.type === "ORCAMENTO"

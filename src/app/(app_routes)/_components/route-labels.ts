@@ -29,6 +29,7 @@ export const ROUTE_LABELS: Record<string, string> = {
   "/products/catalogs/brands": "Marcas",
   "/products/catalogs/pis-cofins": "PIS/COFINS",
   "/sales": "Vendas",
+  "/sales/budgets": "Orçamentos",
   "/sales/dashboard": "Dashboard de Vendas",
 }
 

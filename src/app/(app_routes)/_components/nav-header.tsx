@@ -3,10 +3,11 @@
 import { Fragment, useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LogOut, Moon, Sun } from "lucide-react"
+import { LogOut, Moon, RefreshCw, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { SidebarToggleBar } from "@/app/(app_routes)/_components/app-sidebar"
+import { usePageRefreshButton } from "@/app/(app_routes)/_components/page-refresh"
 import { getBreadcrumbItems } from "@/app/(app_routes)/_components/route-labels"
 import { TeamSwitcher } from "@/app/(app_routes)/_components/team-switcher"
 import { useAuth } from "@/components/providers/authentication/auth-store"
@@ -33,6 +34,7 @@ export function NavHeader() {
     const { resolvedTheme, setTheme } = useTheme()
     const [isLoggingOut, setIsLoggingOut] = useState(false)
     const [mounted, setMounted] = useState(false)
+    const pageRefresh = usePageRefreshButton()
 
     useEffect(() => {
         setTimeout(() => {
@@ -97,6 +99,24 @@ export function NavHeader() {
                     </div>
 
                     <Separator orientation="vertical" className="data-[orientation=vertical]:h-auto" />
+
+                    {pageRefresh ? (
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            disabled={
+                                pageRefresh.disabled || pageRefresh.isFetching
+                            }
+                            onClick={() => void pageRefresh.onRefresh()}
+                            aria-label="Atualizar dados"
+                            className="text-muted-foreground hover:bg-transparent dark:hover:bg-transparent hover:text-primary dark:hover:text-primary"
+                        >
+                            <RefreshCw
+                                className={`size-4 ${pageRefresh.isFetching ? "animate-spin" : ""}`}
+                            />
+                        </Button>
+                    ) : null}
 
                     <Button
                         type="button"

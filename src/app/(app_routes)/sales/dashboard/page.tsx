@@ -163,6 +163,13 @@ export default function SalesDashboardPage() {
     setAppliedFilters({ ...draftFilters })
   }, [draftFilters, useCustomRange])
 
+  const clearFilters = useCallback(() => {
+    const reset = defaultDashboardFilters()
+    setDraftFilters(reset)
+    setAppliedFilters(reset)
+    setUseCustomRange(false)
+  }, [])
+
   function refreshAll() {
     void realizedOverview.refetch()
     void pipelineOverview.refetch()
@@ -232,6 +239,7 @@ export default function SalesDashboardPage() {
           draft={draftFilters}
           onChange={setDraftFilters}
           onApply={applyFilters}
+          onClear={clearFilters}
           useCustomRange={useCustomRange}
           onToggleCustomRange={setUseCustomRange}
         />

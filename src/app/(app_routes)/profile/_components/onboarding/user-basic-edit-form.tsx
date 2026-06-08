@@ -113,10 +113,10 @@ export function UserBasicEditForm({
       onOpenChange(false)
     } catch (error) {
       if (error instanceof HttpError) {
-        toastHttpError(error, "Nao foi possivel actualizar o utilizador.")
+        toastHttpError(error, "Nao foi possivel atualizar o utilizador.")
         return
       }
-      toast.error("Nao foi possivel actualizar o utilizador.")
+      toast.error("Nao foi possivel atualizar o utilizador.")
     }
   }
 

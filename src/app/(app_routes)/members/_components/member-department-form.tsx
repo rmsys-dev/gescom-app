@@ -104,7 +104,7 @@ export function MemberDepartmentForm({
         toastHttpError(
           error,
           editing
-            ? "Nao foi possivel actualizar o departamento."
+            ? "Nao foi possivel atualizar o departamento."
             : "Nao foi possivel adicionar o departamento."
         )
         return

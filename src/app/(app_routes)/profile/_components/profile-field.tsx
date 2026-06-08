@@ -304,10 +304,10 @@ function ProfilePersonalInfoFields({
       onUpdateSuccess?.()
     } catch (error) {
       if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível actualizar o perfil.")
+        toastHttpError(error, "Não foi possível atualizar o perfil.")
         return
       }
-      toast.error("Não foi possível actualizar o perfil.")
+      toast.error("Não foi possível atualizar o perfil.")
     }
   }
 

@@ -36,7 +36,7 @@ export function PermissionsErrorCard() {
         <CardHeader>
           <CardTitle>Não foi possível carregar permissões</CardTitle>
           <CardDescription>
-            Não foi possível obter as permissões da sessão. Tente actualizar a
+            Não foi possível obter as permissões da sessão. Tente atualizar a
             página ou iniciar sessão novamente.
           </CardDescription>
         </CardHeader>
@@ -88,7 +88,7 @@ export function StaleDataBanner({ message }: { message: string }) {
       role="status"
       className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-950 dark:text-amber-100"
     >
-      <p className="font-medium">Não foi possível actualizar a lista.</p>
+      <p className="font-medium">Não foi possível atualizar a lista.</p>
       <p className="mt-1 text-amber-900/90 dark:text-amber-50/90">
         {message}. Os valores abaixo podem estar desatualizados.
       </p>

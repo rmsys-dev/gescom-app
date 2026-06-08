@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react"
 import { toast } from "sonner"
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { ClientsListHeader } from "@/app/(app_routes)/clients/_components/client-field"
 import { ClientsContentLoading } from "@/app/(app_routes)/clients/_components/clients-route-loading"
 import { defaultClientListFilters } from "@/app/(app_routes)/clients/_components/clients-constants"
@@ -41,6 +42,16 @@ export default function ClientsPage() {
     enterpriseId,
     filters: appliedFilters,
     enabled: ready && perms.canConsultMembers,
+  })
+
+  const handleRefresh = useCallback(() => {
+    void refetch()
+  }, [refetch])
+
+  useRegisterPageRefresh({
+    onRefresh: handleRefresh,
+    isFetching,
+    enabled: ready && perms.isReady && !perms.isError && perms.canConsultMembers,
   })
 
   const applyFiltersFromForm = useCallback(() => {
@@ -195,10 +206,6 @@ export default function ClientsPage() {
       {data && !isPending && (
         <div className="space-y-6">
           <ClientsListHeader
-            total={data.total}
-            isFetching={isFetching}
-            isRefreshDisabled={isFetching}
-            onRefresh={() => void refetch()}
             canCreateClient={perms.canCreateMemberWithUser}
             canLink={
               perms.canIncludeMembers && perms.canConsultUsers

@@ -2,9 +2,11 @@
 
 import Link from "next/link"
 import { useParams } from "next/navigation"
+import { useCallback } from "react"
 import { z } from "zod"
-import { ArrowLeft, RefreshCw } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import {
   PermissionDeniedCard,
   PermissionsErrorCard,
@@ -64,6 +66,17 @@ export function ResourceDetailView<T>({
     id: id ?? undefined,
     enabled:
       enterpriseReady && perms.isReady && canConsult && Boolean(id),
+  })
+
+  const handleRefresh = useCallback(() => {
+    void refetch()
+  }, [refetch])
+
+  useRegisterPageRefresh({
+    onRefresh: handleRefresh,
+    isFetching,
+    enabled:
+      enterpriseReady && perms.isReady && !perms.isError && canConsult && Boolean(id),
   })
 
   const { errMessage, errMeta } = useListErrorState(
@@ -134,19 +147,6 @@ export function ResourceDetailView<T>({
               </Link>
             </Button>
             <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="ml-auto"
-              disabled={isFetching}
-              onClick={() => void refetch()}
-            >
-              <RefreshCw
-                className={`mr-2 size-4 ${isFetching ? "animate-spin" : ""}`}
-              />
-              Actualizar
-            </Button>
           </div>
           {renderContent(data)}
         </div>

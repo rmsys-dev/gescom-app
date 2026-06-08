@@ -1,7 +1,8 @@
 "use client"
 
-import { use } from "react"
+import { use, useCallback } from "react"
 
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { SaleBudgetConversionsTable } from "@/app/(app_routes)/sales/_components/sale-budget-conversions-table"
 import { SaleDetailView } from "@/app/(app_routes)/sales/_components/sale-detail"
 import { SaleReturnsTable } from "@/app/(app_routes)/sales/_components/sale-returns-table"
@@ -56,6 +57,16 @@ export default function SaleDetailPage({ params }: SaleDetailPageProps) {
     "Não foi possível carregar a venda."
   )
 
+  const handleRefresh = useCallback(() => {
+    void saleQuery.refetch()
+  }, [saleQuery.refetch])
+
+  useRegisterPageRefresh({
+    onRefresh: handleRefresh,
+    isFetching: saleQuery.isFetching,
+    enabled: ready && perms.isReady && !perms.isError && perms.canConsultSales,
+  })
+
   if (!ready || !perms.isReady) {
     return (
       <PaginatedListLayout loading={<SaleDetailLoading />}>{null}</PaginatedListLayout>
@@ -82,11 +93,7 @@ export default function SaleDetailPage({ params }: SaleDetailPageProps) {
 
       {saleQuery.data && !saleQuery.isPending && (
         <div className="space-y-6">
-          <SaleDetailView
-            sale={saleQuery.data}
-            onRefresh={() => void saleQuery.refetch()}
-            isRefreshing={saleQuery.isFetching}
-          />
+          <SaleDetailView sale={saleQuery.data} />
 
           {perms.canConsultSaleReturns && returnsQuery.data && (
             <SaleReturnsTable returns={returnsQuery.data} />

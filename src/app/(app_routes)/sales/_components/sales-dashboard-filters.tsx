@@ -1,7 +1,5 @@
 "use client"
 
-import { RefreshCw } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -30,8 +28,6 @@ type SalesDashboardFiltersProps = {
   draft: DashboardFilters
   onChange: (filters: DashboardFilters) => void
   onApply: () => void
-  onRefresh?: () => void
-  isRefreshing?: boolean
   useCustomRange: boolean
   onToggleCustomRange: (value: boolean) => void
 }
@@ -40,34 +36,16 @@ export function SalesDashboardFilters({
   draft,
   onChange,
   onApply,
-  onRefresh,
-  isRefreshing,
   useCustomRange,
   onToggleCustomRange,
 }: SalesDashboardFiltersProps) {
   return (
     <Card>
-      <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <CardTitle>Filtros</CardTitle>
-          <CardDescription>
-            Período, comparação e granularidade dos relatórios de vendas.
-          </CardDescription>
-        </div>
-        {onRefresh && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={isRefreshing}
-            onClick={onRefresh}
-          >
-            <RefreshCw
-              className={`mr-2 size-4 ${isRefreshing ? "animate-spin" : ""}`}
-            />
-            Actualizar
-          </Button>
-        )}
+      <CardHeader>
+        <CardTitle>Filtros</CardTitle>
+        <CardDescription>
+          Período, comparação e granularidade dos relatórios de vendas.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form

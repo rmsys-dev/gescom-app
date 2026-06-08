@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react"
 import { toast } from "sonner"
 
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import {
   ProductsListHeader,
 } from "@/app/(app_routes)/products/_components/product-enterprise-field"
@@ -39,6 +40,16 @@ export default function ProductsPage() {
       filters: appliedFilters,
       enabled: ready && perms.canConsultProducts,
     })
+
+  const handleRefresh = useCallback(() => {
+    void refetch()
+  }, [refetch])
+
+  useRegisterPageRefresh({
+    onRefresh: handleRefresh,
+    isFetching,
+    enabled: ready && perms.isReady && !perms.isError && perms.canConsultProducts,
+  })
 
   const applyFilters = useCallback(() => {
     const search = draftFilters.search?.trim()
@@ -90,12 +101,7 @@ export default function ProductsPage() {
       )}
       {data && !isPending && (
         <div className="space-y-6">
-          <ProductsListHeader
-            total={data.total}
-            isFetching={isFetching}
-            isRefreshDisabled={isFetching}
-            onRefresh={() => void refetch()}
-          />
+          <ProductsListHeader total={data.total} />
           <form
             onSubmit={(e) => {
               e.preventDefault()

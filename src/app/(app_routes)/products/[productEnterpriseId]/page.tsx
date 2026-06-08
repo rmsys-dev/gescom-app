@@ -1,9 +1,10 @@
 "use client"
 
 import { useParams } from "next/navigation"
-import { useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { z } from "zod"
 
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import {
   ProductApplicationsSection,
   ProductEnterpriseDetailHeader,
@@ -101,6 +102,21 @@ export default function ProductEnterpriseDetailPage() {
     "Não foi possível carregar o produto."
   )
 
+  const handleRefresh = useCallback(() => {
+    void refetch()
+  }, [refetch])
+
+  useRegisterPageRefresh({
+    onRefresh: handleRefresh,
+    isFetching,
+    enabled:
+      ready &&
+      perms.isReady &&
+      !perms.isError &&
+      perms.canConsultProducts &&
+      Boolean(productEnterpriseId),
+  })
+
   if (!ready || !perms.isReady) {
     return (
       <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
@@ -141,11 +157,7 @@ export default function ProductEnterpriseDetailPage() {
 
       {product && !isPending && (
         <div className="space-y-6">
-          <ProductEnterpriseDetailHeader
-            description={product.description}
-            isFetching={isFetching}
-            onRefresh={() => void refetch()}
-          />
+          <ProductEnterpriseDetailHeader description={product.description} />
           <ProductEnterpriseInfoCard product={product} />
           <div className="grid gap-6 lg:grid-cols-2">
             <ProductPriceSection

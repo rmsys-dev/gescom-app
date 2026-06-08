@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowLeft, RefreshCw } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 
 import { SalesStatusBadge } from "@/app/(app_routes)/sales/_components/sales-status-badge"
 import { SalesTypeBadge } from "@/app/(app_routes)/sales/_components/sales-type-badge"
@@ -24,39 +24,17 @@ import type { SaleDetail } from "@/modules/sales/sales.schema"
 
 type SaleDetailViewProps = {
   sale: SaleDetail
-  onRefresh?: () => void
-  isRefreshing?: boolean
 }
 
-export function SaleDetailView({
-  sale,
-  onRefresh,
-  isRefreshing,
-}: SaleDetailViewProps) {
+export function SaleDetailView({ sale }: SaleDetailViewProps) {
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <Button variant="ghost" size="sm" asChild className="w-fit">
-          <Link href={SALES_BASE_PATH}>
-            <ArrowLeft className="mr-2 size-4" />
-            Voltar à lista
-          </Link>
-        </Button>
-        {onRefresh && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={isRefreshing}
-            onClick={onRefresh}
-          >
-            <RefreshCw
-              className={`mr-2 size-4 ${isRefreshing ? "animate-spin" : ""}`}
-            />
-            Actualizar
-          </Button>
-        )}
-      </div>
+      <Button variant="ghost" size="sm" asChild className="w-fit">
+        <Link href={SALES_BASE_PATH}>
+          <ArrowLeft className="mr-2 size-4" />
+          Voltar à lista
+        </Link>
+      </Button>
 
       <Card>
         <CardHeader>

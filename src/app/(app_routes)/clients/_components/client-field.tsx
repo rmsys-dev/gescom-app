@@ -7,8 +7,6 @@ import { toast } from "sonner"
 import {
   BadgeCheck,
   Calendar,
-  Loader2,
-  RefreshCcw,
   User,
   UserPlus,
   UserRoundPlus,
@@ -53,10 +51,6 @@ export function ClientsListHeader({
   canCreateClient,
   canLink,
 }: {
-  total: number
-  isFetching: boolean
-  isRefreshDisabled: boolean
-  onRefresh: () => void
   canCreateClient: boolean
   canLink: boolean
 }) {
@@ -98,43 +92,13 @@ export function ClientsListHeader({
   )
 }
 
-export function ClientDetailHeader({
-  member,
-  isFetching,
-  isRefreshDisabled,
-  onRefresh,
-}: {
-  member: MemberDetail
-  isFetching: boolean
-  isRefreshDisabled: boolean
-  onRefresh: () => void
-}) {
+export function ClientDetailHeader({ member }: { member: MemberDetail }) {
   const displayName = member.user.userName.trim() || "Cliente"
   const initials = getUserInitials(displayName)
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-start justify-end gap-4">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={isRefreshDisabled}
-            onClick={onRefresh}
-            aria-label="Atualizar cliente"
-            tooltip="Atualizar dados"
-            className="shrink-0 cursor-pointer text-muted-foreground hover:bg-transparent hover:text-primary dark:hover:bg-transparent dark:hover:text-primary"
-          >
-            {isFetching ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-            ) : (
-              <RefreshCcw className="size-4" aria-hidden />
-            )}
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-6">
         <div className="flex justify-center">
           <Avatar
             size="default"

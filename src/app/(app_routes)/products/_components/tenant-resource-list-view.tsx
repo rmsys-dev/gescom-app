@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
-import { ArrowLeft, RefreshCw } from "lucide-react"
+import { useCallback, useState } from "react"
+import { ArrowLeft } from "lucide-react"
 
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import {
   PaginatedListLayout,
   ListErrorCard,
@@ -71,6 +72,16 @@ export function TenantResourceListView<T extends { id: string }>({
     enabled: ready && perms.isReady && canConsult,
   })
 
+  const handleRefresh = useCallback(() => {
+    void refetch()
+  }, [refetch])
+
+  useRegisterPageRefresh({
+    onRefresh: handleRefresh,
+    isFetching,
+    enabled: ready && perms.isReady && !perms.isError && canConsult,
+  })
+
   const { errMessage, errMeta } = useListErrorState(
     error,
     `Não foi possível carregar ${title.toLowerCase()}.`
@@ -113,18 +124,6 @@ export function TenantResourceListView<T extends { id: string }>({
                     </p>
                   </div>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={isFetching}
-                  onClick={() => void refetch()}
-                >
-                  <RefreshCw
-                    className={`mr-2 size-4 ${isFetching ? "animate-spin" : ""}`}
-                  />
-                  Actualizar
-                </Button>
               </div>
               <PaginatedResourceTable
                 items={data.items}

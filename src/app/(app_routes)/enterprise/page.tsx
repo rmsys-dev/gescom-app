@@ -1,5 +1,8 @@
 "use client"
 
+import { useCallback } from "react"
+
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { EnterpriseContentLoading } from "@/app/(app_routes)/enterprise/_components/enterprise-route-loading"
 import { EnterprisePermissionBadge } from "@/app/(app_routes)/enterprise/_components/enterprise-permission-badge"
 import {
@@ -62,10 +65,19 @@ export default function EnterprisePage() {
         ? meError.message
         : "Não foi possível carregar a sessão."
 
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     void refetchEnterprise()
     void refetchMe()
-  }
+  }, [refetchEnterprise, refetchMe])
+
+  const isRefreshing = enterpriseFetching || meFetching
+
+  useRegisterPageRefresh({
+    onRefresh: handleRefresh,
+    isFetching: isRefreshing,
+    disabled: enterprisePending || enterpriseFetching,
+    enabled: ready && perms.isReady && !perms.isError && perms.canConsultEnterprises,
+  })
 
   if (!ready || !perms.isReady) {
     return (
@@ -154,12 +166,7 @@ export default function EnterprisePage() {
 
       {enterpriseDetail && !enterprisePending && (
         <div className="space-y-6">
-          <EnterpriseHero
-            enterprise={enterpriseDetail}
-            isFetching={enterpriseFetching || meFetching}
-            isRefreshDisabled={enterprisePending || enterpriseFetching}
-            onRefresh={handleRefresh}
-          >
+          <EnterpriseHero enterprise={enterpriseDetail}>
             <EnterpriseDetailFields
               enterprise={enterpriseDetail}
               enterpriseId={enterpriseId}

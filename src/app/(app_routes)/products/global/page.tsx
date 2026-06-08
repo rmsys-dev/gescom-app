@@ -2,9 +2,10 @@
 
 import Link from "next/link"
 import { useCallback, useState } from "react"
-import { ArrowLeft, RefreshCw } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { ProductStatusBadge } from "@/app/(app_routes)/products/_components/product-status-badge"
 import {
   PaginatedListLayout,
@@ -44,6 +45,16 @@ export default function GlobalProductsPage() {
   const { data, error, isPending, isFetching, refetch } = useProductsQuery({
     filters: appliedFilters,
     enabled: perms.isReady && perms.canConsultProducts,
+  })
+
+  const handleRefresh = useCallback(() => {
+    void refetch()
+  }, [refetch])
+
+  useRegisterPageRefresh({
+    onRefresh: handleRefresh,
+    isFetching,
+    enabled: perms.isReady && !perms.isError && perms.canConsultProducts,
   })
 
   const applyFilters = useCallback(() => {
@@ -101,17 +112,6 @@ export default function GlobalProductsPage() {
                     </p>
                   </div>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={isFetching}
-                  onClick={() => void refetch()}
-                >
-                  <RefreshCw
-                    className={`mr-2 size-4 ${isFetching ? "animate-spin" : ""}`}
-                  />
-                  Actualizar
-                </Button>
               </div>
 
               <div className="rounded-lg border bg-card p-4 shadow-sm">

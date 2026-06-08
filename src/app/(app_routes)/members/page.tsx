@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react"
 import { toast } from "sonner"
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { MembersListHeader } from "@/app/(app_routes)/members/_components/member-field"
 import { MembersContentLoading } from "@/app/(app_routes)/members/_components/members-route-loading"
 import { defaultMembersListFilters } from "@/app/(app_routes)/members/_components/members-constants"
@@ -41,6 +42,16 @@ export default function MembersPage() {
     enterpriseId,
     filters: appliedFilters,
     enabled: ready && perms.canConsultMembers,
+  })
+
+  const handleRefresh = useCallback(() => {
+    void refetch()
+  }, [refetch])
+
+  useRegisterPageRefresh({
+    onRefresh: handleRefresh,
+    isFetching,
+    enabled: ready && perms.isReady && !perms.isError && perms.canConsultMembers,
   })
 
   const applyFiltersFromForm = useCallback(() => {
@@ -195,10 +206,6 @@ export default function MembersPage() {
       {data && !isPending && (
         <div className="space-y-6">
           <MembersListHeader
-            total={data.total}
-            isFetching={isFetching}
-            isRefreshDisabled={isFetching}
-            onRefresh={() => void refetch()}
             canCreateMember={perms.canCreateMemberWithUser}
             canInvite={perms.canIncludeMembers}
           />

@@ -4,11 +4,9 @@ import { useState } from "react"
 import type { LucideIcon } from "lucide-react"
 import {
   BadgeCheck,
-  Loader2,
   Mail,
   Pencil,
   Phone,
-  RefreshCcw,
   User,
   UserRound,
 } from "lucide-react"
@@ -20,7 +18,6 @@ import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
-  CardHeader,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import {
@@ -389,43 +386,17 @@ export function ProfileSection({
   enterpriseId,
   canEdit,
   onUpdateSuccess,
-  isFetching,
-  isRefreshDisabled,
-  onRefresh,
 }: {
   user: MeResponse["user"]
   enterpriseId?: string
   canEdit?: boolean
   onUpdateSuccess?: () => void
-  isFetching: boolean
-  isRefreshDisabled: boolean
-  onRefresh: () => void
 }) {
   const initials = getUserInitials(user.name)
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-start justify-end gap-4">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={isRefreshDisabled}
-            onClick={onRefresh}
-            aria-label="Atualizar dados do perfil"
-            tooltip="Atualizar dados"
-            className="shrink-0 cursor-pointer text-muted-foreground hover:bg-transparent hover:text-primary dark:hover:bg-transparent dark:hover:text-primary"
-          >
-            {isFetching ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-            ) : (
-              <RefreshCcw className="size-4" aria-hidden />
-            )}
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 pt-6">
         <div className="flex justify-center">
           <Avatar
             size="default"

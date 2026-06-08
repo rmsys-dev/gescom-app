@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react"
 
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { SalesAgingChart } from "@/app/(app_routes)/sales/_components/sales-aging-chart"
 import { SalesByPaymentTypeChart } from "@/app/(app_routes)/sales/_components/sales-by-payment-type-chart"
 import { SalesBySellerChart } from "@/app/(app_routes)/sales/_components/sales-by-seller-chart"
@@ -161,7 +162,7 @@ export default function SalesDashboardPage() {
     setAppliedFilters({ ...draftFilters })
   }, [draftFilters, useCustomRange])
 
-  const refreshAll = useCallback(() => {
+  function refreshAll() {
     void realizedOverview.refetch()
     void pipelineOverview.refetch()
     void timeseries.refetch()
@@ -173,24 +174,18 @@ export default function SalesDashboardPage() {
     void cancellations.refetch()
     void receivablesSummary.refetch()
     void receivablesAging.refetch()
-  }, [
-    realizedOverview,
-    pipelineOverview,
-    timeseries,
-    byPaymentType,
-    bySeller,
-    topProducts,
-    budgetFunnel,
-    statusBreakdown,
-    cancellations,
-    receivablesSummary,
-    receivablesAging,
-  ])
+  }
 
   const isRefreshing =
     realizedOverview.isFetching ||
     pipelineOverview.isFetching ||
     timeseries.isFetching
+
+  useRegisterPageRefresh({
+    onRefresh: refreshAll,
+    isFetching: isRefreshing,
+    enabled: ready && perms.isReady && !perms.isError && perms.canConsultSales,
+  })
 
   const primaryError =
     realizedOverview.error ??
@@ -231,21 +226,10 @@ export default function SalesDashboardPage() {
       loading={isInitialLoading ? <SalesDashboardLoading /> : null}
     >
       <div className="space-y-6">
-        <div>
-          <h1 className="font-heading text-2xl font-semibold tracking-tight">
-            Dashboard de Vendas
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            KPIs, gráficos e rankings da operação comercial da empresa.
-          </p>
-        </div>
-
         <SalesDashboardFilters
           draft={draftFilters}
           onChange={setDraftFilters}
           onApply={applyFilters}
-          onRefresh={refreshAll}
-          isRefreshing={isRefreshing}
           useCustomRange={useCustomRange}
           onToggleCustomRange={setUseCustomRange}
         />

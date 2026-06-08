@@ -8,11 +8,9 @@ import {
   BadgeCheck,
   Calendar,
   Fingerprint,
-  Loader2,
   Mail,
   Pencil,
   Phone,
-  RefreshCcw,
   User,
   UserPlus,
   UserRoundPlus,
@@ -245,17 +243,9 @@ export function MemberEditActions({
 }
 
 export function MembersListHeader({
-  // total,
-  // isFetching,
-  // isRefreshDisabled,
-  // onRefresh,
   canCreateMember,
   canInvite,
 }: {
-  total: number
-  isFetching: boolean
-  isRefreshDisabled: boolean
-  onRefresh: () => void
   canCreateMember: boolean
   canInvite: boolean
 }) {
@@ -263,12 +253,6 @@ export function MembersListHeader({
     <div>
       <div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          {/* <div className="min-w-0 space-y-1">
-            <CardTitle className="text-xl tracking-tight">Membros</CardTitle>
-            <CardDescription className="text-sm text-muted-foreground" >
-              {total === 1 ? "1 membro" : `${total} membros`} cadastrados
-            </CardDescription>
-          </div> */}
           <div className="flex flex-col items-center justify-center gap-2 w-full">
             {canCreateMember && (
               <Button asChild className="w-full" variant="outline" tooltip="Criar membro com usuário novo">
@@ -291,22 +275,6 @@ export function MembersListHeader({
                 </Link>
               </Button>
             )}
-            {/* <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              disabled={isRefreshDisabled}
-              onClick={onRefresh}
-              aria-label="Atualizar lista de membros"
-              tooltip="Atualizar lista"
-              className="shrink-0 cursor-pointer text-muted-foreground hover:bg-transparent hover:text-primary dark:hover:bg-transparent dark:hover:text-primary"
-            >
-              {isFetching ? (
-                <Loader2 className="size-4 animate-spin" aria-hidden />
-              ) : (
-                <RefreshCcw className="size-4" aria-hidden />
-              )}
-            </Button> */}
           </div>
         </div>
       </div>
@@ -314,43 +282,13 @@ export function MembersListHeader({
   )
 }
 
-export function MemberDetailHeader({
-  member,
-  isFetching,
-  isRefreshDisabled,
-  onRefresh,
-}: {
-  member: MemberDetail
-  isFetching: boolean
-  isRefreshDisabled: boolean
-  onRefresh: () => void
-}) {
+export function MemberDetailHeader({ member }: { member: MemberDetail }) {
   const displayName = member.user.userName.trim() || "Membro"
   const initials = getUserInitials(displayName)
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-start justify-end gap-4">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={isRefreshDisabled}
-            onClick={onRefresh}
-            aria-label="Atualizar membro"
-            tooltip="Atualizar dados"
-            className="shrink-0 cursor-pointer text-muted-foreground hover:bg-transparent hover:text-primary dark:hover:bg-transparent dark:hover:text-primary"
-          >
-            {isFetching ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-            ) : (
-              <RefreshCcw className="size-4" aria-hidden />
-            )}
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-6">
         <div className="flex justify-center">
           <Avatar
             size="default"

@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowLeft, RefreshCw } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 
 import { ProductStatusBadge } from "@/app/(app_routes)/products/_components/product-status-badge"
 import { PRODUCTS_BASE_PATH } from "@/app/(app_routes)/products/_components/products-constants"
@@ -16,17 +16,7 @@ import {
 import type { ProductEnterprise } from "@/modules/products/products.schema"
 import type { Price, ProductApplication, ProductTaxation, PromotionalPrice } from "@/modules/products/products-tenant-extras.schema"
 
-export function ProductsListHeader({
-  total,
-  isFetching,
-  isRefreshDisabled,
-  onRefresh,
-}: {
-  total: number
-  isFetching: boolean
-  isRefreshDisabled: boolean
-  onRefresh: () => void
-}) {
+export function ProductsListHeader({ total }: { total: number }) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
@@ -44,18 +34,6 @@ export function ProductsListHeader({
         <Button variant="outline" size="sm" asChild>
           <Link href={`${PRODUCTS_BASE_PATH}/catalogs`}>Catálogos</Link>
         </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={isRefreshDisabled}
-          onClick={onRefresh}
-        >
-          <RefreshCw
-            className={`mr-2 size-4 ${isFetching ? "animate-spin" : ""}`}
-          />
-          Actualizar
-        </Button>
       </div>
     </div>
   )
@@ -63,12 +41,8 @@ export function ProductsListHeader({
 
 export function ProductEnterpriseDetailHeader({
   description,
-  isFetching,
-  onRefresh,
 }: {
   description: string
-  isFetching: boolean
-  onRefresh: () => void
 }) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -87,18 +61,6 @@ export function ProductEnterpriseDetailHeader({
           </p>
         </div>
       </div>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        disabled={isFetching}
-        onClick={onRefresh}
-      >
-        <RefreshCw
-          className={`mr-2 size-4 ${isFetching ? "animate-spin" : ""}`}
-        />
-        Actualizar
-      </Button>
     </div>
   )
 }

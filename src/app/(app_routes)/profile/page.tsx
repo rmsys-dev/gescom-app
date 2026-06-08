@@ -1,5 +1,8 @@
 "use client"
 
+import { useCallback } from "react"
+
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { UserOnboardingPanel } from "@/app/(app_routes)/profile/_components/onboarding/user-onboarding-panel"
 import { ProfileContentLoading } from "@/app/(app_routes)/profile/_components/profile-route-loading"
 import { ProfileSection } from "@/app/(app_routes)/profile/_components/profile-field"
@@ -55,12 +58,19 @@ export default function ProfilePage() {
 
   const isRefreshing = isFetching || detailsFetching
 
-  function handleRefresh() {
+  const handleRefresh = useCallback(() => {
     void refetch()
     if (enterpriseId && userId) {
       void refetchDetails()
     }
-  }
+  }, [enterpriseId, refetch, refetchDetails, userId])
+
+  useRegisterPageRefresh({
+    onRefresh: handleRefresh,
+    isFetching: isRefreshing,
+    disabled: isRefreshing,
+    enabled: ready,
+  })
 
   if (!ready) {
     return (
@@ -136,9 +146,6 @@ export default function ProfilePage() {
             enterpriseId={enterpriseId}
             canEdit={Boolean(enterpriseId)}
             onUpdateSuccess={() => void refetch()}
-            isFetching={isRefreshing}
-            isRefreshDisabled={isRefreshing}
-            onRefresh={handleRefresh}
           />
 
           {enterpriseId ? (

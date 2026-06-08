@@ -8,13 +8,11 @@ import {
   Building2,
   Calendar,
   Landmark,
-  Loader2,
   Mail,
   MapPin,
   MessageCircle,
   Pencil,
   Phone,
-  RefreshCcw,
   Store,
 } from "lucide-react"
 import { toast } from "sonner"
@@ -29,7 +27,6 @@ import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
-  CardHeader,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -58,17 +55,11 @@ import {
 
 type EnterpriseHeroProps = {
   enterprise: Pick<Enterprise, "tradeName" | "legalName"> | null
-  isFetching: boolean
-  isRefreshDisabled: boolean
-  onRefresh: () => void
   children?: ReactNode
 }
 
 export function EnterpriseHero({
   enterprise,
-  isFetching,
-  isRefreshDisabled,
-  onRefresh,
   children,
 }: EnterpriseHeroProps) {
   const hasContext = enterprise != null
@@ -77,27 +68,7 @@ export function EnterpriseHero({
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-start justify-end gap-4">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={isRefreshDisabled}
-            onClick={onRefresh}
-            aria-label="Atualizar dados da empresa"
-            tooltip="Atualizar dados"
-            className="shrink-0 cursor-pointer text-muted-foreground hover:bg-transparent hover:text-primary dark:hover:bg-transparent dark:hover:text-primary"
-          >
-            {isFetching ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-            ) : (
-              <RefreshCcw className="size-4" aria-hidden />
-            )}
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 pt-6">
         <div className="flex justify-center">
           <Avatar
             size="default"

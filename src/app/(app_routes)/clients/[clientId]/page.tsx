@@ -2,8 +2,10 @@
 
 import Link from "next/link"
 import { useParams } from "next/navigation"
+import { useCallback } from "react"
 import { z } from "zod"
 
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { UserOnboardingPanel } from "@/app/(app_routes)/profile/_components/onboarding/user-onboarding-panel"
 import {
   ClientDetailHeader,
@@ -83,12 +85,24 @@ export default function ClientDetailPage() {
 
   const isRefreshing = isFetching || detailsFetching
 
-  function handleRefresh() {
+  const handleRefresh = useCallback(() => {
     void refetch()
     if (perms.canConsultUsers && userId) {
       void refetchDetails()
     }
-  }
+  }, [perms.canConsultUsers, refetch, refetchDetails, userId])
+
+  useRegisterPageRefresh({
+    onRefresh: handleRefresh,
+    isFetching: isRefreshing,
+    disabled: isRefreshing,
+    enabled:
+      ready &&
+      perms.isReady &&
+      !perms.isError &&
+      perms.canConsultMembers &&
+      Boolean(clientId),
+  })
 
   if (!ready || !perms.isReady) {
     return (
@@ -217,12 +231,7 @@ export default function ClientDetailPage() {
 
       {data && !isPending && isClient && enterpriseId && (
         <div className="space-y-6">
-          <ClientDetailHeader
-            member={data}
-            isFetching={isRefreshing}
-            isRefreshDisabled={isRefreshing}
-            onRefresh={handleRefresh}
-          />
+          <ClientDetailHeader member={data} />
 
           <div className="grid gap-6 lg:grid-cols-2">
             <ClientUserInfoCard

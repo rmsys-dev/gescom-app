@@ -2,9 +2,10 @@
 
 import Link from "next/link"
 import { useCallback, useState } from "react"
-import { ArrowLeft, RefreshCw } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 
+import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import {
   DEFAULT_CATALOG_FILTERS,
   DEFAULT_NBS_FILTERS,
@@ -78,6 +79,16 @@ export function CatalogListView<T extends { id: string }>({
     enabled: perms.isReady && canConsult,
   })
 
+  const handleRefresh = useCallback(() => {
+    void refetch()
+  }, [refetch])
+
+  useRegisterPageRefresh({
+    onRefresh: handleRefresh,
+    isFetching,
+    enabled: perms.isReady && !perms.isError && canConsult,
+  })
+
   const applyFilters = useCallback(() => {
     const searchValue =
       "search" in draftFilters && typeof draftFilters.search === "string"
@@ -148,18 +159,6 @@ export function CatalogListView<T extends { id: string }>({
                     </p>
                   </div>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={isFetching}
-                  onClick={() => void refetch()}
-                >
-                  <RefreshCw
-                    className={`mr-2 size-4 ${isFetching ? "animate-spin" : ""}`}
-                  />
-                  Actualizar
-                </Button>
               </div>
 
               {config.supportsSearch && (

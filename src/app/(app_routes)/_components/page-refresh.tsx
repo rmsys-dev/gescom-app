@@ -2,33 +2,35 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react"
 
-type PageRefreshRegistration = {
-  onRefresh: () => void
+type PageRefreshStatus = {
   isFetching: boolean
   disabled: boolean
 }
 
 type PageRefreshContextValue = {
-  registration: PageRefreshRegistration | null
-  setRegistration: (registration: PageRefreshRegistration | null) => void
+  status: PageRefreshStatus | null
+  onRefreshRef: React.RefObject<(() => void) | null>
+  setStatus: React.Dispatch<React.SetStateAction<PageRefreshStatus | null>>
 }
 
 const PageRefreshContext = createContext<PageRefreshContextValue | null>(null)
 
 export function PageRefreshProvider({ children }: { children: ReactNode }) {
-  const [registration, setRegistration] =
-    useState<PageRefreshRegistration | null>(null)
+  const onRefreshRef = useRef<(() => void) | null>(null)
+  const [status, setStatus] = useState<PageRefreshStatus | null>(null)
 
   const value = useMemo(
-    () => ({ registration, setRegistration }),
-    [registration]
+    () => ({ status, onRefreshRef, setStatus }),
+    [status]
   )
 
   return (
@@ -61,20 +63,45 @@ export function useRegisterPageRefresh({
   disabled?: boolean
   enabled?: boolean
 }) {
-  const { setRegistration } = usePageRefreshContext()
+  const { onRefreshRef, setStatus } = usePageRefreshContext()
+
+  onRefreshRef.current = enabled ? onRefresh : null
 
   useEffect(() => {
     if (!enabled) {
-      setRegistration(null)
+      setStatus(null)
       return
     }
 
-    setRegistration({ onRefresh, isFetching, disabled })
+    setStatus((prev) => {
+      if (
+        prev?.isFetching === isFetching &&
+        prev?.disabled === disabled
+      ) {
+        return prev
+      }
 
-    return () => setRegistration(null)
-  }, [disabled, enabled, isFetching, onRefresh, setRegistration])
+      return { isFetching, disabled }
+    })
+
+    return () => setStatus(null)
+  }, [disabled, enabled, isFetching, setStatus])
 }
 
 export function usePageRefreshButton() {
-  return usePageRefreshContext().registration
+  const { status, onRefreshRef } = usePageRefreshContext()
+
+  const triggerRefresh = useCallback(() => {
+    onRefreshRef.current?.()
+  }, [onRefreshRef])
+
+  if (!status) {
+    return null
+  }
+
+  return {
+    onRefresh: triggerRefresh,
+    isFetching: status.isFetching,
+    disabled: status.disabled,
+  }
 }

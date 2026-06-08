@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import {
-  FileText,
+  FilePlus,
   Moon,
   ShoppingCart,
   Sun,
@@ -59,7 +59,7 @@ const GREETING_ICON_CLASS = {
 const QUICK_ACTIONS = [
   { label: "Nova venda", icon: ShoppingCart },
   { label: "Novo cliente", icon: UserPlus },
-  { label: "Novo orçamento", icon: FileText },
+  { label: "Novo orçamento", icon: FilePlus },
 ] as const
 
 export function HomeWelcomeCard() {
@@ -106,8 +106,8 @@ export function HomeWelcomeCard() {
             <Button
               key={action.label}
               type="button"
-              variant="outline"
-              className="border-border/60 bg-card shadow-sm hover:bg-card/90"
+              variant="default"
+              className="bg-transparent border border-primary/20 border-dashed hover:bg-primary/75 hover:border-transparent hover:shadow-md hover:scale-101 transition-all duration-500"
             >
               <action.icon className="size-4" aria-hidden />
               {action.label}

@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server"
 import {
   clearAuthCookies,
-  getAccessToken,
   getEnterprisesSnapshot,
   getRefreshToken,
 } from "@/lib/auth/cookies"
+import { fetchAuthMeResponse } from "@/lib/auth/fetch-auth-me"
 import { jsonError } from "@/lib/auth/route-utils"
-import { apiServerFetch, refreshTokensOnServer } from "@/lib/auth/server-fetch"
 import { sessionBootstrapSchema } from "@/lib/auth/session-response"
 import { HttpError } from "@/lib/api/http-error"
 import { successEnvelopeSchema } from "@/lib/api/envelope"
@@ -19,21 +18,7 @@ export async function GET() {
       return NextResponse.json({ authenticated: false })
     }
 
-    if (!(await getAccessToken())) {
-      await refreshTokensOnServer(refreshToken)
-    }
-
-    let res = await apiServerFetch("auth/me", { method: "GET" })
-
-    if (res.status === 401) {
-      try {
-        await refreshTokensOnServer(refreshToken)
-        res = await apiServerFetch("auth/me", { method: "GET", _retry: true })
-      } catch {
-        await clearAuthCookies()
-        return NextResponse.json({ authenticated: false })
-      }
-    }
+    const res = await fetchAuthMeResponse()
 
     if (!res.ok) {
       if (res.status === 401) {

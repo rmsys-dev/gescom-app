@@ -11,7 +11,9 @@ const ACCESS_INVALID_CODES = new Set([
   "MISSING_ACCESS_TOKEN",
 ])
 
-export async function refreshTokensOnServer(refreshToken: string) {
+let refreshInFlight: Promise<void> | null = null
+
+async function performRefresh(refreshToken: string) {
   const res = await fetch(`${getServerApiBaseUrl()}/auth/refresh`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -29,6 +31,49 @@ export async function refreshTokensOnServer(refreshToken: string) {
   return tokens
 }
 
+export async function refreshTokensOnServer(refreshToken: string) {
+  return performRefresh(refreshToken)
+}
+
+/** Evita refresh concorrente com o mesmo token (várias rotas em paralelo). */
+export async function refreshTokensOnce() {
+  if (refreshInFlight) {
+    await refreshInFlight
+    return
+  }
+
+  const refreshToken = await getRefreshToken()
+  if (!refreshToken) {
+    throw new HttpError(
+      401,
+      "INVALID_SESSION",
+      "Sessão não encontrada."
+    )
+  }
+
+  refreshInFlight = performRefresh(refreshToken)
+    .then(() => undefined)
+    .finally(() => {
+      refreshInFlight = null
+    })
+
+  await refreshInFlight
+}
+
+/** Garante access token nos cookies antes de pedidos autenticados. */
+export async function ensureAccessToken() {
+  if (await getAccessToken()) {
+    return
+  }
+
+  const refreshToken = await getRefreshToken()
+  if (!refreshToken) {
+    return
+  }
+
+  await refreshTokensOnce()
+}
+
 type ServerFetchInit = RequestInit & {
   auth?: boolean
   _retry?: boolean
@@ -43,6 +88,10 @@ export async function apiServerFetch(
 ): Promise<Response> {
   const { auth = true, _retry, ...rest } = init
   const url = `${getServerApiBaseUrl()}/${path.replace(/^\/+/, "")}`
+
+  if (auth && !_retry) {
+    await ensureAccessToken()
+  }
 
   const headers = new Headers(rest.headers)
   if (auth) {
@@ -79,14 +128,13 @@ export async function apiServerFetch(
     return res
   }
 
-  const refreshToken = await getRefreshToken()
-  if (!refreshToken) {
+  if (!(await getRefreshToken())) {
     await clearAuthCookies()
     return res
   }
 
   try {
-    await refreshTokensOnServer(refreshToken)
+    await refreshTokensOnce()
   } catch (err) {
     await clearAuthCookies()
     if (err instanceof HttpError) {

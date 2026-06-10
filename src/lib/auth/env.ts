@@ -24,8 +24,10 @@ export function isAuthCookieSecure(): boolean {
   return process.env.NODE_ENV === "production"
 }
 
-/** 15 minutos — alinhado a JWT_ACCESS_EXPIRES_IN da API. */
-export const ACCESS_COOKIE_MAX_AGE = 15 * 60
+const DAY_SECONDS = 24 * 60 * 60
 
-/** 7 dias — alinhado a JWT_REFRESH_EXPIRES_IN da API. */
-export const REFRESH_COOKIE_MAX_AGE = 7 * 24 * 60 * 60
+/** 7 dias — alinhado a JWT_ACCESS_EXPIRES_IN da API. */
+export const ACCESS_COOKIE_MAX_AGE = 7 * DAY_SECONDS
+
+/** 14 dias — alinhado a JWT_REFRESH_EXPIRES_IN da API. */
+export const REFRESH_COOKIE_MAX_AGE = 14 * DAY_SECONDS

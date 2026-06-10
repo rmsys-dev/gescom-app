@@ -1,8 +1,7 @@
 "use client"
 
-import { InviteMemberForm } from "@/app/(app_routes)/members/_components/invite-member-form"
+import { CreateMemberForm } from "@/app/(app_routes)/members/_components/create-member-form"
 import { MembershipFormContentLoading } from "@/app/(app_routes)/members/_components/members-route-loading"
-import { MEMBERS_ROUTE_CONFIG } from "@/modules/memberships/membership-route-config"
 import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import {
   Card,
@@ -12,15 +11,20 @@ import {
 } from "@/components/ui/card"
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
 import { useOperatorPermissions } from "@/lib/permissions"
+import type { MembershipRouteConfig } from "@/modules/memberships/membership-route-config"
 
-export default function InviteMemberPage() {
+export function CreateMemberPageContent({
+  config,
+}: {
+  config: MembershipRouteConfig
+}) {
   const { ready, enterpriseId } = useRequireEnterprise()
   const perms = useOperatorPermissions()
 
   if (!ready || !perms.isReady) {
     return (
       <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
-        <MembershipFormContentLoading config={MEMBERS_ROUTE_CONFIG} />
+        <MembershipFormContentLoading config={config} />
       </main>
     )
   }
@@ -44,7 +48,7 @@ export default function InviteMemberPage() {
 
   if (!enterpriseId) return null
 
-  if (!perms.canIncludeMembers) {
+  if (!perms.canCreateMemberWithUser) {
     return (
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6 p-4 md:p-8">
         <RouteBreadcrumb />
@@ -52,7 +56,7 @@ export default function InviteMemberPage() {
           <CardHeader>
             <CardTitle>Sem permissão</CardTitle>
             <CardDescription>
-              Necessita da permissão incluir_membros.
+              Necessita de incluir_usuarios e incluir_membros.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -63,7 +67,7 @@ export default function InviteMemberPage() {
   return (
     <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
       <RouteBreadcrumb />
-      <InviteMemberForm enterpriseId={enterpriseId} />
+      <CreateMemberForm enterpriseId={enterpriseId} config={config} />
     </main>
   )
 }

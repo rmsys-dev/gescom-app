@@ -1,5 +1,6 @@
-import { ClientsRouteLoading } from "@/app/(app_routes)/clients/_components/clients-route-loading"
+import { MembershipRouteLoading } from "@/app/(app_routes)/members/_components/members-route-loading"
+import { CLIENTS_ROUTE_CONFIG } from "@/modules/memberships/membership-route-config"
 
 export default function Loading() {
-  return <ClientsRouteLoading />
+  return <MembershipRouteLoading config={CLIENTS_ROUTE_CONFIG} />
 }

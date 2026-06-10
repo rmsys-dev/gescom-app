@@ -1,7 +1,8 @@
 "use client"
 
 import { LinkClientForm } from "@/app/(app_routes)/clients/_components/link-client-form"
-import { ClientFormContentLoading } from "@/app/(app_routes)/clients/_components/clients-route-loading"
+import { MembershipFormContentLoading } from "@/app/(app_routes)/members/_components/members-route-loading"
+import { CLIENTS_ROUTE_CONFIG } from "@/modules/memberships/membership-route-config"
 import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import {
   Card,
@@ -19,7 +20,7 @@ export default function LinkClientPage() {
   if (!ready || !perms.isReady) {
     return (
       <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
-        <ClientFormContentLoading />
+        <MembershipFormContentLoading config={CLIENTS_ROUTE_CONFIG} />
       </main>
     )
   }

@@ -19,6 +19,7 @@ type MembersFiltersProps = {
   onChange: (filters: ListMembersQuery) => void
   onApply: () => void
   onClear: () => void
+  showClassFilter?: boolean
 }
 
 export function MembersFilters({
@@ -26,6 +27,7 @@ export function MembersFilters({
   onChange,
   onApply,
   onClear,
+  showClassFilter = true,
 }: MembersFiltersProps) {
   return (
     <div className="rounded-lg border bg-card p-4 shadow-sm">
@@ -54,30 +56,32 @@ export function MembersFilters({
             </SelectContent>
           </Select>
         </Field>
-        <Field>
-          <FieldLabel htmlFor="filter-class">Classe</FieldLabel>
-          <Select
-            value={filters.class ?? "all"}
-            onValueChange={(v) =>
-              onChange({
-                ...filters,
-                class: v === "all" ? undefined : (v as ListMembersQuery["class"]),
-              })
-            }
-          >
-            <SelectTrigger id="filter-class" className="w-full">
-              <SelectValue placeholder="Todas" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas</SelectItem>
-              {MEMBER_CLASS_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value}>
-                  {o.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Field>
+        {showClassFilter && (
+          <Field>
+            <FieldLabel htmlFor="filter-class">Classe</FieldLabel>
+            <Select
+              value={filters.class ?? "all"}
+              onValueChange={(v) =>
+                onChange({
+                  ...filters,
+                  class: v === "all" ? undefined : (v as ListMembersQuery["class"]),
+                })
+              }
+            >
+              <SelectTrigger id="filter-class" className="w-full">
+                <SelectValue placeholder="Todas" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas</SelectItem>
+                {MEMBER_CLASS_OPTIONS.map((o) => (
+                  <SelectItem key={o.value} value={o.value}>
+                    {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+        )}
         <Field>
           <FieldLabel htmlFor="filter-email">E-mail</FieldLabel>
           <Input

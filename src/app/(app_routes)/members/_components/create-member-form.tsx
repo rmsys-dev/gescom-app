@@ -20,11 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
 import { HttpError } from "@/lib/api/http-error"
 import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { MemberDepartmentsPicker } from "@/app/(app_routes)/members/_components/member-departments-picker"
-import { MEMBERS_BASE_PATH } from "@/app/(app_routes)/members/_components/members-constants"
 import { MEMBER_CLASS_OPTIONS } from "@/modules/memberships/member-class-label"
+import type { MembershipRouteConfig } from "@/modules/memberships/membership-route-config"
 import type { EnterpriseMemberClass } from "@/modules/memberships/memberships.schema"
 import type { MemberDepartmentPayload } from "@/modules/memberships/memberships.schema"
 import {
@@ -35,17 +36,20 @@ import {
   validateDepartmentsPayload,
 } from "@/modules/memberships/memberships-rules"
 import { useCreateMemberWithUserMutation } from "@/modules/memberships/use-members"
-import { Separator } from "@/components/ui/separator"
 
 export function CreateMemberForm({
   enterpriseId,
+  config,
 }: {
   enterpriseId: string
+  config: MembershipRouteConfig
 }) {
   const router = useRouter()
   const mutation = useCreateMemberWithUserMutation(enterpriseId)
-  const [memberClass, setMemberClass] =
-    useState<EnterpriseMemberClass>("COLABORADOR")
+  const fixedClass = config.create.fixedClass
+  const [memberClass, setMemberClass] = useState<EnterpriseMemberClass>(
+    fixedClass ?? "COLABORADOR"
+  )
   const [departments, setDepartments] = useState<MemberDepartmentPayload[]>([])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -68,10 +72,17 @@ export function CreateMemberForm({
       return
     }
 
-    const deptValidation = validateDepartmentsPayload(memberClass, departments)
-    if (!deptValidation.ok) {
-      toast.error(deptValidation.message)
-      return
+    const resolvedClass = fixedClass ?? memberClass
+
+    if (config.create.showDepartments) {
+      const deptValidation = validateDepartmentsPayload(
+        resolvedClass,
+        departments
+      )
+      if (!deptValidation.ok) {
+        toast.error(deptValidation.message)
+        return
+      }
     }
 
     try {
@@ -83,46 +94,56 @@ export function CreateMemberForm({
           userPhone,
         },
         member: {
-          class: memberClass,
-          departments: isClienteClass(memberClass) ? [] : departments,
+          class: resolvedClass,
+          departments: isClienteClass(resolvedClass) ? [] : departments,
         },
       })
-      if (!isClienteClass(memberClass)) {
+      if (config.create.showDepartments && !isClienteClass(resolvedClass)) {
         toast.info(
           "O utilizador recebera um e-mail de primeiro acesso para concluir o cadastro."
         )
       }
-      router.push(`${MEMBERS_BASE_PATH}/${result.member.id}`)
+      router.push(`${config.basePath}/${result.member.id}`)
     } catch (error) {
       if (error instanceof HttpError) {
-        toastHttpError(error, "Nao foi possivel criar o membro.")
+        toastHttpError(error, config.create.createError)
         return
       }
-      toast.error("Nao foi possivel criar o membro.")
+      toast.error(config.create.createError)
     }
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">Novo membro</CardTitle>
-        <CardDescription>
-          Crie um novo membro e vincule-o à empresa.
-        </CardDescription>
+        <CardTitle className="text-lg">{config.create.title}</CardTitle>
+        <CardDescription>{config.create.description}</CardDescription>
       </CardHeader>
       <Separator />
       <CardContent>
-        <p className="text-sm text-muted-foreground mb-4">
-          Ao relacionar um usuário existente, o usuário receberá um e-mail de primeiro acesso para concluir o cadastro de acesso ao sistema.
-        </p>
+        {config.create.note && (
+          <p className="mb-4 text-sm text-muted-foreground">
+            {config.create.note}
+          </p>
+        )}
         <form onSubmit={handleSubmit}>
           <FieldGroup>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field className="sm:col-span-2">
-                <Input id="userName" name="userName" placeholder="Informe o nome" required />
+                <Input
+                  id="userName"
+                  name="userName"
+                  placeholder="Informe o nome"
+                  required
+                />
               </Field>
               <Field>
-                <Input id="userRegistration" name="userRegistration" placeholder="Informe o CPF/CNPJ" required />
+                <Input
+                  id="userRegistration"
+                  name="userRegistration"
+                  placeholder="Informe o CPF/CNPJ"
+                  required
+                />
               </Field>
               <Field>
                 <Input
@@ -135,44 +156,55 @@ export function CreateMemberForm({
                 />
               </Field>
               <Field>
-                <Input id="userPhone" name="userPhone" required placeholder="Informe o telefone" />
-              </Field>
-              <Field>
-                <Select
-                  value={memberClass}
-                  onValueChange={(v) => {
-                    const next = v as EnterpriseMemberClass
-                    setMemberClass(next)
-                    if (isClienteClass(next)) setDepartments([])
-                  }}
-                >
-                  <SelectTrigger id="memberClass" className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {MEMBER_CLASS_OPTIONS.map((o) => (
-                      <SelectItem key={o.value} value={o.value}>
-                        {o.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
-              <Field className="sm:col-span-2">
-                <MemberDepartmentsPicker
-                  memberClass={memberClass}
-                  departments={departments}
-                  onChange={setDepartments}
+                <Input
+                  id="userPhone"
+                  name="userPhone"
+                  required
+                  placeholder="Informe o telefone"
                 />
               </Field>
+              {!fixedClass && (
+                <Field>
+                  <Select
+                    value={memberClass}
+                    onValueChange={(v) => {
+                      const next = v as EnterpriseMemberClass
+                      setMemberClass(next)
+                      if (isClienteClass(next)) setDepartments([])
+                    }}
+                  >
+                    <SelectTrigger id="memberClass" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {MEMBER_CLASS_OPTIONS.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                          {o.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+              )}
+              {config.create.showDepartments && (
+                <Field className="sm:col-span-2">
+                  <MemberDepartmentsPicker
+                    memberClass={memberClass}
+                    departments={departments}
+                    onChange={setDepartments}
+                  />
+                </Field>
+              )}
             </div>
             <Button
               type="submit"
               disabled={mutation.isPending}
               className="w-full sm:w-auto"
-              tooltip="Criar membro"
+              tooltip={config.create.submitLabel}
             >
-              {mutation.isPending ? "A criar..." : "Criar membro"}
+              {mutation.isPending
+                ? config.create.submitPendingLabel
+                : config.create.submitLabel}
             </Button>
           </FieldGroup>
         </form>

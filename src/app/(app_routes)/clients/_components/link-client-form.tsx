@@ -14,10 +14,8 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { HttpError } from "@/lib/api/http-error"
 import { toastHttpError } from "@/modules/authentication/http-error-feedback"
-import {
-  CLIENT_MEMBER_CLASS,
-  CLIENTS_BASE_PATH,
-} from "@/app/(app_routes)/clients/_components/clients-constants"
+import { CLIENTS_ROUTE_CONFIG } from "@/modules/memberships/membership-route-config"
+import { CLIENT_MEMBER_CLASS } from "@/modules/memberships/memberships-rules"
 import { LinkClientUsersFilters } from "@/app/(app_routes)/clients/_components/link-client-users-filters"
 import { LinkClientUsersTable } from "@/app/(app_routes)/clients/_components/link-client-users-table"
 import { useCreateMemberMutation } from "@/modules/memberships/use-members"
@@ -97,7 +95,7 @@ export function LinkClientForm({ enterpriseId }: { enterpriseId: string }) {
         class: CLIENT_MEMBER_CLASS,
         departments: [],
       })
-      router.push(`${CLIENTS_BASE_PATH}/${member.id}`)
+      router.push(`${CLIENTS_ROUTE_CONFIG.basePath}/${member.id}`)
     } catch (err) {
       if (err instanceof HttpError) {
         toastHttpError(err, "Não foi possível vincular o cliente.")

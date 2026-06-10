@@ -17,6 +17,7 @@ import {
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
 import { HttpError } from "@/lib/api/http-error"
 import { useMeQuery } from "@/modules/authentication/use-account"
+import { buildEmptyUserDetails } from "@/modules/users-onboarding/users-onboarding-empty"
 import { useUserDetailsQuery } from "@/modules/users-onboarding/use-users-onboarding"
 
 export default function ProfilePage() {
@@ -36,6 +37,17 @@ export default function ProfilePage() {
     userId,
     enabled: ready && Boolean(enterpriseId) && Boolean(userId),
   })
+
+  const onboardingDetails =
+    detailsData ??
+    (data?.user
+      ? buildEmptyUserDetails({
+          id: data.user.id,
+          userName: data.user.name,
+          userEmail: data.user.email ?? "",
+          userPhone: data.user.phone ?? "",
+        })
+      : undefined)
 
   const errMessage =
     error instanceof HttpError
@@ -161,7 +173,7 @@ export default function ProfilePage() {
                 </Card>
               )}
               <UserOnboardingPanel
-                details={detailsData}
+                details={onboardingDetails}
                 enterpriseId={enterpriseId}
                 userId={data.user.id}
                 memberId={data.enterprise?.memberId}

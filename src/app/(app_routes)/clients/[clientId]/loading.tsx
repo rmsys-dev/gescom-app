@@ -1,9 +1,10 @@
-import { ClientDetailContentLoading } from "@/app/(app_routes)/clients/_components/clients-route-loading"
+import { MembershipDetailContentLoading } from "@/app/(app_routes)/members/_components/members-route-loading"
+import { CLIENTS_ROUTE_CONFIG } from "@/modules/memberships/membership-route-config"
 
 export default function Loading() {
   return (
     <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
-      <ClientDetailContentLoading />
+      <MembershipDetailContentLoading config={CLIENTS_ROUTE_CONFIG} />
     </main>
   )
 }

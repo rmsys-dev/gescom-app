@@ -4,6 +4,7 @@ import {
   CardHeader,
 } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import type { MembershipRouteConfig } from "@/modules/memberships/membership-route-config"
 
 function ListContentLoading({ label }: { label: string }) {
   return (
@@ -97,28 +98,6 @@ function DetailContentLoading({ label }: { label: string }) {
   )
 }
 
-export function MembersRouteLoading() {
-  return (
-    <main
-      className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8"
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
-      aria-label="A carregar membros"
-    >
-      <ListContentLoading label="A carregar membros" />
-    </main>
-  )
-}
-
-export function MembersContentLoading() {
-  return <ListContentLoading label="A carregar lista de membros" />
-}
-
-export function MemberDetailContentLoading() {
-  return <DetailContentLoading label="A carregar detalhe do membro" />
-}
-
 function FormContentLoading({ label }: { label: string }) {
   return (
     <div
@@ -146,6 +125,44 @@ function FormContentLoading({ label }: { label: string }) {
   )
 }
 
-export function MemberFormContentLoading() {
-  return <FormContentLoading label="A carregar formulário de membro" />
+export function MembershipRouteLoading({
+  config,
+}: {
+  config: MembershipRouteConfig
+}) {
+  return (
+    <main
+      className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-label={config.labels.loadingRoute}
+    >
+      <ListContentLoading label={config.labels.loadingRoute} />
+    </main>
+  )
+}
+
+export function MembershipContentLoading({
+  config,
+}: {
+  config: MembershipRouteConfig
+}) {
+  return <ListContentLoading label={config.labels.loadingList} />
+}
+
+export function MembershipDetailContentLoading({
+  config,
+}: {
+  config: MembershipRouteConfig
+}) {
+  return <DetailContentLoading label={config.labels.loadingDetail} />
+}
+
+export function MembershipFormContentLoading({
+  config,
+}: {
+  config: MembershipRouteConfig
+}) {
+  return <FormContentLoading label={config.labels.loadingForm} />
 }

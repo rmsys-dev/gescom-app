@@ -4,7 +4,6 @@ import Link from "next/link"
 import { ChevronLeft, ChevronRight, Eye } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { MEMBERS_BASE_PATH } from "@/app/(app_routes)/members/_components/members-constants"
 import { MemberClassBadge } from "@/app/(app_routes)/members/_components/member-class-badge"
 import { MemberStatusBadge } from "@/app/(app_routes)/members/_components/member-status-badge"
 import type { MemberListItem } from "@/modules/memberships/memberships.schema"
@@ -15,6 +14,10 @@ type MembersTableProps = {
   total: number
   limit: number
   offset: number
+  basePath: string
+  showClassColumn?: boolean
+  emptyTitle: string
+  emptyHint: string
   onPageChange: (offset: number) => void
 }
 
@@ -23,6 +26,10 @@ export function MembersTable({
   total,
   limit,
   offset,
+  basePath,
+  showClassColumn = true,
+  emptyTitle,
+  emptyHint,
   onPageChange,
 }: MembersTableProps) {
   const page = Math.floor(offset / limit) + 1
@@ -33,10 +40,8 @@ export function MembersTable({
   if (items.length === 0) {
     return (
       <div className="rounded-lg border border-dashed bg-card px-6 py-12 text-center">
-        <p className="font-medium text-foreground">Nenhum membro encontrado</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Ajuste os filtros ou adicione um novo membro.
-        </p>
+        <p className="font-medium text-foreground">{emptyTitle}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{emptyHint}</p>
       </div>
     )
   }
@@ -51,7 +56,9 @@ export function MembersTable({
               <th className="px-4 py-3 font-medium">CPF/CNPJ</th>
               <th className="px-4 py-3 font-medium">E-mail</th>
               <th className="px-4 py-3 font-medium">Telefone</th>
-              <th className="px-4 py-3 font-medium">Classe</th>
+              {showClassColumn && (
+                <th className="px-4 py-3 font-medium">Classe</th>
+              )}
               <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3 font-medium text-right">Ações</th>
             </tr>
@@ -66,18 +73,18 @@ export function MembersTable({
                 <td className="max-w-[200px] truncate p-4">
                   {item.user.userEmail}
                 </td>
-                <td className="p-4">
-                  {formatPhone(item.user.userPhone)}
-                </td>
-                <td className="p-4">
-                  <MemberClassBadge memberClass={item.class} />
-                </td>
+                <td className="p-4">{formatPhone(item.user.userPhone)}</td>
+                {showClassColumn && (
+                  <td className="p-4">
+                    <MemberClassBadge memberClass={item.class} />
+                  </td>
+                )}
                 <td className="p-4">
                   <MemberStatusBadge status={item.status} />
                 </td>
                 <td className="p-4 text-right">
                   <Button asChild variant="ghost" size="sm" tooltip="Ver detalhe">
-                    <Link href={`${MEMBERS_BASE_PATH}/${item.id}`}>
+                    <Link href={`${basePath}/${item.id}`}>
                       <Eye className="size-4" aria-hidden />
                     </Link>
                   </Button>
@@ -96,18 +103,20 @@ export function MembersTable({
           >
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <p className="font-medium truncate">{item.user.userName}</p>
-                <p className="text-xs text-muted-foreground truncate">
+                <p className="truncate font-medium">{item.user.userName}</p>
+                <p className="truncate text-xs text-muted-foreground">
                   {item.user.userEmail}
                 </p>
               </div>
               <MemberStatusBadge status={item.status} />
             </div>
-            <div className="mt-2 flex flex-wrap gap-2">
-              <MemberClassBadge memberClass={item.class} />
-            </div>
+            {showClassColumn && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                <MemberClassBadge memberClass={item.class} />
+              </div>
+            )}
             <Button asChild className="mt-3 w-full" variant="outline" size="sm">
-              <Link href={`${MEMBERS_BASE_PATH}/${item.id}`}>Ver detalhe</Link>
+              <Link href={`${basePath}/${item.id}`}>Ver detalhe</Link>
             </Button>
           </li>
         ))}

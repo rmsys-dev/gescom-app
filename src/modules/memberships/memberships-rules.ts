@@ -2,8 +2,10 @@ import type { EnterpriseMemberClass } from "@/modules/memberships/memberships.sc
 import type { MemberDepartmentPayload } from "@/modules/memberships/memberships.schema"
 import { normalizePhoneToE164 } from "@/lib/validation/phone"
 
+export const CLIENT_MEMBER_CLASS = "CLIENTE" as const
+
 export function isClienteClass(memberClass: EnterpriseMemberClass): boolean {
-  return memberClass === "CLIENTE"
+  return memberClass === CLIENT_MEMBER_CLASS
 }
 
 export function normalizeEmail(raw: string): string {

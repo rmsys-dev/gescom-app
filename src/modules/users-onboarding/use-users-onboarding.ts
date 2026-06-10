@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { HttpError } from "@/lib/api/http-error"
 import { memberQueryKey } from "@/modules/memberships/use-members"
 import {
   getUserDetailsService,
@@ -67,9 +68,24 @@ export function useUserDetailsQuery({
 }) {
   return useQuery({
     queryKey: userDetailsQueryKey(enterpriseId ?? "", userId ?? ""),
-    queryFn: () => getUserDetailsService(enterpriseId!, userId!),
+    queryFn: async () => {
+      try {
+        return await getUserDetailsService(enterpriseId!, userId!)
+      } catch (error) {
+        if (error instanceof HttpError && error.status === 404) {
+          return null
+        }
+        throw error
+      }
+    },
     enabled: enabled && Boolean(enterpriseId) && Boolean(userId),
     staleTime: 0,
+    retry: (failureCount, error) => {
+      if (error instanceof HttpError && error.status === 404) {
+        return false
+      }
+      return failureCount < 3
+    },
   })
 }
 

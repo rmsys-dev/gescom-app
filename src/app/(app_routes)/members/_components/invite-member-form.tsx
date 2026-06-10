@@ -24,7 +24,7 @@ import { Separator } from "@/components/ui/separator"
 import { HttpError } from "@/lib/api/http-error"
 import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { MemberDepartmentsPicker } from "@/app/(app_routes)/members/_components/member-departments-picker"
-import { MEMBERS_BASE_PATH } from "@/app/(app_routes)/members/_components/members-constants"
+import { MEMBERS_ROUTE_CONFIG } from "@/modules/memberships/membership-route-config"
 import { MEMBER_CLASS_OPTIONS } from "@/modules/memberships/member-class-label"
 import type { EnterpriseMemberClass } from "@/modules/memberships/memberships.schema"
 import type { MemberDepartmentPayload } from "@/modules/memberships/memberships.schema"
@@ -85,7 +85,7 @@ export function InviteMemberForm({
       toast.info(
         "O usuário deve aceitar o convite com o codigo recebido por e-mail ou telefone."
       )
-      router.push(`${MEMBERS_BASE_PATH}/${result.memberId}`)
+      router.push(`${MEMBERS_ROUTE_CONFIG.basePath}/${result.memberId}`)
     } catch (error) {
       if (error instanceof HttpError) {
         toastHttpError(error, "Nao foi possivel enviar o convite.")

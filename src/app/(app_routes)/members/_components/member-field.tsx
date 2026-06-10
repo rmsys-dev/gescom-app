@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import type { LucideIcon } from "lucide-react"
 import {
@@ -12,8 +11,6 @@ import {
   Pencil,
   Phone,
   User,
-  UserPlus,
-  UserRoundPlus,
 } from "lucide-react"
 import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
@@ -36,7 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
 import { MemberClassBadge } from "@/app/(app_routes)/members/_components/member-class-badge"
 import { MemberStatusBadge } from "@/app/(app_routes)/members/_components/member-status-badge"
 import { formatCpfCnpj, formatDateOnly, formatPhone } from "@/lib/formatters"
@@ -50,6 +46,7 @@ import {
   getMemberClassLabel,
   MEMBER_CLASS_OPTIONS,
 } from "@/modules/memberships/member-class-label"
+import type { MembershipRouteConfig } from "@/modules/memberships/membership-route-config"
 import {
   getMemberStatusLabel,
   MEMBER_STATUS_OPTIONS,
@@ -72,7 +69,6 @@ import {
 } from "@/modules/memberships/use-members"
 import { useUpdateUserMutation, useUserQuery } from "@/modules/users/use-users"
 import { userDetailsQueryKey } from "@/modules/users-onboarding/use-users-onboarding"
-import { MEMBERS_BASE_PATH } from "./members-constants"
 
 export type MemberSelectOption = {
   value: string
@@ -242,48 +238,15 @@ export function MemberEditActions({
   )
 }
 
-export function MembersListHeader({
-  canCreateMember,
-  canInvite,
+export function MemberDetailHeader({
+  member,
+  config,
 }: {
-  canCreateMember: boolean
-  canInvite: boolean
+  member: MemberDetail
+  config: MembershipRouteConfig
 }) {
-  return (
-    <div>
-      <div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col items-center justify-center gap-2 w-full">
-            {canCreateMember && (
-              <Button asChild className="w-full" variant="outline" tooltip="Criar membro com usuário novo">
-                <Link href={`${MEMBERS_BASE_PATH}/new`}>
-                  <UserPlus className="size-4" aria-hidden />
-                  Novo membro
-                </Link>
-              </Button>
-            )}
-            {canInvite && (
-              <Button
-                asChild
-                className="w-full"
-                variant="outline"
-                tooltip="Convidar usuário existente"
-              >
-                <Link href={`${MEMBERS_BASE_PATH}/invite`}>
-                  <UserRoundPlus className="size-4" aria-hidden />
-                  Convidar
-                </Link>
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function MemberDetailHeader({ member }: { member: MemberDetail }) {
-  const displayName = member.user.userName.trim() || "Membro"
+  const displayName =
+    member.user.userName.trim() || config.labels.defaultDisplayName
   const initials = getUserInitials(displayName)
 
   return (
@@ -311,7 +274,7 @@ export function MemberDetailHeader({ member }: { member: MemberDetail }) {
             className="font-mono text-xs text-muted-foreground pt-2"
             title={member.id}
           >
-            Identificador de membro: {member.id.slice(0, 8)}
+            {config.labels.identifierLabel}: {member.id.slice(0, 8)}
           </p>
         </div>
       </CardContent>
@@ -490,11 +453,13 @@ export function MemberUserInfoCard({
 export function MemberLinkCard({
   member,
   enterpriseId,
+  config,
   canEdit,
   onUpdateSuccess,
 }: {
   member: MemberDetail
   enterpriseId: string
+  config: MembershipRouteConfig
   canEdit?: boolean
   onUpdateSuccess?: () => void
 }) {
@@ -506,6 +471,7 @@ export function MemberLinkCard({
   )
   const [status, setStatus] = useState<MemberStatus>(member.status)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const allowClassEdit = config.detail.allowClassEdit
 
   const {
     data: includedByMembers,
@@ -554,7 +520,9 @@ export function MemberLinkCard({
 
   async function handleSave() {
     const patch: { class?: EnterpriseMemberClass; status?: MemberStatus } = {}
-    if (memberClass !== member.class) patch.class = memberClass
+    if (allowClassEdit && memberClass !== member.class) {
+      patch.class = memberClass
+    }
     if (status !== member.status) patch.status = status
 
     if (Object.keys(patch).length === 0) {
@@ -569,10 +537,10 @@ export function MemberLinkCard({
       onUpdateSuccess?.()
     } catch (error) {
       if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível atualizar o vínculo.")
+        toastHttpError(error, config.detail.updateLinkError)
         return
       }
-      toast.error("Não foi possível atualizar o vínculo.")
+      toast.error(config.detail.updateLinkError)
     }
   }
 
@@ -580,13 +548,13 @@ export function MemberLinkCard({
     try {
       await mutation.mutateAsync({ softDelete: true })
       setConfirmDelete(false)
-      router.push(MEMBERS_BASE_PATH)
+      router.push(config.basePath)
     } catch (error) {
       if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível inativar o membro.")
+        toastHttpError(error, config.detail.inactivateError)
         return
       }
-      toast.error("Não foi possível inativar o membro.")
+      toast.error(config.detail.inactivateError)
     }
   }
 
@@ -594,21 +562,23 @@ export function MemberLinkCard({
     <>
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Dados de vínculo</CardTitle>
-          <CardDescription>Informações de vínculo do membro</CardDescription>
+          <CardTitle className="text-base">{config.detail.linkCardTitle}</CardTitle>
+          <CardDescription>{config.detail.linkCardDescription}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
-            <MemberField
-              label="Classe"
-              value={getMemberClassLabel(member.class)}
-              icon={BadgeCheck}
-              editing={editing}
-              editValue={memberClass}
-              onEditChange={(v) => setMemberClass(v as EnterpriseMemberClass)}
-              editSelectOptions={MEMBER_CLASS_OPTIONS}
-              inputId="member-class"
-            />
+            {allowClassEdit && (
+              <MemberField
+                label="Classe"
+                value={getMemberClassLabel(member.class)}
+                icon={BadgeCheck}
+                editing={editing}
+                editValue={memberClass}
+                onEditChange={(v) => setMemberClass(v as EnterpriseMemberClass)}
+                editSelectOptions={MEMBER_CLASS_OPTIONS}
+                inputId="member-class"
+              />
+            )}
             <MemberField
               label="Status"
               value={getMemberStatusLabel(member.status)}
@@ -653,9 +623,9 @@ export function MemberLinkCard({
                   variant="destructive"
                   className="w-full"
                   onClick={() => setConfirmDelete(true)}
-                  tooltip="Desvincular membro"
+                  tooltip={config.detail.softDeleteLabel}
                 >
-                  Desvincular membro
+                  {config.detail.softDeleteLabel}
                 </Button>
               )}
             </>
@@ -666,9 +636,9 @@ export function MemberLinkCard({
       <ConfirmSoftDeleteDialog
         open={confirmDelete}
         onOpenChange={setConfirmDelete}
-        title="Desvincular membro?"
-        description="O membro será desvinculado da empresa e departamentos associados serão removidos."
-        confirmLabel="Desvincular"
+        title={config.detail.softDeleteTitle}
+        description={config.detail.softDeleteDescription}
+        confirmLabel={config.detail.softDeleteConfirm}
         isPending={mutation.isPending}
         onConfirm={() => void handleSoftDelete()}
       />

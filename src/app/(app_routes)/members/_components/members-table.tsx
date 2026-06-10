@@ -1,8 +1,6 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
 import {
   ArrowUpDown,
   ChevronLeft,
@@ -12,6 +10,7 @@ import {
   SearchX,
 } from "lucide-react"
 
+import { MemberDetailDialog } from "@/app/(app_routes)/members/_components/member-detail-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -23,6 +22,7 @@ import {
 import { MemberClassBadge } from "@/app/(app_routes)/members/_components/member-class-badge"
 import { MemberStatusBadge } from "@/app/(app_routes)/members/_components/member-status-badge"
 import { MemberActionsMenu } from "@/app/(app_routes)/members/_components/member-actions-menu"
+import type { MembershipRouteConfig } from "@/modules/memberships/membership-route-config"
 import type { MemberListItem } from "@/modules/memberships/memberships.schema"
 import { formatCpfCnpj, formatPhone } from "@/lib/formatters"
 import { cn } from "@/lib/utils"
@@ -37,6 +37,7 @@ type MembersTableProps = {
   limit: number
   offset: number
   basePath: string
+  config: MembershipRouteConfig
   showClassColumn?: boolean
   emptyTitle: string
   emptyHint: string
@@ -110,6 +111,7 @@ export function MembersTable({
   limit,
   offset,
   basePath,
+  config,
   showClassColumn = true,
   emptyTitle,
   emptyHint,
@@ -118,8 +120,8 @@ export function MembersTable({
   onLimitChange,
   onClearFilters,
 }: MembersTableProps) {
-  const router = useRouter()
   const [sort, setSort] = useState<SortState>(null)
+  const [viewMemberId, setViewMemberId] = useState<string | null>(null)
 
   const page = Math.floor(offset / limit) + 1
   const totalPages = Math.max(1, Math.ceil(total / limit))
@@ -168,8 +170,12 @@ export function MembersTable({
     })
   }
 
+  function openMemberView(memberId: string) {
+    setViewMemberId(memberId)
+  }
+
   function handleRowClick(memberId: string) {
-    router.push(`${basePath}/${memberId}`)
+    openMemberView(memberId)
   }
 
   // Compute visible page numbers (window of 5 centered on current page)
@@ -324,6 +330,7 @@ export function MembersTable({
                     memberId={item.id}
                     basePath={basePath}
                     canEdit={canEdit}
+                    onView={() => openMemberView(item.id)}
                   />
                 </td>
               </tr>
@@ -362,8 +369,14 @@ export function MembersTable({
                 <MemberClassBadge memberClass={item.class} />
               </div>
             )}
-            <Button asChild className="mt-3 w-full" variant="outline" size="sm">
-              <Link href={`${basePath}/${item.id}`}>Visualizar</Link>
+            <Button
+              type="button"
+              className="mt-3 w-full"
+              variant="outline"
+              size="sm"
+              onClick={() => openMemberView(item.id)}
+            >
+              Visualizar
             </Button>
           </li>
         ))}
@@ -466,6 +479,19 @@ export function MembersTable({
           Página {page} de {totalPages}
         </span>
       </div>
+
+      {viewMemberId && (
+        <MemberDetailDialog
+          memberId={viewMemberId}
+          basePath={basePath}
+          config={config}
+          open={viewMemberId !== null}
+          onOpenChange={(open) => {
+            if (!open) setViewMemberId(null)
+          }}
+          canEdit={canEdit}
+        />
+      )}
     </div>
   )
 }

@@ -72,6 +72,7 @@ function DialogContent({
               className="absolute top-3 right-3"
               size="icon-sm"
               aria-label="Fechar"
+              tooltipOnHover
             >
               <XIcon />
               <span className="sr-only">Fechar</span>

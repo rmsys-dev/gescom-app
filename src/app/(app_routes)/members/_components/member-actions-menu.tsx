@@ -1,14 +1,13 @@
 "use client"
 
 import Link from "next/link"
-import { Eye, LinkIcon, MoreVertical, Pencil } from "lucide-react"
+import { Eye, MoreVertical, Pencil } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
@@ -16,12 +15,14 @@ type MemberActionsMenuProps = {
   memberId: string
   basePath: string
   canEdit?: boolean
+  onView: () => void
 }
 
 export function MemberActionsMenu({
   memberId,
   basePath,
   canEdit = false,
+  onView,
 }: MemberActionsMenuProps) {
   const detailHref = `${basePath}/${memberId}`
 
@@ -39,14 +40,15 @@ export function MemberActionsMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
-        <DropdownMenuItem asChild>
-          <Link
-            href={detailHref}
-            className="flex cursor-pointer items-center gap-2"
-          >
-            <Eye className="size-4 shrink-0" aria-hidden />
-            Visualizar
-          </Link>
+        <DropdownMenuItem
+          className="flex cursor-pointer items-center gap-2"
+          onSelect={(e) => {
+            e.preventDefault()
+            onView()
+          }}
+        >
+          <Eye className="size-4 shrink-0" aria-hidden />
+          Visualizar
         </DropdownMenuItem>
 
         {canEdit && (
@@ -60,16 +62,6 @@ export function MemberActionsMenu({
             </Link>
           </DropdownMenuItem>
         )}
-
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem
-          className="flex cursor-pointer items-center gap-2 text-destructive"
-          title="Desvincular membro"
-        >
-          <LinkIcon className="size-4 shrink-0 " aria-hidden />
-          Desvincular
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

@@ -57,6 +57,7 @@ function Button({
   asChild = false,
   tooltip,
   tooltipSide = "top",
+  tooltipOnHover = false,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -64,9 +65,12 @@ function Button({
     /** Texto do tooltip. Use `false` para desativar. Se omitido, usa `aria-label`. */
     tooltip?: ButtonTooltip | false
     tooltipSide?: React.ComponentProps<typeof TooltipContent>["side"]
+    /** Exibe o tooltip apenas ao passar o mouse, não ao receber foco. */
+    tooltipOnHover?: boolean
   }) {
   const Comp = asChild ? Slot.Root : "button"
   const { "aria-label": ariaLabel, ...rest } = props
+  const [hoverTooltipOpen, setHoverTooltipOpen] = React.useState(false)
 
   const button = (
     <Comp
@@ -92,6 +96,26 @@ function Button({
     typeof resolvedTooltip === "string"
       ? { children: resolvedTooltip }
       : resolvedTooltip
+
+  if (tooltipOnHover) {
+    return (
+      <Tooltip
+        open={hoverTooltipOpen}
+        onOpenChange={(open) => {
+          if (!open) setHoverTooltipOpen(false)
+        }}
+      >
+        <TooltipTrigger
+          asChild
+          onPointerEnter={() => setHoverTooltipOpen(true)}
+          onPointerLeave={() => setHoverTooltipOpen(false)}
+        >
+          {button}
+        </TooltipTrigger>
+        <TooltipContent side={tooltipSide} {...contentProps} />
+      </Tooltip>
+    )
+  }
 
   return (
     <Tooltip>

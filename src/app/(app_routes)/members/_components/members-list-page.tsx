@@ -239,7 +239,8 @@ export function MembersListPage({
             total={tableTotal}
             limit={tableLimit}
             offset={tableOffset}
-            basePath="/members"
+            basePath={config.basePath}
+            config={config}
             showClassColumn={config.list.showClassColumn}
             emptyTitle={config.labels.emptyList}
             emptyHint={config.labels.emptyListHint}

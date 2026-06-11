@@ -39,7 +39,7 @@ export function SaleDetailView({ sale }: SaleDetailViewProps) {
             <SalesStatusBadge status={sale.status} />
           </div>
           <CardDescription>
-            Registado por {sale.UserName}
+            Registado por {sale.userLegalName}
             {sale.memberName ? ` · Cliente ${sale.memberName}` : ""}
           </CardDescription>
         </CardHeader>

@@ -112,9 +112,9 @@ export function BudgetsTable({
                 <td className="px-4 py-3">
                   <BudgetClosureBadge situation={item.budgetClosureSituation} />
                 </td>
-                <td className="px-4 py-3">{item.memberName ?? item.UserName}</td>
+                <td className="px-4 py-3">{item.sellerLegalName}</td>
                 <td className="px-4 py-3 text-muted-foreground">
-                  {item.memberName ? item.UserName : "—"}
+                  {item.memberName ?? "—"}
                 </td>
                 <td className="px-4 py-3 font-medium">
                   {formatCurrency(item.valueLiquid)}
@@ -147,7 +147,7 @@ export function BudgetsTable({
               <div>
                 <p className="font-medium">Pedido #{item.orderNumber}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {item.memberName ?? item.UserName}
+                  {item.memberName ?? item.sellerLegalName}
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1">

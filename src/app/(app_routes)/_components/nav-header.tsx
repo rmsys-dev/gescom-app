@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { LogOut, Moon, RefreshCw, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
+import { User } from "lucide-react"
 
 import { EnterpriseDropdown } from "@/app/(app_routes)/_components/enterprise-dropdown"
 import { NavHeaderDateTimeWeather } from "@/app/(app_routes)/_components/nav-header-datetime-weather"
@@ -46,8 +47,8 @@ export function NavHeader() {
         <div className="hidden items-center gap-2 md:flex">
           <Avatar className="h-8 w-8 rounded-lg">
             <AvatarImage src="" alt={displayName} />
-            <AvatarFallback className="rounded-lg">
-              {displayName.charAt(0)}
+            <AvatarFallback className="rounded-lg bg-transparent">
+              <User className="size-4 text-foreground/30" />
             </AvatarFallback>
           </Avatar>
           <div className="hidden min-w-0 leading-tight sm:grid">

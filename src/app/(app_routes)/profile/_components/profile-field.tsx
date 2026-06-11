@@ -69,6 +69,7 @@ export function ProfileField({
   required,
   editSelectOptions,
   editPlaceholder,
+  editDisabled,
 }: {
   label: string
   value: string | null | undefined | boolean
@@ -84,6 +85,7 @@ export function ProfileField({
   required?: boolean
   editSelectOptions?: ProfileSelectOption[]
   editPlaceholder?: string
+  editDisabled?: boolean
 }) {
   const display = formatValue(value)
   const empty = display === "—"
@@ -105,7 +107,11 @@ export function ProfileField({
           <Icon className="size-4" aria-hidden />
         </span>
         {isSelectEdit ? (
-          <Select value={editValue ?? ""} onValueChange={onEditChange}>
+          <Select
+            value={editValue ?? ""}
+            onValueChange={onEditChange}
+            disabled={editDisabled}
+          >
             <SelectTrigger
               id={inputId}
               className="min-w-0 flex-1 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0"

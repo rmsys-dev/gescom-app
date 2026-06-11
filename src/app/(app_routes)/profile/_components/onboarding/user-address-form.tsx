@@ -1,42 +1,27 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { Globe, MapPin, Tag } from "lucide-react"
 import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
+  ProfileEditActions,
+  ProfileField,
+} from "@/app/(app_routes)/profile/_components/profile-field"
 import { HttpError } from "@/lib/api/http-error"
 import { toastHttpError } from "@/modules/authentication/http-error-feedback"
-import type { Cep } from "@/modules/addresses/addresses.schema"
 import {
   useCepsQuery,
   useCitiesQuery,
   useCountriesQuery,
   useStatesQuery,
 } from "@/modules/addresses/use-address-catalog"
-import { USER_ADDRESS_TYPE_OPTIONS } from "@/modules/users-onboarding/users-onboarding-labels"
-import type {
-  UserAddress,
-  UserAddressType,
-} from "@/modules/users-onboarding/users-onboarding.schema"
 import {
-  useCreateUserAddressMutation,
-  usePatchUserAddressMutation,
-} from "@/modules/users-onboarding/use-users-onboarding"
+  getUserAddressTypeLabel,
+  USER_ADDRESS_TYPE_OPTIONS,
+} from "@/modules/users-onboarding/users-onboarding-labels"
+import type { UserAddressType } from "@/modules/users-onboarding/users-onboarding.schema"
+import { useCreateUserAddressMutation } from "@/modules/users-onboarding/use-users-onboarding"
 
 function formatCepMask(value: string): string {
   const digits = value.replace(/\D/g, "").slice(0, 8)
@@ -44,258 +29,231 @@ function formatCepMask(value: string): string {
   return `${digits.slice(0, 5)}-${digits.slice(5)}`
 }
 
-type UserAddressFormProps = {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  enterpriseId: string
-  userId: string
-  memberId?: string
-  mode: "create" | "edit"
-  editing?: UserAddress | null
-}
+export function UserAddressFormFields({
+  editing,
+  countryId,
+  stateId,
+  cityId,
+  cepId,
+  adressType,
+  displayCountry,
+  displayState,
+  displayCity,
+  displayCep,
+  displayType,
+  onCountryChange,
+  onStateChange,
+  onCityChange,
+  onCepChange,
+  onAdressTypeChange,
+}: {
+  editing: boolean
+  countryId: string
+  stateId: string
+  cityId: string
+  cepId: string
+  adressType: UserAddressType
+  displayCountry: string | null | undefined
+  displayState: string | null | undefined
+  displayCity: string | null | undefined
+  displayCep: string | null | undefined
+  displayType: string
+  onCountryChange: (value: string) => void
+  onStateChange: (value: string) => void
+  onCityChange: (value: string) => void
+  onCepChange: (value: string) => void
+  onAdressTypeChange: (value: UserAddressType) => void
+}) {
+  const countriesQuery = useCountriesQuery(editing)
+  const statesQuery = useStatesQuery(countryId || undefined, editing)
+  const citiesQuery = useCitiesQuery(stateId || undefined, editing)
+  const cepsQuery = useCepsQuery(cityId || undefined, undefined, editing)
 
-export function UserAddressForm({
-  open,
-  onOpenChange,
-  enterpriseId,
-  userId,
-  memberId,
-  mode,
-  editing = null,
-}: UserAddressFormProps) {
-  const [session, setSession] = useState(0)
-  const [prevOpen, setPrevOpen] = useState(open)
+  const countryOptions = useMemo(
+    () =>
+      (countriesQuery.data ?? []).map((c) => ({
+        value: c.id,
+        label: c.countryName,
+      })),
+    [countriesQuery.data]
+  )
 
-  if (open !== prevOpen) {
-    setPrevOpen(open)
-    if (open) setSession((s) => s + 1)
-  }
+  const stateOptions = useMemo(
+    () =>
+      (statesQuery.data ?? []).map((s) => ({
+        value: s.id,
+        label: `${s.acronym} — ${s.description}`,
+      })),
+    [statesQuery.data]
+  )
+
+  const cityOptions = useMemo(
+    () =>
+      (citiesQuery.data ?? []).map((c) => ({
+        value: c.id,
+        label: c.citieName,
+      })),
+    [citiesQuery.data]
+  )
+
+  const cepOptions = useMemo(
+    () =>
+      (cepsQuery.data ?? []).map((c) => ({
+        value: c.id,
+        label: `${formatCepMask(c.cepNumber)} — ${c.address}, ${c.neighborhood}`,
+      })),
+    [cepsQuery.data]
+  )
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="overflow-y-auto sm:max-w-md">
-        {open ? (
-          <UserAddressFormContent
-            key={`${mode}-${editing?.id ?? "create"}-${session}`}
-            enterpriseId={enterpriseId}
-            userId={userId}
-            memberId={memberId}
-            mode={mode}
-            editing={editing}
-            onOpenChange={onOpenChange}
-          />
-        ) : null}
-      </SheetContent>
-    </Sheet>
+    <div className="grid gap-4 sm:grid-cols-2">
+      <ProfileField
+        label="País"
+        value={displayCountry}
+        icon={Globe}
+        editing={editing}
+        editValue={countryId}
+        onEditChange={onCountryChange}
+        editSelectOptions={countryOptions}
+        editPlaceholder="Selecione o país..."
+      />
+      <ProfileField
+        label="Estado"
+        value={displayState}
+        icon={MapPin}
+        editing={editing}
+        editValue={stateId}
+        onEditChange={onStateChange}
+        editSelectOptions={stateOptions}
+        editPlaceholder="Selecione o estado..."
+        editDisabled={!countryId}
+      />
+      <ProfileField
+        label="Cidade"
+        value={displayCity}
+        icon={MapPin}
+        editing={editing}
+        editValue={cityId}
+        onEditChange={onCityChange}
+        editSelectOptions={cityOptions}
+        editPlaceholder="Selecione a cidade..."
+        editDisabled={!stateId}
+      />
+      <ProfileField
+        label="CEP / Logradouro"
+        value={displayCep}
+        icon={MapPin}
+        className="sm:col-span-2"
+        editing={editing}
+        editValue={cepId}
+        onEditChange={onCepChange}
+        editSelectOptions={cepOptions}
+        editPlaceholder="Selecione o CEP..."
+        editDisabled={!cityId}
+      />
+      <ProfileField
+        label="Tipo"
+        value={displayType}
+        icon={Tag}
+        editing={editing}
+        editValue={adressType}
+        onEditChange={(value) => onAdressTypeChange(value as UserAddressType)}
+        editSelectOptions={USER_ADDRESS_TYPE_OPTIONS}
+      />
+    </div>
   )
 }
 
-function UserAddressFormContent({
+export function UserAddressCreateForm({
   enterpriseId,
   userId,
   memberId,
-  mode,
-  editing,
-  onOpenChange,
+  onCancel,
+  onSaved,
 }: {
   enterpriseId: string
   userId: string
   memberId?: string
-  mode: "create" | "edit"
-  editing: UserAddress | null
-  onOpenChange: (open: boolean) => void
+  onCancel: () => void
+  onSaved: () => void
 }) {
   const createMutation = useCreateUserAddressMutation(
     enterpriseId,
     userId,
     memberId
   )
-  const patchMutation = usePatchUserAddressMutation(
-    enterpriseId,
-    userId,
-    memberId
-  )
 
-  const [countryId, setCountryId] = useState(editing?.countryId ?? "")
-  const [stateId, setStateId] = useState(editing?.stateId ?? "")
-  const [cityId, setCityId] = useState(editing?.cityId ?? "")
-  const [cepId, setCepId] = useState(editing?.cepId ?? "")
-  const [adressType, setAdressType] = useState<UserAddressType>(
-    editing?.adressType ?? "PRINCIPAL"
-  )
+  const [countryId, setCountryId] = useState("")
+  const [stateId, setStateId] = useState("")
+  const [cityId, setCityId] = useState("")
+  const [cepId, setCepId] = useState("")
+  const [adressType, setAdressType] = useState<UserAddressType>("PRINCIPAL")
 
-  const countriesQuery = useCountriesQuery(true)
-  const statesQuery = useStatesQuery(countryId || undefined, true)
-  const citiesQuery = useCitiesQuery(stateId || undefined, true)
-  const cepsQuery = useCepsQuery(cityId || undefined, undefined)
-
-  const selectedCep: Cep | undefined = useMemo(() => {
-    const items = cepsQuery.data ?? []
-    return items.find((c) => c.id === cepId)
-  }, [cepsQuery.data, cepId])
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+  async function handleSave() {
     if (!countryId || !stateId || !cityId || !cepId) {
       toast.error("Preencha país, estado, cidade e CEP.")
       return
     }
 
     try {
-      if (mode === "create") {
-        await createMutation.mutateAsync({
-          countryId,
-          stateId,
-          cityId,
-          cepId,
-          adressType,
-        })
-      } else if (editing) {
-        await patchMutation.mutateAsync({
-          addressId: editing.id,
-          input: { countryId, stateId, cityId, cepId, adressType },
-        })
-      }
-      onOpenChange(false)
+      await createMutation.mutateAsync({
+        countryId,
+        stateId,
+        cityId,
+        cepId,
+        adressType,
+      })
+      onSaved()
     } catch (error) {
       if (error instanceof HttpError) {
-        toastHttpError(
-          error,
-          mode === "create"
-            ? "Não foi possível adicionar o endereço."
-            : "Não foi possível atualizar o endereço."
-        )
+        toastHttpError(error, "Não foi possível adicionar o endereço.")
         return
       }
-      toast.error("Operação falhou.")
+      toast.error("Não foi possível adicionar o endereço.")
     }
   }
 
-  const isPending = createMutation.isPending || patchMutation.isPending
-
   return (
-    <>
-      <SheetHeader>
-        <SheetTitle>
-          {mode === "create" ? "Novo endereço" : "Editar endereço"}
-        </SheetTitle>
-        <SheetDescription>
-          Selecione país, estado, cidade e CEP do catálogo.
-        </SheetDescription>
-      </SheetHeader>
-      <form onSubmit={handleSubmit} className="mt-6">
-        <FieldGroup className="gap-4">
-          <Field>
-            <FieldLabel>País</FieldLabel>
-            <Select value={countryId} onValueChange={(v) => {
-              setCountryId(v)
-              setStateId("")
-              setCityId("")
-              setCepId("")
-            }}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione o país..." />
-              </SelectTrigger>
-              <SelectContent>
-                {(countriesQuery.data ?? []).map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.countryName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field>
-            <FieldLabel>Estado</FieldLabel>
-            <Select
-              value={stateId}
-              onValueChange={(v) => {
-                setStateId(v)
-                setCityId("")
-                setCepId("")
-              }}
-              disabled={!countryId}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione o estado..." />
-              </SelectTrigger>
-              <SelectContent>
-                {(statesQuery.data ?? []).map((s) => (
-                  <SelectItem key={s.id} value={s.id}>
-                    {s.acronym} — {s.description}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field>
-            <FieldLabel>Cidade</FieldLabel>
-            <Select
-              value={cityId}
-              onValueChange={(v) => {
-                setCityId(v)
-                setCepId("")
-              }}
-              disabled={!stateId}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione a cidade..." />
-              </SelectTrigger>
-              <SelectContent>
-                {(citiesQuery.data ?? []).map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.citieName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field>
-            <FieldLabel>CEP / Logradouro</FieldLabel>
-            <Select value={cepId} onValueChange={setCepId} disabled={!cityId}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione o CEP..." />
-              </SelectTrigger>
-              <SelectContent>
-                {(cepsQuery.data ?? []).map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {formatCepMask(c.cepNumber)} — {c.address}, {c.neighborhood}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          {selectedCep && (
-            <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2 text-sm text-muted-foreground">
-              <p>
-                <span className="font-medium text-foreground">Logradouro:</span>{" "}
-                {selectedCep.address}
-              </p>
-            </div>
-          )}
-          <Field>
-            <FieldLabel>Tipo</FieldLabel>
-            <Select
-              value={adressType}
-              onValueChange={(v) => setAdressType(v as UserAddressType)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {USER_ADDRESS_TYPE_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value}>
-                    {o.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          <Button type="submit" disabled={isPending}>
-            {isPending ? "Salvando..." : "Salvar"}
-          </Button>
-        </FieldGroup>
-      </form>
-    </>
+    <div className="space-y-4 rounded-lg border border-dashed border-border/80 bg-muted/10 p-4">
+      <p className="text-sm font-semibold text-foreground">Novo endereço</p>
+      <UserAddressFormFields
+        editing
+        countryId={countryId}
+        stateId={stateId}
+        cityId={cityId}
+        cepId={cepId}
+        adressType={adressType}
+        displayCountry={countryId}
+        displayState={stateId}
+        displayCity={cityId}
+        displayCep={cepId}
+        displayType={getUserAddressTypeLabel(adressType)}
+        onCountryChange={(value) => {
+          setCountryId(value)
+          setStateId("")
+          setCityId("")
+          setCepId("")
+        }}
+        onStateChange={(value) => {
+          setStateId(value)
+          setCityId("")
+          setCepId("")
+        }}
+        onCityChange={(value) => {
+          setCityId(value)
+          setCepId("")
+        }}
+        onCepChange={setCepId}
+        onAdressTypeChange={setAdressType}
+      />
+      <ProfileEditActions
+        editing
+        canEdit
+        onStartEdit={() => undefined}
+        onCancel={onCancel}
+        onSave={() => void handleSave()}
+        isPending={createMutation.isPending}
+      />
+    </div>
   )
 }

@@ -353,7 +353,7 @@ export function UserRelationshipsSection({
               editPlaceholder="—"
             />
             <ProfileField
-              label="Aquecer"
+              label="Enviar avisos"
               value={boolLabel(relationships?.toWarmUp)}
               icon={User}
               editing={editing}

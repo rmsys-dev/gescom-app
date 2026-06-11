@@ -39,7 +39,7 @@ function buildSearchFilters(
 
   const base: ListSalesQuery = {
     ...defaults,
-    status: draftFilters.status,
+    status: defaults.type === "ORCAMENTO" ? undefined : draftFilters.status,
     budgetClosureSituation: draftFilters.budgetClosureSituation,
     limit: needsClientFetch
       ? SALES_CLIENT_SEARCH_LIMIT

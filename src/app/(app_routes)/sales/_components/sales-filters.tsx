@@ -50,8 +50,8 @@ export function SalesFilters({
 }: SalesFiltersProps) {
   const hasActiveCriteria =
     searchTerm.trim() !== "" ||
-    Boolean(filters.status) ||
-    Boolean(filters.budgetClosureSituation) ||
+    (!showBudgetClosureFilter && Boolean(filters.status)) ||
+    (showBudgetClosureFilter && Boolean(filters.budgetClosureSituation)) ||
     Boolean(dateFilters.dateFrom) ||
     Boolean(dateFilters.dateTo)
 
@@ -103,33 +103,34 @@ export function SalesFilters({
           Filtros
         </p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Field>
-            <FieldLabel htmlFor="sale-status">
-              {showBudgetClosureFilter ? "Status do documento" : "Status"}
-            </FieldLabel>
-            <Select
-              value={filters.status ?? ALL}
-              onValueChange={(v) =>
-                onFiltersChange({
-                  ...filters,
-                  status: v === ALL ? undefined : (v as ListSalesQuery["status"]),
-                })
-              }
-              disabled={isSearching}
-            >
-              <SelectTrigger id="sale-status" className="w-full">
-                <SelectValue placeholder="Todos" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ALL}>Todos</SelectItem>
-                {Object.entries(SALE_STATUS_LABELS).map(([value, label]) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
+          {!showBudgetClosureFilter && (
+            <Field>
+              <FieldLabel htmlFor="sale-status">Status</FieldLabel>
+              <Select
+                value={filters.status ?? ALL}
+                onValueChange={(v) =>
+                  onFiltersChange({
+                    ...filters,
+                    status:
+                      v === ALL ? undefined : (v as ListSalesQuery["status"]),
+                  })
+                }
+                disabled={isSearching}
+              >
+                <SelectTrigger id="sale-status" className="w-full">
+                  <SelectValue placeholder="Todos" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={ALL}>Todos</SelectItem>
+                  {Object.entries(SALE_STATUS_LABELS).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
 
           <Field>
             <FieldLabel htmlFor="filter-date-from">De</FieldLabel>
@@ -202,7 +203,11 @@ export function SalesFilters({
           variant="outline"
           onClick={onApplyFilters}
           disabled={isSearching}
-          tooltip="Aplicar filtros de status, datas e fechamento"
+          tooltip={
+            showBudgetClosureFilter
+              ? "Aplicar filtros de fechamento e datas"
+              : "Aplicar filtros de status e datas"
+          }
         >
           <SlidersHorizontal className="size-4" aria-hidden />
           Filtrar

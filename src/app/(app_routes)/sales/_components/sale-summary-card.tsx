@@ -1,5 +1,6 @@
 "use client"
 
+import { BudgetClosureBadge } from "@/app/(app_routes)/sales/_components/budget-closure-badge"
 import { SalesStatusBadge } from "@/app/(app_routes)/sales/_components/sales-status-badge"
 import { SalesTypeBadge } from "@/app/(app_routes)/sales/_components/sales-type-badge"
 import {
@@ -32,7 +33,11 @@ export function SaleSummaryCard({
           </CardTitle>
           <div className="flex items-center gap-2">
             <SalesTypeBadge type={sale.type} />
-            <SalesStatusBadge status={sale.status} />
+            {sale.type === "ORCAMENTO" ? (
+              <BudgetClosureBadge situation={sale.budgetClosureSituation} />
+            ) : (
+              <SalesStatusBadge status={sale.status} />
+            )}
           </div>
         </div>
       </CardHeader>

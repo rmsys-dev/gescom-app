@@ -34,6 +34,7 @@ import type { SaleSummary } from "@/modules/sales/sales.schema"
 type SortKey =
   | "orderNumber"
   | "status"
+  | "budgetClosureSituation"
   | "seller"
   | "client"
   | "valueLiquid"
@@ -149,6 +150,10 @@ export function SalesListTable({
           valA = a.status
           valB = b.status
           break
+        case "budgetClosureSituation":
+          valA = a.budgetClosureSituation
+          valB = b.budgetClosureSituation
+          break
         case "seller":
           valA = formatPersonName(a.sellerLegalName)
           valB = formatPersonName(b.sellerLegalName)
@@ -238,18 +243,18 @@ export function SalesListTable({
               >
                 Pedido
               </SortableTh>
-              <SortableTh column="status" sort={sort} onSort={toggleSort}>
-                {config.list.showBudgetClosureFilter
-                  ? "Status do documento"
-                  : "Status"}
-              </SortableTh>
-              {config.list.showBudgetClosureFilter && (
-                <th
-                  scope="col"
-                  className="px-4 py-3 text-left text-xs font-medium text-muted-foreground"
+              {config.list.showBudgetClosureFilter ? (
+                <SortableTh
+                  column="budgetClosureSituation"
+                  sort={sort}
+                  onSort={toggleSort}
                 >
-                  Situação de fechamento
-                </th>
+                  Status
+                </SortableTh>
+              ) : (
+                <SortableTh column="status" sort={sort} onSort={toggleSort}>
+                  Status
+                </SortableTh>
               )}
               <SortableTh column="seller" sort={sort} onSort={toggleSort}>
                 Vendedor
@@ -307,15 +312,14 @@ export function SalesListTable({
                   #{item.orderNumber}
                 </td>
                 <td className="px-4 py-3">
-                  <SalesStatusBadge status={item.status} />
-                </td>
-                {config.list.showBudgetClosureFilter && (
-                  <td className="px-4 py-3">
+                  {config.list.showBudgetClosureFilter ? (
                     <BudgetClosureBadge
                       situation={item.budgetClosureSituation}
                     />
-                  </td>
-                )}
+                  ) : (
+                    <SalesStatusBadge status={item.status} />
+                  )}
+                </td>
                 <td className="max-w-[200px] px-4 py-3 text-muted-foreground">
                   <span
                     className="block truncate"
@@ -387,11 +391,12 @@ export function SalesListTable({
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <SalesStatusBadge status={item.status} />
-                {config.list.showBudgetClosureFilter && (
+                {config.list.showBudgetClosureFilter ? (
                   <BudgetClosureBadge
                     situation={item.budgetClosureSituation}
                   />
+                ) : (
+                  <SalesStatusBadge status={item.status} />
                 )}
               </div>
             </div>

@@ -218,6 +218,38 @@ export function MembershipDetailContentLoading({
   return <DetailContentLoading label={config.labels.loadingDetail} />
 }
 
+export function MemberDetailLoading({ compact = false }: { compact?: boolean }) {
+  if (compact) {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+        aria-label="A carregar detalhe do membro"
+        className="space-y-4"
+      >
+        <Skeleton className="h-32 w-full rounded-lg" />
+        <Skeleton className="h-4 w-40" />
+      </div>
+    )
+  }
+
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-label="A carregar detalhe do membro"
+      className="space-y-6"
+    >
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-40 w-full rounded-lg" />
+      <Skeleton className="h-56 w-full rounded-lg" />
+      <Skeleton className="h-40 w-full rounded-lg" />
+    </div>
+  )
+}
+
 export function MembershipFormContentLoading({
   config,
 }: {

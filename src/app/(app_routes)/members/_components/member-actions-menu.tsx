@@ -14,14 +14,12 @@ import {
 type MemberActionsMenuProps = {
   memberId: string
   basePath: string
-  canEdit?: boolean
   onView: () => void
 }
 
 export function MemberActionsMenu({
   memberId,
   basePath,
-  canEdit = false,
   onView,
 }: MemberActionsMenuProps) {
   const detailHref = `${basePath}/${memberId}`
@@ -39,7 +37,7 @@ export function MemberActionsMenu({
           <MoreVertical className="size-4" aria-hidden />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-40">
+      <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem
           className="flex cursor-pointer items-center gap-2"
           onSelect={(e) => {
@@ -50,18 +48,15 @@ export function MemberActionsMenu({
           <Eye className="size-4 shrink-0" aria-hidden />
           Visualizar
         </DropdownMenuItem>
-
-        {canEdit && (
-          <DropdownMenuItem asChild>
-            <Link
-              href={detailHref}
-              className="flex cursor-pointer items-center gap-2"
-            >
-              <Pencil className="size-4 shrink-0" aria-hidden />
-              Editar
-            </Link>
-          </DropdownMenuItem>
-        )}
+        <DropdownMenuItem asChild>
+          <Link
+            href={detailHref}
+            className="flex cursor-pointer items-center gap-2"
+          >
+            <Pencil className="size-4 shrink-0" aria-hidden />
+            Editar
+          </Link>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

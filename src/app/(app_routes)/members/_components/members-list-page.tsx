@@ -8,14 +8,14 @@ import { MembersListHeader } from "@/app/(app_routes)/members/_components/member
 import { MembershipContentLoading } from "@/app/(app_routes)/members/_components/members-route-loading"
 import { MembersTable } from "@/app/(app_routes)/members/_components/members-table"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+  ListErrorCard,
+  PaginatedListLayout,
+  PermissionDeniedCard,
+  PermissionsErrorCard,
+  StaleDataBanner,
+  useListErrorState,
+} from "@/app/(app_routes)/products/_components/paginated-list-shell"
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
-import { HttpError } from "@/lib/api/http-error"
 import { useOperatorPermissions } from "@/lib/permissions"
 import type { MembershipRouteConfig } from "@/modules/memberships/membership-route-config"
 import { filterMembersByName } from "@/modules/memberships/memberships-rules"
@@ -79,6 +79,9 @@ export function MembersListPage({
     : (data?.offset ?? 0)
   const tableLimit = appliedFilters.limit ?? data?.limit ?? 50
 
+  const rangeStart = tableTotal === 0 ? 0 : tableOffset + 1
+  const rangeEnd = Math.min(tableOffset + tableLimit, tableTotal)
+
   useEffect(() => {
     if (!isExplicitSearch.current) return
     if (isFetching || isPending) return
@@ -114,104 +117,41 @@ export function MembersListPage({
     enabled: ready && perms.isReady && !perms.isError && perms.canConsultMembers,
   })
 
-  const errMessage =
-    error instanceof HttpError
-      ? error.message
-      : error instanceof Error
-        ? error.message
-        : config.labels.loadListError
-
-  const errMeta =
-    error instanceof HttpError
-      ? { code: error.code, status: error.status, requestId: error.requestId }
-      : null
+  const { errMessage, errMeta } = useListErrorState(
+    error,
+    config.labels.loadListError
+  )
 
   if (!ready || !perms.isReady) {
     return (
-      <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
-        <MembershipContentLoading config={config} />
-      </main>
+      <PaginatedListLayout
+        loading={<MembershipContentLoading config={config} />}
+      >
+        {null}
+      </PaginatedListLayout>
     )
   }
 
-  if (perms.isError) {
-    return (
-      <main className="mx-auto flex w-full max-w-lg flex-col gap-6 p-4 md:p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Não foi possível carregar permissões</CardTitle>
-            <CardDescription>
-              Não foi possível obter as permissões da sessão. Tente atualizar a
-              página ou iniciar sessão novamente.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </main>
-    )
-  }
+  if (perms.isError) return <PermissionsErrorCard />
 
   if (!perms.canConsultMembers) {
-    return (
-      <main className="mx-auto flex w-full max-w-lg flex-col gap-6 p-4 md:p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Sem permissão</CardTitle>
-            <CardDescription>
-              Necessita da permissão consultar_membros para ver esta área.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </main>
-    )
+    return <PermissionDeniedCard permissionLabel="consultar_membros" />
   }
 
   return (
-    <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
-      {isPending && <MembershipContentLoading config={config} />}
-
-      {error && data && (
-        <div
-          role="status"
-          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-950 dark:text-amber-100"
-        >
-          <p className="font-medium">Não foi possível atualizar a lista.</p>
-          <p className="mt-1 text-amber-900/90 dark:text-amber-50/90">
-            {errMessage}. Os valores abaixo podem estar desatualizados.
-          </p>
-        </div>
-      )}
-
+    <PaginatedListLayout
+      loading={
+        isPending ? <MembershipContentLoading config={config} /> : null
+      }
+    >
+      {error && data && <StaleDataBanner message={errMessage} />}
       {error && !data && !isPending && (
-        <Card className="border-destructive/40 ring-destructive/20">
-          <CardHeader>
-            <CardTitle className="text-destructive">
-              {config.labels.loadListErrorTitle}
-            </CardTitle>
-            <CardDescription>{errMessage}</CardDescription>
-          </CardHeader>
-          {errMeta && (
-            <CardContent>
-              <dl className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
-                <div>
-                  <dt className="font-medium text-foreground">Código</dt>
-                  <dd className="font-mono">{errMeta.code}</dd>
-                </div>
-                <div>
-                  <dt className="font-medium text-foreground">HTTP</dt>
-                  <dd>{errMeta.status}</dd>
-                </div>
-                <div className="min-w-0 sm:col-span-1">
-                  <dt className="font-medium text-foreground">Request ID</dt>
-                  <dd className="truncate font-mono">
-                    {errMeta.requestId ?? "—"}
-                  </dd>
-                </div>
-              </dl>
-            </CardContent>
-          )}
-        </Card>
+        <ListErrorCard
+          title={config.labels.loadListErrorTitle}
+          message={errMessage}
+          meta={errMeta}
+        />
       )}
-
       {data && !isPending && (
         <div className="space-y-6">
           <MembersListHeader config={config} perms={perms} />
@@ -234,6 +174,21 @@ export function MembersListPage({
               showClassFilter={config.list.showClassFilter}
             />
           </form>
+
+          <p
+            className="text-sm text-muted-foreground"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {tableTotal === 1
+              ? "1 registro encontrado"
+              : `Mostrando ${rangeStart}–${rangeEnd} de ${tableTotal} registros`}
+            {isClientPagination && tableTotal > 0
+              ? " (resultados filtrados localmente)"
+              : ""}
+          </p>
+
           <MembersTable
             items={tableItems}
             total={tableTotal}
@@ -244,13 +199,12 @@ export function MembersListPage({
             showClassColumn={config.list.showClassColumn}
             emptyTitle={config.labels.emptyList}
             emptyHint={config.labels.emptyListHint}
-            canEdit={perms.canAlterMembers}
             onPageChange={setPageOffset}
             onLimitChange={setLimit}
             onClearFilters={clearFilters}
           />
         </div>
       )}
-    </main>
+    </PaginatedListLayout>
   )
 }

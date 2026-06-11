@@ -41,7 +41,6 @@ type MembersTableProps = {
   showClassColumn?: boolean
   emptyTitle: string
   emptyHint: string
-  canEdit?: boolean
   onPageChange: (offset: number) => void
   onLimitChange?: (limit: number) => void
   onClearFilters?: () => void
@@ -115,7 +114,6 @@ export function MembersTable({
   showClassColumn = true,
   emptyTitle,
   emptyHint,
-  canEdit = false,
   onPageChange,
   onLimitChange,
   onClearFilters,
@@ -127,8 +125,6 @@ export function MembersTable({
   const totalPages = Math.max(1, Math.ceil(total / limit))
   const canPrev = offset > 0
   const canNext = offset + limit < total
-  const rangeStart = total === 0 ? 0 : offset + 1
-  const rangeEnd = Math.min(offset + limit, total)
 
   const sortedItems = useMemo(() => {
     if (!sort) return items
@@ -174,11 +170,6 @@ export function MembersTable({
     setViewMemberId(memberId)
   }
 
-  function handleRowClick(memberId: string) {
-    openMemberView(memberId)
-  }
-
-  // Compute visible page numbers (window of 5 centered on current page)
   const pageNumbers = useMemo(() => {
     const total5 = Math.min(5, totalPages)
     let start: number
@@ -193,6 +184,8 @@ export function MembersTable({
     }
     return Array.from({ length: total5 }, (_, i) => start + i)
   }, [page, totalPages])
+
+  const listLabel = `Lista de ${config.labels.plural}`
 
   if (items.length === 0) {
     return (
@@ -222,24 +215,8 @@ export function MembersTable({
 
   return (
     <div className="space-y-3">
-      {/* Result counter */}
-      <p
-        className="text-sm text-muted-foreground"
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        {total === 1
-          ? "1 registro encontrado"
-          : `Mostrando ${rangeStart}–${rangeEnd} de ${total} registros`}
-      </p>
-
-      {/* ── Desktop table ── */}
       <div className="hidden overflow-hidden rounded-lg border md:block">
-        <table
-          className="w-full text-sm"
-          aria-label="Lista de registros"
-        >
+        <table className="w-full text-sm" aria-label={listLabel}>
           <thead className="border-b bg-muted/40 text-xs">
             <tr>
               <SortableTh column="name" sort={sort} onSort={toggleSort}>
@@ -281,7 +258,7 @@ export function MembersTable({
             {sortedItems.map((item, idx) => (
               <tr
                 key={item.id}
-                onClick={() => handleRowClick(item.id)}
+                onClick={() => openMemberView(item.id)}
                 className={cn(
                   "cursor-pointer border-b transition-colors last:border-0",
                   "hover:bg-primary/5 focus-within:bg-primary/5",
@@ -293,7 +270,7 @@ export function MembersTable({
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault()
-                    handleRowClick(item.id)
+                    openMemberView(item.id)
                   }
                 }}
               >
@@ -329,7 +306,6 @@ export function MembersTable({
                   <MemberActionsMenu
                     memberId={item.id}
                     basePath={basePath}
-                    canEdit={canEdit}
                     onView={() => openMemberView(item.id)}
                   />
                 </td>
@@ -339,8 +315,7 @@ export function MembersTable({
         </table>
       </div>
 
-      {/* ── Mobile cards ── */}
-      <ul className="space-y-3 md:hidden" aria-label="Lista de registros">
+      <ul className="space-y-3 md:hidden" aria-label={listLabel}>
         {sortedItems.map((item) => (
           <li
             key={item.id}
@@ -382,9 +357,7 @@ export function MembersTable({
         ))}
       </ul>
 
-      {/* ── Pagination footer ── */}
       <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
-        {/* Page size selector */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span className="shrink-0">Registros por página:</span>
           <Select
@@ -408,7 +381,6 @@ export function MembersTable({
           </Select>
         </div>
 
-        {/* Page number controls */}
         <div className="flex items-center gap-1" role="navigation" aria-label="Paginação">
           <Button
             type="button"
@@ -483,13 +455,11 @@ export function MembersTable({
       {viewMemberId && (
         <MemberDetailDialog
           memberId={viewMemberId}
-          basePath={basePath}
           config={config}
           open={viewMemberId !== null}
           onOpenChange={(open) => {
             if (!open) setViewMemberId(null)
           }}
-          canEdit={canEdit}
         />
       )}
     </div>

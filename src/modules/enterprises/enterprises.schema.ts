@@ -5,6 +5,12 @@ import { phoneE164Schema } from "@/lib/validation/phone"
 /** Telefone na resposta pode vir em formato legado (ate 20 caracteres). */
 export const enterpriseResponsePhoneSchema = z.string().max(20).nullable()
 
+/** CPF/CNPJ na resposta — normaliza dígitos sem revalidar verificadores (dados legados). */
+export const enterpriseResponseRegistrationSchema = z
+  .string()
+  .trim()
+  .transform((v) => v.replace(/\D/g, ""))
+
 export const enterpriseStatusSchema = z.enum([
   "ATIVO",
   "INATIVO",
@@ -33,7 +39,7 @@ export type EnterpriseAddressType = z.infer<typeof enterpriseAddressTypeSchema>
 export const enterpriseSchema = z.object({
   id: z.uuid(),
   status: enterpriseStatusSchema,
-  registration: cpfCnpjSchema,
+  registration: enterpriseResponseRegistrationSchema,
   legalName: z.string(),
   tradeName: z.string(),
   phone: enterpriseResponsePhoneSchema,

@@ -54,7 +54,7 @@ export function SalesActionsMenu({
             className="flex cursor-pointer items-center gap-2"
           >
             <ExternalLink className="size-4 shrink-0" aria-hidden />
-            Ver detalhe completo
+            Detalhamento
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

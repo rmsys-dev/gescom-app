@@ -235,6 +235,14 @@ export default function SalesDashboardPage() {
     >
       <div className="space-y-6">
         <RouteBreadcrumb currentLabel="Relatórios de Vendas" />
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Relatórios de Vendas
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Acompanhe indicadores de receita, pipeline e operações da empresa.
+          </p>
+        </div>
         <SalesDashboardFilters
           draft={draftFilters}
           onChange={setDraftFilters}
@@ -244,7 +252,12 @@ export default function SalesDashboardPage() {
           onToggleCustomRange={setUseCustomRange}
         />
 
-        {primaryError && hasAnyData && <StaleDataBanner message={errMessage} />}
+        {primaryError && hasAnyData && (
+          <StaleDataBanner
+            title="Não foi possível atualizar o dashboard."
+            message={errMessage}
+          />
+        )}
 
         {primaryError && !hasAnyData && !isInitialLoading && (
           <ListErrorCard

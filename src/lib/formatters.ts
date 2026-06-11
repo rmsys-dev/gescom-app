@@ -108,6 +108,24 @@ export function formatCpfCnpj(value: string | null | undefined): string {
   return value.trim() || EMPTY_DISPLAY
 }
 
+const PERSON_NAME_LOCALE = "pt-BR"
+
+/** Ex.: "JOÃO SILVA" → "João Silva" */
+export function formatPersonName(value: string | null | undefined): string {
+  if (!value?.trim()) return EMPTY_DISPLAY
+
+  return value
+    .trim()
+    .split(/\s+/)
+    .map((word) => {
+      const lower = word.toLocaleLowerCase(PERSON_NAME_LOCALE)
+      return (
+        lower.charAt(0).toLocaleUpperCase(PERSON_NAME_LOCALE) + lower.slice(1)
+      )
+    })
+    .join(" ")
+}
+
 export function formatPhone(value: string | null | undefined): string {
   if (!value?.trim()) return EMPTY_DISPLAY
 

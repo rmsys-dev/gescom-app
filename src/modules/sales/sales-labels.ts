@@ -106,6 +106,18 @@ export function formatNumber(value: number | null | undefined): string {
   return new Intl.NumberFormat("pt-BR").format(value)
 }
 
+export function formatQuantity(
+  value: number | string | null | undefined
+): string {
+  const num =
+    typeof value === "string" ? Number.parseFloat(value) : (value ?? Number.NaN)
+  if (Number.isNaN(num)) return "—"
+  return new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(num)
+}
+
 export function formatPercent(value: number | null | undefined): string {
   if (value === null || value === undefined || Number.isNaN(value)) return "—"
   const sign = value > 0 ? "+" : ""

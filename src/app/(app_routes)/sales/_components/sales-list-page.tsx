@@ -1,14 +1,12 @@
 "use client"
 
-import { useCallback, useMemo, useState, type ReactNode } from "react"
-import { toast } from "sonner"
+import { useCallback, useEffect, useMemo, useRef, type ReactNode } from "react"
 
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
-import { BudgetsFilters } from "@/app/(app_routes)/sales/_components/budgets-filters"
-import { BudgetsTable } from "@/app/(app_routes)/sales/_components/budgets-table"
 import { SalesFilters } from "@/app/(app_routes)/sales/_components/sales-filters"
+import { SalesListHeader } from "@/app/(app_routes)/sales/_components/sales-list-header"
+import { SalesListTable } from "@/app/(app_routes)/sales/_components/sales-list-table"
 import { SalesContentLoading } from "@/app/(app_routes)/sales/_components/sales-route-loading"
-import { SalesTable } from "@/app/(app_routes)/sales/_components/sales-table"
 import {
   ListErrorCard,
   PaginatedListLayout,
@@ -20,99 +18,108 @@ import {
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
 import { useOperatorPermissions } from "@/lib/permissions"
 import { filterSalesItemsByDate } from "@/modules/sales/sales-client-filters"
-import {
-  defaultBudgetFilters,
-  defaultSalesDateFilters,
-  defaultSalesFilters,
-  hasActiveSalesDateFilters,
-  type SalesDateFilters,
-} from "@/modules/sales/sales-constants"
-import type { ListSalesQuery } from "@/modules/sales/sales.schema"
+import { filterSalesBySearchTerm } from "@/modules/sales/sales-rules"
+import type { SalesListRouteConfig } from "@/modules/sales/sales-route-config"
+import { useSalesListFilters } from "@/modules/sales/use-sales-list-filters"
 import { useSalesQuery } from "@/modules/sales/use-sales"
 
-type SalesListVariant = "sales" | "budgets"
-
-const LIST_PAGE_CONFIG: Record<
-  SalesListVariant,
-  {
-    defaultFilters: () => ListSalesQuery
-    formId: string
-    loadErrorMessage: string
-    loadErrorTitle: string
-    emptyMessage: string
-  }
-> = {
-  sales: {
-    defaultFilters: defaultSalesFilters,
-    formId: "sales-filters-form",
-    loadErrorMessage: "Não foi possível carregar as vendas.",
-    loadErrorTitle: "Erro ao carregar vendas",
-    emptyMessage: "Nenhuma venda encontrada",
-  },
-  budgets: {
-    defaultFilters: defaultBudgetFilters,
-    formId: "budgets-filters-form",
-    loadErrorMessage: "Não foi possível carregar os orçamentos.",
-    loadErrorTitle: "Erro ao carregar orçamentos",
-    emptyMessage: "Nenhum orçamento encontrado",
-  },
-}
-
-function parseFiltersFromForm(form: HTMLFormElement): {
-  filters: Pick<ListSalesQuery, "orderNumber" | "seller" | "client">
-  dateFilters: SalesDateFilters
-} {
-  const orderNumberEl = form.elements.namedItem(
-    "orderNumber"
-  ) as HTMLInputElement | null
-  const sellerEl = form.elements.namedItem("seller") as HTMLInputElement | null
-  const clientEl = form.elements.namedItem("client") as HTMLInputElement | null
-  const dateFromEl = form.elements.namedItem(
-    "dateFrom"
-  ) as HTMLInputElement | null
-  const dateToEl = form.elements.namedItem("dateTo") as HTMLInputElement | null
-
-  return {
-    filters: {
-      orderNumber: orderNumberEl?.value.trim() || undefined,
-      seller: sellerEl?.value.trim() || undefined,
-      client: clientEl?.value.trim() || undefined,
-    },
-    dateFilters: {
-      dateFrom: dateFromEl?.value.trim() || undefined,
-      dateTo: dateToEl?.value.trim() || undefined,
-    },
-  }
-}
-
 type SalesListPageProps = {
-  variant: SalesListVariant
+  config: SalesListRouteConfig
   leading?: ReactNode
 }
 
-export function SalesListPage({ variant, leading }: SalesListPageProps) {
-  const config = LIST_PAGE_CONFIG[variant]
+export function SalesListPage({ config, leading }: SalesListPageProps) {
   const { ready, enterpriseId } = useRequireEnterprise()
   const perms = useOperatorPermissions()
-  const [draftFilters, setDraftFilters] = useState<ListSalesQuery>(
-    config.defaultFilters()
-  )
-  const [appliedFilters, setAppliedFilters] = useState<ListSalesQuery>(
-    config.defaultFilters()
-  )
-  const [draftDateFilters, setDraftDateFilters] = useState(
-    defaultSalesDateFilters()
-  )
-  const [appliedDateFilters, setAppliedDateFilters] = useState(
-    defaultSalesDateFilters()
-  )
-  const [formKey, setFormKey] = useState(0)
+  const isExplicitSearch = useRef(false)
+
+  const {
+    searchTerm,
+    setSearchTerm,
+    nameSearchFilter,
+    draftFilters,
+    setDraftFilters,
+    appliedFilters,
+    draftDateFilters,
+    setDraftDateFilters,
+    appliedDateFilters,
+    isClientPagination,
+    applySearch,
+    applyFilters,
+    handleSearchResult,
+    clearFilters,
+    setPageOffset,
+    setLimit,
+  } = useSalesListFilters(config)
+
+  const queryFilters = useMemo(() => {
+    if (!isClientPagination) return appliedFilters
+    return { ...appliedFilters, offset: 0 }
+  }, [appliedFilters, isClientPagination])
 
   const { data, error, isPending, isFetching, refetch } = useSalesQuery({
     enterpriseId,
-    filters: appliedFilters,
+    filters: queryFilters,
     enabled: ready && perms.canConsultSales,
   })
+
+  const filteredItems = useMemo(() => {
+    if (!data) return []
+    let items = data.items
+    if (nameSearchFilter) {
+      items = filterSalesBySearchTerm(items, nameSearchFilter)
+    }
+    return filterSalesItemsByDate(items, appliedDateFilters)
+  }, [data, nameSearchFilter, appliedDateFilters])
+
+  const tableItems = useMemo(() => {
+    if (!isClientPagination) return filteredItems
+    const offset = appliedFilters.offset ?? 0
+    const limit = appliedFilters.limit ?? data?.limit ?? 20
+    return filteredItems.slice(offset, offset + limit)
+  }, [
+    filteredItems,
+    isClientPagination,
+    appliedFilters.offset,
+    appliedFilters.limit,
+    data?.limit,
+  ])
+
+  const tableTotal = isClientPagination
+    ? filteredItems.length
+    : (data?.total ?? 0)
+  const tableOffset = isClientPagination
+    ? (appliedFilters.offset ?? 0)
+    : (data?.offset ?? 0)
+  const tableLimit = appliedFilters.limit ?? data?.limit ?? 20
+
+  const rangeStart = tableTotal === 0 ? 0 : tableOffset + 1
+  const rangeEnd = Math.min(tableOffset + tableLimit, tableTotal)
+
+  useEffect(() => {
+    if (!isExplicitSearch.current) return
+    if (isFetching || isPending) return
+    if (!data) return
+    isExplicitSearch.current = false
+    handleSearchResult(isClientPagination ? filteredItems : data.items)
+  }, [
+    isFetching,
+    isPending,
+    data,
+    filteredItems,
+    isClientPagination,
+    handleSearchResult,
+  ])
+
+  function handleSearch() {
+    const ok = applySearch()
+    if (ok) isExplicitSearch.current = true
+  }
+
+  function handleApplyFilters() {
+    const ok = applyFilters()
+    if (ok) isExplicitSearch.current = false
+  }
 
   const handleRefresh = useCallback(() => {
     void refetch()
@@ -124,65 +131,18 @@ export function SalesListPage({ variant, leading }: SalesListPageProps) {
     enabled: ready && perms.isReady && !perms.isError && perms.canConsultSales,
   })
 
-  const applyFiltersFromForm = useCallback(() => {
-    const form = document.getElementById(config.formId)
-    if (!form || !(form instanceof HTMLFormElement)) {
-      setAppliedFilters({ ...draftFilters, offset: 0 })
-      setAppliedDateFilters(draftDateFilters)
-      return
-    }
-
-    const { filters: textFilters, dateFilters } = parseFiltersFromForm(form)
-
-    if (
-      dateFilters.dateFrom &&
-      dateFilters.dateTo &&
-      dateFilters.dateFrom > dateFilters.dateTo
-    ) {
-      toast.error("A data inicial não pode ser posterior à data final.")
-      return
-    }
-
-    const nextFilters: ListSalesQuery = {
-      ...draftFilters,
-      offset: 0,
-      orderNumber: textFilters.orderNumber,
-      seller: textFilters.seller,
-      client: textFilters.client,
-    }
-
-    setDraftFilters(nextFilters)
-    setDraftDateFilters(dateFilters)
-    setAppliedFilters(nextFilters)
-    setAppliedDateFilters(dateFilters)
-  }, [config.formId, draftFilters, draftDateFilters])
-
-  const clearFilters = useCallback(() => {
-    const reset = config.defaultFilters()
-    const resetDate = defaultSalesDateFilters()
-    setDraftFilters(reset)
-    setAppliedFilters(reset)
-    setDraftDateFilters(resetDate)
-    setAppliedDateFilters(resetDate)
-    setFormKey((key) => key + 1)
-  }, [config])
-
-  const visibleItems = useMemo(
-    () =>
-      data ? filterSalesItemsByDate(data.items, appliedDateFilters) : [],
-    [data, appliedDateFilters]
-  )
-
-  const localDateFilterActive = hasActiveSalesDateFilters(appliedDateFilters)
-
   const { errMessage, errMeta } = useListErrorState(
     error,
-    config.loadErrorMessage
+    config.labels.loadListError
   )
 
   if (!ready || !perms.isReady) {
     return (
-      <PaginatedListLayout loading={<SalesContentLoading />}>{null}</PaginatedListLayout>
+      <PaginatedListLayout
+        loading={<SalesContentLoading config={config} />}
+      >
+        {null}
+      </PaginatedListLayout>
     )
   }
 
@@ -193,70 +153,71 @@ export function SalesListPage({ variant, leading }: SalesListPageProps) {
   }
 
   return (
-    <PaginatedListLayout loading={isPending ? <SalesContentLoading /> : null}>
+    <PaginatedListLayout
+      loading={
+        isPending ? <SalesContentLoading config={config} /> : null
+      }
+    >
       {leading}
       {error && data && <StaleDataBanner message={errMessage} />}
       {error && !data && !isPending && (
         <ListErrorCard
-          title={config.loadErrorTitle}
+          title={config.labels.loadListErrorTitle}
           message={errMessage}
           meta={errMeta}
         />
       )}
       {data && !isPending && (
         <div className="space-y-6">
+          <SalesListHeader config={config} />
           <form
-            key={formKey}
-            id={config.formId}
+            id={config.list.filtersFormId}
             onSubmit={(e) => {
               e.preventDefault()
-              applyFiltersFromForm()
+              handleSearch()
             }}
           >
-            {variant === "sales" ? (
-              <SalesFilters
-                filters={draftFilters}
-                dateFilters={draftDateFilters}
-                onChange={setDraftFilters}
-                onApply={applyFiltersFromForm}
-                onClear={clearFilters}
-              />
-            ) : (
-              <BudgetsFilters
-                filters={draftFilters}
-                dateFilters={draftDateFilters}
-                onChange={setDraftFilters}
-                onApply={applyFiltersFromForm}
-                onClear={clearFilters}
-              />
-            )}
+            <SalesFilters
+              filters={draftFilters}
+              dateFilters={draftDateFilters}
+              searchTerm={searchTerm}
+              onSearchTermChange={setSearchTerm}
+              onFiltersChange={setDraftFilters}
+              onDateFiltersChange={setDraftDateFilters}
+              onSearch={handleSearch}
+              onApplyFilters={handleApplyFilters}
+              onClear={clearFilters}
+              isSearching={isFetching && !isPending}
+              showBudgetClosureFilter={config.list.showBudgetClosureFilter}
+            />
           </form>
 
-          {variant === "sales" ? (
-            <SalesTable
-              items={visibleItems}
-              total={data.total}
-              limit={data.limit}
-              offset={data.offset}
-              localFilterActive={localDateFilterActive}
-              emptyMessage={config.emptyMessage}
-              onPageChange={(offset) =>
-                setAppliedFilters((f) => ({ ...f, offset }))
-              }
-            />
-          ) : (
-            <BudgetsTable
-              items={visibleItems}
-              total={data.total}
-              limit={data.limit}
-              offset={data.offset}
-              localFilterActive={localDateFilterActive}
-              emptyMessage={config.emptyMessage}
-              onPageChange={(offset) =>
-                setAppliedFilters((f) => ({ ...f, offset }))
-              }
-            />
-          )}
+          <p
+            className="text-sm text-muted-foreground"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {tableTotal === 1
+              ? "1 registro encontrado"
+              : `Mostrando ${rangeStart}–${rangeEnd} de ${tableTotal} registros`}
+            {isClientPagination && tableTotal > 0
+              ? " (resultados filtrados localmente)"
+              : ""}
+          </p>
+
+          <SalesListTable
+            items={tableItems}
+            total={tableTotal}
+            limit={tableLimit}
+            offset={tableOffset}
+            config={config}
+            emptyTitle={config.labels.emptyList}
+            emptyHint={config.labels.emptyListHint}
+            onPageChange={setPageOffset}
+            onLimitChange={setLimit}
+            onClearFilters={clearFilters}
+          />
         </div>
       )}
     </PaginatedListLayout>

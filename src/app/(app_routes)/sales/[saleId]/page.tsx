@@ -12,6 +12,7 @@ import {
   PaginatedListLayout,
   PermissionDeniedCard,
   PermissionsErrorCard,
+  StaleDataBanner,
   useListErrorState,
 } from "@/app/(app_routes)/products/_components/paginated-list-shell"
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
@@ -57,9 +58,11 @@ export default function SaleDetailPage({ params }: SaleDetailPageProps) {
     "Não foi possível carregar a venda."
   )
 
+  const { refetch: refetchSale } = saleQuery
+
   const handleRefresh = useCallback(() => {
-    void saleQuery.refetch()
-  }, [saleQuery.refetch])
+    void refetchSale()
+  }, [refetchSale])
 
   useRegisterPageRefresh({
     onRefresh: handleRefresh,
@@ -83,7 +86,14 @@ export default function SaleDetailPage({ params }: SaleDetailPageProps) {
     <PaginatedListLayout
       loading={saleQuery.isPending ? <SaleDetailLoading /> : null}
     >
-      {saleQuery.error && !saleQuery.isPending && (
+      {saleQuery.error && saleQuery.data && (
+        <StaleDataBanner
+          title="Não foi possível atualizar o detalhe."
+          message={errMessage}
+        />
+      )}
+
+      {saleQuery.error && !saleQuery.data && !saleQuery.isPending && (
         <ListErrorCard
           title="Erro ao carregar venda"
           message={errMessage}

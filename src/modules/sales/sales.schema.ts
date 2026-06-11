@@ -92,7 +92,7 @@ export const sourceBudgetSummarySchema = z.object({
   id: z.uuid(),
   orderNumber: z.number().int(),
   status: saleStatusSchema,
-  valueLiquid: decimalSchema,
+  valueLiquid: decimalSchema.optional(),
 })
 
 export type SourceBudgetSummary = z.infer<typeof sourceBudgetSummarySchema>

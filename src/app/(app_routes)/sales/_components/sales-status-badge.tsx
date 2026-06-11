@@ -20,7 +20,7 @@ export function SalesStatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex h-5 items-center rounded-full border px-2.5 text-xs font-medium",
         STATUS_STYLES[key] ??
           "border-border bg-muted/30 text-muted-foreground",
         className

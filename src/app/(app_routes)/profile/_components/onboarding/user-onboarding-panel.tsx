@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { Loader2 } from "lucide-react"
 
 import { UserAddressesSection } from "@/app/(app_routes)/profile/_components/onboarding/user-addresses-section"
@@ -9,12 +10,34 @@ import { UserPersonalInfoSection } from "@/app/(app_routes)/profile/_components/
 import { UserRelationshipsSection } from "@/app/(app_routes)/profile/_components/onboarding/user-relationships-section"
 import { UserTaxInfosSection } from "@/app/(app_routes)/profile/_components/onboarding/user-tax-infos-section"
 import {
+  SectionToggle,
+  SectionTogglePanel,
+  type SectionToggleOption,
+} from "@/components/global/section-toggle"
+import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 import type { UserDetailsResponse } from "@/modules/users-onboarding/users-onboarding.schema"
+
+type OnboardingSection =
+  | "pessoais"
+  | "enderecos"
+  | "contatos"
+  | "relacionamentos"
+  | "fiscais"
+  | "financeiras"
+
+const ONBOARDING_SECTIONS: SectionToggleOption<OnboardingSection>[] = [
+  { id: "pessoais", label: "Pessoais" },
+  { id: "enderecos", label: "Endereços" },
+  { id: "contatos", label: "Contatos" },
+  { id: "relacionamentos", label: "Relacionamentos" },
+  { id: "fiscais", label: "Fiscais" },
+  { id: "financeiras", label: "Financeiras" },
+]
 
 export function UserOnboardingPanel({
   details,
@@ -35,6 +58,8 @@ export function UserOnboardingPanel({
   title?: string
   description?: string
 }) {
+  const [section, setSection] = useState<OnboardingSection>("pessoais")
+
   if (isLoading) {
     return (
       <Card>
@@ -52,59 +77,76 @@ export function UserOnboardingPanel({
   if (!details) return null
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
         <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
 
-      <UserPersonalInfoSection
-        enterpriseId={enterpriseId}
-        userId={userId}
-        memberId={memberId}
-        personalInfo={details.personalInfo}
-        canAlter={canAlter}
+      <SectionToggle
+        value={section}
+        onValueChange={setSection}
+        options={ONBOARDING_SECTIONS}
+        ariaLabel="Seções do onboarding do utilizador"
+        idPrefix="user-onboarding"
       />
 
-      <UserAddressesSection
-        enterpriseId={enterpriseId}
-        userId={userId}
-        memberId={memberId}
-        addresses={details.addresses}
-        canAlter={canAlter}
-      />
-
-      <UserContactsSection
-        enterpriseId={enterpriseId}
-        userId={userId}
-        memberId={memberId}
-        contacts={details.contacts}
-        canAlter={canAlter}
-      />
-
-      <UserRelationshipsSection
-        enterpriseId={enterpriseId}
-        userId={userId}
-        memberId={memberId}
-        relationships={details.relationships}
-        canAlter={canAlter}
-      />
-
-      <UserTaxInfosSection
-        enterpriseId={enterpriseId}
-        userId={userId}
-        memberId={memberId}
-        taxInfos={details.taxInfos}
-        canAlter={canAlter}
-      />
-
-      <UserFinancialInfoSection
-        enterpriseId={enterpriseId}
-        userId={userId}
-        memberId={memberId}
-        financialInfo={details.financialInfo}
-        canAlter={canAlter}
-      />
+      <SectionTogglePanel sectionId={section} idPrefix="user-onboarding">
+        {section === "pessoais" && (
+          <UserPersonalInfoSection
+            enterpriseId={enterpriseId}
+            userId={userId}
+            memberId={memberId}
+            personalInfo={details.personalInfo}
+            canAlter={canAlter}
+          />
+        )}
+        {section === "enderecos" && (
+          <UserAddressesSection
+            enterpriseId={enterpriseId}
+            userId={userId}
+            memberId={memberId}
+            addresses={details.addresses}
+            canAlter={canAlter}
+          />
+        )}
+        {section === "contatos" && (
+          <UserContactsSection
+            enterpriseId={enterpriseId}
+            userId={userId}
+            memberId={memberId}
+            contacts={details.contacts}
+            canAlter={canAlter}
+          />
+        )}
+        {section === "relacionamentos" && (
+          <UserRelationshipsSection
+            enterpriseId={enterpriseId}
+            userId={userId}
+            memberId={memberId}
+            relationships={details.relationships}
+            canAlter={canAlter}
+          />
+        )}
+        {section === "fiscais" && (
+          <UserTaxInfosSection
+            enterpriseId={enterpriseId}
+            userId={userId}
+            memberId={memberId}
+            taxInfos={details.taxInfos}
+            canAlter={canAlter}
+          />
+        )}
+        {section === "financeiras" && (
+          <UserFinancialInfoSection
+            enterpriseId={enterpriseId}
+            userId={userId}
+            memberId={memberId}
+            financialInfo={details.financialInfo}
+            canAlter={canAlter}
+          />
+        )}
+      </SectionTogglePanel>
     </div>
   )
 }

@@ -125,7 +125,7 @@ export function UserPersonalInfoSection({
         {!exists && !editing ? (
           <UserOnboardingEmpty
             title="Sem informações pessoais cadastradas."
-            description="Registe gênero, data de nascimento ou local de nascimento."
+            description="Registre gênero, data de nascimento ou local de nascimento."
           />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">

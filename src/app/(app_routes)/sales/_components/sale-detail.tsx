@@ -25,7 +25,7 @@ type SaleDetailViewProps = {
 export function SaleDetailView({ sale }: SaleDetailViewProps) {
   return (
     <div className="space-y-6">
-      <RouteBreadcrumb currentLabel={`Pedido #${sale.orderNumber}`} />
+      <RouteBreadcrumb currentLabel={`${sale.type === "ORCAMENTO" ? "Orçamento" : "Pedido"} #${sale.orderNumber}`} />
 
       <SaleSummaryCard
         sale={sale}

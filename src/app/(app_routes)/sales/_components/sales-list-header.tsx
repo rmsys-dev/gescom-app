@@ -8,7 +8,7 @@ function capitalize(str: string): string {
 
 export function SalesListHeader({ config }: { config: SalesListRouteConfig }) {
   const title = capitalize(config.labels.plural)
-  const subtitle = `Gerencie e consulte os ${config.labels.plural} cadastrados`
+  const subtitle = `Consulte e gerencie ${config.labels.plural}`
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

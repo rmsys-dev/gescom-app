@@ -29,7 +29,7 @@ export function SaleSummaryCard({
       <CardHeader>
         <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
           <CardTitle className="text-md">
-            Pedido #{sale.orderNumber}
+            {sale.type === "ORCAMENTO" ? "Orçamento" : "Pedido"} #{sale.orderNumber}
           </CardTitle>
           <div className="flex items-center gap-2">
             <SalesTypeBadge type={sale.type} />

@@ -4,8 +4,6 @@ import type { ReactNode } from "react"
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useVirtualRows } from "@/components/ui/use-virtual-rows"
-import { cn } from "@/lib/utils"
 
 export type ResourceColumn<T> = {
   header: string
@@ -46,10 +44,6 @@ export function PaginatedResourceTable<T extends { id: string }>({
   const canPrev = offset > 0
   const canNext = offset + limit < total
 
-  const { parentRef, shouldVirtualize, virtualRows, totalSize } = useVirtualRows({
-    count: items.length,
-  })
-
   function renderDataRow(item: T) {
     return (
       <tr key={item.id} className="border-b last:border-0">
@@ -81,20 +75,9 @@ export function PaginatedResourceTable<T extends { id: string }>({
 
   return (
     <div className="space-y-4">
-      <div
-        ref={parentRef}
-        className={cn(
-          "hidden overflow-hidden rounded-lg border md:block",
-          shouldVirtualize && "max-h-[480px] overflow-y-auto"
-        )}
-      >
+      <div className="hidden overflow-hidden rounded-lg border md:block">
         <table className="w-full text-sm">
-          <thead
-            className={cn(
-              "border-b bg-muted/40 text-left text-xs text-muted-foreground",
-              shouldVirtualize && "sticky top-0 z-10 bg-muted/40"
-            )}
-          >
+          <thead className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
             <tr>
               {columns.map((col) => (
                 <th key={col.header} className="px-4 py-3 font-medium">
@@ -104,49 +87,7 @@ export function PaginatedResourceTable<T extends { id: string }>({
               <th className="px-4 py-3 font-medium" />
             </tr>
           </thead>
-          <tbody
-            style={
-              shouldVirtualize
-                ? { height: totalSize, position: "relative", display: "block" }
-                : undefined
-            }
-          >
-            {shouldVirtualize && virtualRows
-              ? virtualRows.map((virtualRow) => {
-                  const item = items[virtualRow.index]
-                  return (
-                    <tr
-                      key={item.id}
-                      className="border-b last:border-0"
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        display: "table",
-                        tableLayout: "fixed",
-                        height: `${virtualRow.size}px`,
-                        transform: `translateY(${virtualRow.start}px)`,
-                      }}
-                    >
-                      {columns.map((col) => (
-                        <td key={col.header} className="px-4 py-3">
-                          {col.cell(item)}
-                        </td>
-                      ))}
-                      <td className="px-4 py-3 text-right">
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link href={`${basePath}/${item.id}`}>
-                            <Eye className="mr-1 size-4" />
-                            Ver
-                          </Link>
-                        </Button>
-                      </td>
-                    </tr>
-                  )
-                })
-              : items.map((item) => renderDataRow(item))}
-          </tbody>
+          <tbody>{items.map((item) => renderDataRow(item))}</tbody>
         </table>
       </div>
 

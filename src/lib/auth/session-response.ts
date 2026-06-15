@@ -1,7 +1,7 @@
 import { z } from "zod"
 import {
   authUserSchema,
-  enterpriseSchema,
+  authEnterpriseSchema,
   meDepartmentSchema,
   meEnterpriseSchema,
   meUserSchema,
@@ -10,7 +10,7 @@ import {
 /** Resposta de login ao browser (sem tokens). */
 export const loginClientResponseSchema = z.object({
   user: authUserSchema,
-  enterprises: z.array(enterpriseSchema),
+  enterprises: z.array(authEnterpriseSchema),
 })
 
 export type LoginClientResponse = z.infer<typeof loginClientResponseSchema>
@@ -38,7 +38,7 @@ export const sessionBootstrapSchema = z.discriminatedUnion("authenticated", [
     enterprise: meEnterpriseSchema.nullable(),
     departments: z.array(meDepartmentSchema).default([]),
     permissions: z.array(z.string()).default([]),
-    enterprises: z.array(enterpriseSchema),
+    enterprises: z.array(authEnterpriseSchema),
   }),
 ])
 

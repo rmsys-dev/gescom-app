@@ -30,15 +30,13 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { HttpError } from "@/lib/api/http-error"
 import { getUserInitials } from "@/lib/user-initials"
 import { cpfCnpjSchema } from "@/lib/validation/cpf-cnpj"
 import { phoneE164Schema } from "@/lib/validation/phone"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { EnterpriseAddressList } from "@/app/(app_routes)/enterprise/_components/enterprise-address-list"
 import { getEnterpriseStatusLabel } from "@/modules/enterprises/enterprise-status-label"
 import type {
-  Enterprise,
+  EnterpriseRecord,
   EnterpriseDetail,
 } from "@/modules/enterprises/enterprises.schema"
 import { useUpdateEnterpriseMutation } from "@/modules/enterprises/use-enterprises"
@@ -54,7 +52,7 @@ import {
 } from "@/lib/formatters"
 
 type EnterpriseHeroProps = {
-  enterprise: Pick<Enterprise, "tradeName" | "legalName"> | null
+  enterprise: Pick<EnterpriseRecord, "tradeName" | "legalName"> | null
   children?: ReactNode
 }
 
@@ -304,12 +302,8 @@ function EnterpriseCadastroSection({
       await mutation.mutateAsync(patch)
       setEditing(false)
       onUpdateSuccess?.()
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível atualizar a empresa.")
-        return
-      }
-      toast.error("Não foi possível atualizar a empresa.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

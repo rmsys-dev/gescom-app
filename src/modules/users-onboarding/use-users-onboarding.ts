@@ -1,9 +1,12 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { CACHE } from "@/lib/react-query/cache-policy"
+import { useMutationWithToast } from "@/lib/react-query/use-mutation-with-toast"
 import { HttpError } from "@/lib/api/http-error"
-import { memberQueryKey } from "@/modules/memberships/use-members"
+import { memberQueryKey } from "@/modules/memberships/memberships-query-keys"
+import { userDetailsQueryKey } from "@/modules/users/users-query-keys"
 import {
   getUserDetailsService,
   patchFinancialInfoService,
@@ -34,9 +37,7 @@ import type {
   PostUserContactRequest,
 } from "@/modules/users-onboarding/users-onboarding.schema"
 
-export function userDetailsQueryKey(enterpriseId: string, userId: string) {
-  return ["users", enterpriseId, userId, "details"] as const
-}
+export { userDetailsQueryKey } from "@/modules/users/users-query-keys"
 
 function useInvalidateUserDetails(
   enterpriseId: string,
@@ -79,7 +80,7 @@ export function useUserDetailsQuery({
       }
     },
     enabled: enabled && Boolean(enterpriseId) && Boolean(userId),
-    staleTime: 0,
+    staleTime: CACHE.tenantDetail,
     retry: (failureCount, error) => {
       if (error instanceof HttpError && error.status === 404) {
         return false
@@ -95,7 +96,7 @@ export function useUpsertPersonalInfoMutation(
   memberId?: string
 ) {
   const invalidate = useInvalidateUserDetails(enterpriseId, userId, memberId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       exists,
       input,
@@ -114,10 +115,8 @@ export function useUpsertPersonalInfoMutation(
             userId,
             input as PostPersonalInfoRequest
           ),
-    onSuccess: () => {
-      invalidate()
-      toast.success("Informações pessoais registradas!")
-    },
+    successMessage: "Informações pessoais registradas!",
+    onSuccess: () => invalidate(),
   })
 }
 
@@ -127,13 +126,11 @@ export function useCreateUserAddressMutation(
   memberId?: string
 ) {
   const invalidate = useInvalidateUserDetails(enterpriseId, userId, memberId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (input: PostUserAddressRequest) =>
       postUserAddressService(enterpriseId, userId, input),
-    onSuccess: () => {
-      invalidate()
-      toast.success("Endereço adicionado!")
-    },
+    successMessage: "Endereço adicionado!",
+    onSuccess: () => invalidate(),
   })
 }
 
@@ -143,7 +140,7 @@ export function usePatchUserAddressMutation(
   memberId?: string
 ) {
   const invalidate = useInvalidateUserDetails(enterpriseId, userId, memberId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       addressId,
       input,
@@ -168,13 +165,11 @@ export function useCreateUserContactMutation(
   memberId?: string
 ) {
   const invalidate = useInvalidateUserDetails(enterpriseId, userId, memberId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (input: PostUserContactRequest) =>
       postUserContactService(enterpriseId, userId, input),
-    onSuccess: () => {
-      invalidate()
-      toast.success("Contato adicionado!")
-    },
+    successMessage: "Contato adicionado!",
+    onSuccess: () => invalidate(),
   })
 }
 
@@ -184,7 +179,7 @@ export function usePatchUserContactMutation(
   memberId?: string
 ) {
   const invalidate = useInvalidateUserDetails(enterpriseId, userId, memberId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       contactId,
       input,
@@ -209,7 +204,7 @@ export function useUpsertRelationshipsMutation(
   memberId?: string
 ) {
   const invalidate = useInvalidateUserDetails(enterpriseId, userId, memberId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       exists,
       input,
@@ -228,10 +223,8 @@ export function useUpsertRelationshipsMutation(
             userId,
             input as PostRelationshipsRequest
           ),
-    onSuccess: () => {
-      invalidate()
-      toast.success("Relacionamentos registrados!")
-    },
+    successMessage: "Relacionamentos registrados!",
+    onSuccess: () => invalidate(),
   })
 }
 
@@ -241,7 +234,7 @@ export function useUpsertTaxInfosMutation(
   memberId?: string
 ) {
   const invalidate = useInvalidateUserDetails(enterpriseId, userId, memberId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       exists,
       input,
@@ -256,10 +249,8 @@ export function useUpsertTaxInfosMutation(
             input as PatchTaxInfosRequest
           )
         : postTaxInfosService(enterpriseId, userId, input as PostTaxInfosRequest),
-    onSuccess: () => {
-      invalidate()
-      toast.success("Informações fiscais registradas!")
-    },
+    successMessage: "Informações fiscais registradas!",
+    onSuccess: () => invalidate(),
   })
 }
 
@@ -269,7 +260,7 @@ export function useUpsertFinancialInfoMutation(
   memberId?: string
 ) {
   const invalidate = useInvalidateUserDetails(enterpriseId, userId, memberId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       exists,
       input,
@@ -288,9 +279,7 @@ export function useUpsertFinancialInfoMutation(
             userId,
             input as PostFinancialInfoRequest
           ),
-    onSuccess: () => {
-      invalidate()
-      toast.success("Informações financeiras registradas!")
-    },
+    successMessage: "Informações financeiras registradas!",
+    onSuccess: () => invalidate(),
   })
 }

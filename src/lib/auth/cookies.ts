@@ -11,8 +11,8 @@ import {
   REFRESH_COOKIE_MAX_AGE,
 } from "@/lib/auth/env"
 import {
-  enterpriseSchema,
-  type Enterprise,
+  authEnterpriseSchema,
+  type AuthEnterprise,
 } from "@/modules/authentication/auth.schema"
 
 export {
@@ -41,12 +41,12 @@ export async function getRefreshToken(): Promise<string | null> {
   return store.get(REFRESH_TOKEN_COOKIE)?.value ?? null
 }
 
-export async function getEnterprisesSnapshot(): Promise<Enterprise[]> {
+export async function getEnterprisesSnapshot(): Promise<AuthEnterprise[]> {
   const store = await cookies()
   const raw = store.get(ENTERPRISES_COOKIE)?.value
   if (!raw) return []
   try {
-    const parsed = z.array(enterpriseSchema).safeParse(JSON.parse(raw))
+    const parsed = z.array(authEnterpriseSchema).safeParse(JSON.parse(raw))
     return parsed.success ? parsed.data : []
   } catch {
     return []
@@ -55,7 +55,7 @@ export async function getEnterprisesSnapshot(): Promise<Enterprise[]> {
 
 export async function setAuthCookies(
   tokens: { accessToken: string; refreshToken: string },
-  enterprises?: Enterprise[]
+  enterprises?: AuthEnterprise[]
 ) {
   const store = await cookies()
   store.set(ACCESS_TOKEN_COOKIE, tokens.accessToken, {

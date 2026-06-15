@@ -1,11 +1,11 @@
-import type { Enterprise } from "@/modules/authentication/auth.schema"
+import type { AuthEnterprise } from "@/modules/authentication/auth.schema"
 import type { MeResponse } from "@/modules/authentication/auth.schema"
 
 /**
  * Monta snapshot mínimo para cookie `gescom_enterprises` quando a API só devolve
  * contexto activo em GET /me (ex.: após first-access verify).
  */
-export function enterprisesSnapshotFromMe(me: MeResponse): Enterprise[] {
+export function enterprisesSnapshotFromMe(me: MeResponse): AuthEnterprise[] {
   if (!me.enterprise) return []
   return [
     {

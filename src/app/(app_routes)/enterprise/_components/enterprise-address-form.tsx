@@ -18,8 +18,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { HttpError } from "@/lib/api/http-error"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import type { Cep } from "@/modules/addresses/addresses.schema"
 import {
   useCepsQuery,
@@ -32,7 +30,6 @@ import {
   ENTERPRISE_PRINCIPAL_ADDRESS_EXISTS_MESSAGE,
   findPrincipalEnterpriseAddress,
   hasConflictingPrincipalEnterpriseAddress,
-  isEnterprisePrincipalAddressError,
 } from "@/modules/enterprises/enterprise-address-rules"
 import type { EnterpriseAddressType } from "@/modules/enterprises/enterprise-addresses.schema"
 import type { EnterpriseAddress } from "@/modules/enterprises/enterprises.schema"
@@ -268,33 +265,8 @@ function EnterpriseAddressFormContent({
         })
       }
       onOpenChange(false)
-    } catch (error) {
-      if (error instanceof HttpError) {
-        if (error.code === "ADDRESS_HIERARCHY_MISMATCH") {
-          toast.error(
-            error.message ||
-            "País, estado, cidade e CEP não estão alinhados. Verifique as seleções."
-          )
-          return
-        }
-        if (
-          isEnterprisePrincipalAddressError({
-            code: error.code,
-            adressType,
-          })
-        ) {
-          toast.error(ENTERPRISE_PRINCIPAL_ADDRESS_EXISTS_MESSAGE)
-          return
-        }
-        toastHttpError(
-          error,
-          mode === "create"
-            ? "Não foi possível cadastrar o endereço."
-            : "Não foi possível atualizar o endereço."
-        )
-        return
-      }
-      toast.error("Operação falhou.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

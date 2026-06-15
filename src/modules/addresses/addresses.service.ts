@@ -1,6 +1,7 @@
 import { apiFetch } from "@/lib/api/client"
-import { successEnvelopeSchema } from "@/lib/api/envelope"
+import { parseSuccessEnvelope } from "@/lib/api/parse-response"
 import {
+  cepSchema,
   listCepsResponseSchema,
   listCitiesResponseSchema,
   listCountriesResponseSchema,
@@ -9,8 +10,11 @@ import {
 
 export async function listCountriesService() {
   const raw = await apiFetch<unknown>("addresses/countries", { method: "GET" })
-  const envelope = successEnvelopeSchema(listCountriesResponseSchema).parse(raw)
-  return envelope.data
+  return parseSuccessEnvelope(
+    raw,
+    listCountriesResponseSchema,
+    "GET /addresses/countries"
+  )
 }
 
 export async function listStatesService(countryId: string) {
@@ -19,8 +23,11 @@ export async function listStatesService(countryId: string) {
     `addresses/states?${params.toString()}`,
     { method: "GET" }
   )
-  const envelope = successEnvelopeSchema(listStatesResponseSchema).parse(raw)
-  return envelope.data
+  return parseSuccessEnvelope(
+    raw,
+    listStatesResponseSchema,
+    "GET /addresses/states"
+  )
 }
 
 export async function listCitiesService(stateId: string) {
@@ -29,8 +36,11 @@ export async function listCitiesService(stateId: string) {
     `addresses/cities?${params.toString()}`,
     { method: "GET" }
   )
-  const envelope = successEnvelopeSchema(listCitiesResponseSchema).parse(raw)
-  return envelope.data
+  return parseSuccessEnvelope(
+    raw,
+    listCitiesResponseSchema,
+    "GET /addresses/cities"
+  )
 }
 
 export async function listCepsService(cityId: string, cepNumber?: string) {
@@ -44,6 +54,13 @@ export async function listCepsService(cityId: string, cepNumber?: string) {
     `addresses/ceps?${params.toString()}`,
     { method: "GET" }
   )
-  const envelope = successEnvelopeSchema(listCepsResponseSchema).parse(raw)
-  return envelope.data
+  return parseSuccessEnvelope(raw, listCepsResponseSchema, "GET /addresses/ceps")
+}
+
+/** Resolve um CEP por ID sem baixar a lista completa da cidade. */
+export async function getCepByIdService(cepId: string) {
+  const raw = await apiFetch<unknown>(`addresses/ceps/${cepId}`, {
+    method: "GET",
+  })
+  return parseSuccessEnvelope(raw, cepSchema, `GET /addresses/ceps/${cepId}`)
 }

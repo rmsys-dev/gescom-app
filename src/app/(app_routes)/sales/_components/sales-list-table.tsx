@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { formatDateOnly, formatPersonName } from "@/lib/formatters"
+import { usePrefetchSaleDetail } from "@/lib/react-query/use-prefetch-sale-detail"
 import { cn } from "@/lib/utils"
 import {
   RETURN_SITUATION_LABELS,
@@ -47,6 +48,7 @@ type SalesListTableProps = {
   total: number
   limit: number
   offset: number
+  enterpriseId?: string
   config: SalesListRouteConfig
   emptyTitle: string
   emptyHint: string
@@ -122,6 +124,7 @@ export function SalesListTable({
   total,
   limit,
   offset,
+  enterpriseId,
   config,
   emptyTitle,
   emptyHint,
@@ -131,6 +134,7 @@ export function SalesListTable({
 }: SalesListTableProps) {
   const [sort, setSort] = useState<SortState>(null)
   const [viewSaleId, setViewSaleId] = useState<string | null>(null)
+  const prefetchSaleDetail = usePrefetchSaleDetail(enterpriseId)
 
   const page = Math.floor(offset / limit) + 1
   const totalPages = Math.max(1, Math.ceil(total / limit))
@@ -293,6 +297,8 @@ export function SalesListTable({
               <tr
                 key={item.id}
                 onClick={() => openSaleView(item.id)}
+                onMouseEnter={() => prefetchSaleDetail(item.id)}
+                onFocus={() => prefetchSaleDetail(item.id)}
                 className={cn(
                   "cursor-pointer border-b transition-colors last:border-0",
                   "hover:bg-primary/5 focus-within:bg-primary/5",

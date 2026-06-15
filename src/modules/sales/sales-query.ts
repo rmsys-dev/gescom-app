@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { paginationQuerySchema } from "@/modules/products/products-query"
+import { paginationQuerySchema } from "@/lib/schemas/pagination"
 import {
   budgetClosureSituationSchema,
   paymentTypeStatusSchema,

@@ -9,6 +9,7 @@ import {
   SearchX,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useVirtualRows } from "@/components/ui/use-virtual-rows"
 import {
   Select,
   SelectContent,
@@ -69,6 +70,56 @@ export function LinkClientUsersTable({
     return Array.from({ length: total5 }, (_, i) => start + i)
   }, [page, totalPages])
 
+  const { parentRef, shouldVirtualize, virtualRows, totalSize } = useVirtualRows({
+    count: items.length,
+  })
+
+  function renderUserRow(item: User, idx: number) {
+    const selected = selectedUserId === item.id
+    return (
+      <tr
+        key={item.id}
+        role="row"
+        tabIndex={0}
+        aria-label={`Selecionar ${item.userName}`}
+        className={cn(
+          "cursor-pointer border-b transition-colors last:border-0",
+          "hover:bg-primary/5 focus-within:bg-primary/5",
+          selected && "bg-primary/5",
+          idx % 2 === 1 && "bg-muted/20"
+        )}
+        onClick={() => onSelectUser(item.id)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault()
+            onSelectUser(item.id)
+          }
+        }}
+      >
+        <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+          <input
+            type="radio"
+            name="link-user"
+            checked={selected}
+            onChange={() => onSelectUser(item.id)}
+            aria-label={`Selecionar ${item.userName}`}
+            className="size-4 accent-primary"
+          />
+        </td>
+        <td className="px-4 py-3 font-medium">{item.userName}</td>
+        <td
+          className="max-w-[200px] truncate px-4 py-3"
+          title={item.userEmail}
+        >
+          {item.userEmail}
+        </td>
+        <td className="px-4 py-3 tabular-nums text-muted-foreground">
+          {formatPhone(item.userPhone)}
+        </td>
+      </tr>
+    )
+  }
+
   if (items.length === 0) {
     return (
       <div
@@ -108,12 +159,23 @@ export function LinkClientUsersTable({
           : `Mostrando ${rangeStart}–${rangeEnd} de ${total} registros`}
       </p>
 
-      <div className="hidden overflow-hidden rounded-lg border md:block">
+      <div
+        ref={parentRef}
+        className={cn(
+          "hidden overflow-hidden rounded-lg border md:block",
+          shouldVirtualize && "max-h-[480px] overflow-y-auto"
+        )}
+      >
         <table
           className="w-full text-sm"
           aria-label="Lista de usuários para vincular como cliente"
         >
-          <thead className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
+          <thead
+            className={cn(
+              "border-b bg-muted/40 text-left text-xs text-muted-foreground",
+              shouldVirtualize && "sticky top-0 z-10"
+            )}
+          >
             <tr>
               <th className="w-10 px-4 py-3" scope="col" aria-label="Selecionar" />
               <th className="px-4 py-3 font-medium" scope="col">
@@ -127,52 +189,73 @@ export function LinkClientUsersTable({
               </th>
             </tr>
           </thead>
-          <tbody>
-            {items.map((item, idx) => {
-              const selected = selectedUserId === item.id
-              return (
-                <tr
-                  key={item.id}
-                  role="row"
-                  tabIndex={0}
-                  aria-label={`Selecionar ${item.userName}`}
-                  className={cn(
-                    "cursor-pointer border-b transition-colors last:border-0",
-                    "hover:bg-primary/5 focus-within:bg-primary/5",
-                    selected && "bg-primary/5",
-                    idx % 2 === 1 && "bg-muted/20"
-                  )}
-                  onClick={() => onSelectUser(item.id)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault()
-                      onSelectUser(item.id)
-                    }
-                  }}
-                >
-                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                    <input
-                      type="radio"
-                      name="link-user"
-                      checked={selected}
-                      onChange={() => onSelectUser(item.id)}
+          <tbody
+            style={
+              shouldVirtualize
+                ? { height: totalSize, position: "relative", display: "block" }
+                : undefined
+            }
+          >
+            {shouldVirtualize && virtualRows
+              ? virtualRows.map((virtualRow) => {
+                  const item = items[virtualRow.index]
+                  return (
+                    <tr
+                      key={item.id}
+                      role="row"
+                      tabIndex={0}
                       aria-label={`Selecionar ${item.userName}`}
-                      className="size-4 accent-primary"
-                    />
-                  </td>
-                  <td className="px-4 py-3 font-medium">{item.userName}</td>
-                  <td
-                    className="max-w-[200px] truncate px-4 py-3"
-                    title={item.userEmail}
-                  >
-                    {item.userEmail}
-                  </td>
-                  <td className="px-4 py-3 tabular-nums text-muted-foreground">
-                    {formatPhone(item.userPhone)}
-                  </td>
-                </tr>
-              )
-            })}
+                      className={cn(
+                        "cursor-pointer border-b transition-colors last:border-0",
+                        "hover:bg-primary/5 focus-within:bg-primary/5",
+                        selectedUserId === item.id && "bg-primary/5",
+                        virtualRow.index % 2 === 1 && "bg-muted/20"
+                      )}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        display: "table",
+                        tableLayout: "fixed",
+                        height: `${virtualRow.size}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                      onClick={() => onSelectUser(item.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault()
+                          onSelectUser(item.id)
+                        }
+                      }}
+                    >
+                      <td
+                        className="px-4 py-3"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <input
+                          type="radio"
+                          name="link-user"
+                          checked={selectedUserId === item.id}
+                          onChange={() => onSelectUser(item.id)}
+                          aria-label={`Selecionar ${item.userName}`}
+                          className="size-4 accent-primary"
+                        />
+                      </td>
+                      <td className="px-4 py-3 font-medium">{item.userName}</td>
+                      <td
+                        className="max-w-[200px] truncate px-4 py-3"
+                        title={item.userEmail}
+                      >
+                        {item.userEmail}
+                      </td>
+                      <td className="px-4 py-3 tabular-nums text-muted-foreground">
+                        {formatPhone(item.userPhone)}
+                      </td>
+                    </tr>
+                  )
+                })
+              : items.map((item, idx) => renderUserRow(item, idx))}
           </tbody>
         </table>
       </div>

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
+import { assertProxyPathAllowed } from "@/lib/api/proxy-allowlist"
+import { enforceRateLimit } from "@/lib/api/with-rate-limit"
 import { clearAuthCookies } from "@/lib/auth/cookies"
 import { SESSION_FATAL_CODES } from "@/lib/auth/session-fatal-codes"
 import { apiServerFetch } from "@/lib/auth/server-fetch"
@@ -8,6 +10,7 @@ const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"])
 
 async function handleProxy(req: NextRequest, pathSegments: string[]) {
   const path = pathSegments.join("/")
+  assertProxyPathAllowed(req.method, path)
   const query = req.nextUrl.search
   const apiPath = query ? `${path}${query}` : path
 
@@ -88,6 +91,11 @@ function proxyErrorResponse(error: unknown) {
 type RouteContext = { params: Promise<{ path: string[] }> }
 
 async function routeHandler(req: NextRequest, context: RouteContext) {
+  const rateLimited = enforceRateLimit(req, "proxy", 120, 60 * 1000)
+  if (rateLimited) {
+    return rateLimited
+  }
+
   try {
     const { path } = await context.params
     return await handleProxy(req, path)

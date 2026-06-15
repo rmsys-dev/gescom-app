@@ -12,7 +12,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { HttpError } from "@/lib/api/http-error"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { CLIENT_MEMBER_CLASS } from "@/modules/memberships/memberships-rules"
 import { parseMembershipSearchTerm } from "@/modules/memberships/memberships-rules"
 import { MembersFilters } from "@/app/(app_routes)/members/_components/members-filters"
@@ -27,9 +26,11 @@ import {
   getNameFromParsedSearch,
   paginateUsers,
   searchTermToUsersQuery,
+  usersNameSearchBannerMessage,
 } from "@/modules/users/users-rules"
 import { useUsersQuery } from "@/modules/users/use-users"
 import { MembershipLinkTableLoading } from "@/app/(app_routes)/members/_components/members-route-loading"
+import { StaleDataBanner } from "@/app/(app_routes)/products/_components/paginated-list-shell"
 import type { ListMembersQuery } from "@/modules/memberships/memberships.schema"
 
 const PAGE_SIZE_OPTIONS = [20, 50, 100]
@@ -52,11 +53,14 @@ export function LinkClientForm({
   const [uiLimit, setUiLimit] = useState(50)
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
   const [searchEnabled, setSearchEnabled] = useState(false)
+  const [fetchAllPages, setFetchAllPages] = useState(false)
+  const [nameSearchWarning, setNameSearchWarning] = useState<string | null>(null)
 
   const { data, error, isPending, isFetching } = useUsersQuery({
     enterpriseId,
     filters: appliedQuery,
     enabled: searchEnabled,
+    fetchAllPages,
   })
 
   const appliedParsed = useMemo(
@@ -77,7 +81,12 @@ export function LinkClientForm({
   )
 
   const applySearch = useCallback(() => {
-    const { query, error: validationError } = searchTermToUsersQuery(searchTerm)
+    const {
+      query,
+      error: validationError,
+      searchByName,
+      warning,
+    } = searchTermToUsersQuery(searchTerm)
     if (validationError) {
       toast.error(validationError)
       return
@@ -85,6 +94,8 @@ export function LinkClientForm({
 
     setAppliedSearchTerm(searchTerm)
     setAppliedQuery(query)
+    setFetchAllPages(Boolean(searchByName))
+    setNameSearchWarning(searchByName ? (warning ?? null) : null)
     setUiOffset(0)
     setSelectedUserId(null)
     setSearchEnabled(true)
@@ -97,6 +108,8 @@ export function LinkClientForm({
     setUiOffset(0)
     setSelectedUserId(null)
     setSearchEnabled(false)
+    setFetchAllPages(false)
+    setNameSearchWarning(null)
   }, [])
 
   const handleLimitChange = useCallback((limit: number) => {
@@ -117,12 +130,8 @@ export function LinkClientForm({
         departments: [],
       })
       router.push(`${config.basePath}/${member.id}`)
-    } catch (err) {
-      if (err instanceof HttpError) {
-        toastHttpError(err, config.link.linkError)
-        return
-      }
-      toast.error(config.link.linkError)
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 
@@ -137,6 +146,12 @@ export function LinkClientForm({
     error instanceof HttpError
       ? { code: error.code, status: error.status, requestId: error.requestId }
       : null
+
+  const nameSearchBannerMessage = useMemo(() => {
+    if (!nameSearchWarning) return null
+    const truncated = Boolean(data && "truncated" in data && data.truncated)
+    return usersNameSearchBannerMessage(truncated)
+  }, [nameSearchWarning, data])
 
   const emptyFilters: ListMembersQuery = {}
 
@@ -179,19 +194,25 @@ export function LinkClientForm({
       )}
 
       {searchEnabled && isPending && (
-        <MembershipLinkTableLoading label={config.labels.loadingList} />
+        <MembershipLinkTableLoading
+          label={
+            fetchAllPages
+              ? "A carregar utilizadores…"
+              : config.labels.loadingList
+          }
+        />
+      )}
+
+      {searchEnabled && nameSearchBannerMessage && (
+        <StaleDataBanner
+          title="Busca por nome com limitações"
+          message={nameSearchBannerMessage}
+          showStaleNote={false}
+        />
       )}
 
       {searchEnabled && error && data && (
-        <div
-          role="status"
-          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-950 dark:text-amber-100"
-        >
-          <p className="font-medium">Não foi possível atualizar a lista.</p>
-          <p className="mt-1 text-amber-900/90 dark:text-amber-50/90">
-            {listError}. Os valores abaixo podem estar desatualizados.
-          </p>
-        </div>
+        <StaleDataBanner message={listError ?? "Erro desconhecido"} />
       )}
 
       {searchEnabled && listError && !data && !isPending && (

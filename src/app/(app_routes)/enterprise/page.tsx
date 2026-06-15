@@ -8,6 +8,7 @@ import {
   EnterpriseDetailFields,
   EnterpriseHero,
 } from "@/app/(app_routes)/enterprise/_components/enterprise-field"
+import { PermissionRouteGuard } from "@/components/guards/permission-route-guard"
 import {
   Card,
   CardContent,
@@ -17,7 +18,7 @@ import {
 } from "@/components/ui/card"
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
 import { HttpError } from "@/lib/api/http-error"
-import { useOperatorPermissions } from "@/lib/permissions"
+import { PERMISSION_CODES, useOperatorPermissions } from "@/lib/permissions"
 import { useEnterpriseDetailQuery } from "@/modules/enterprises/use-enterprises"
 
 export default function EnterprisePage() {
@@ -61,7 +62,7 @@ export default function EnterprisePage() {
     enabled: ready && perms.isReady && !perms.isError && perms.canConsultEnterprises,
   })
 
-  if (!ready || !perms.isReady) {
+  if (!ready) {
     return (
       <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
         <EnterpriseContentLoading />
@@ -69,39 +70,17 @@ export default function EnterprisePage() {
     )
   }
 
-  if (perms.isError) {
-    return (
-      <main className="mx-auto flex w-full max-w-lg flex-col gap-6 p-4 md:p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Não foi possível carregar permissões</CardTitle>
-            <CardDescription>
-              Não foi possível obter as permissões da sessão. Tente atualizar a
-              página ou iniciar sessão novamente.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </main>
-    )
-  }
-
-  if (!perms.canConsultEnterprises) {
-    return (
-      <main className="mx-auto flex w-full max-w-lg flex-col gap-6 p-4 md:p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Sem permissão</CardTitle>
-            <CardDescription>
-              Necessita da permissão consultar_empresas.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </main>
-    )
-  }
-
   return (
-    <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
+    <PermissionRouteGuard
+      check={(perms) => perms.canConsultEnterprises}
+      permissionLabel={PERMISSION_CODES.consultarEmpresas}
+      loading={
+        <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
+          <EnterpriseContentLoading />
+        </main>
+      }
+    >
+      <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
       {enterprisePending && <EnterpriseContentLoading />}
 
       {enterpriseError && enterpriseDetail && (
@@ -161,5 +140,6 @@ export default function EnterprisePage() {
         </EnterpriseHero>
       )}
     </main>
+    </PermissionRouteGuard>
   )
 }

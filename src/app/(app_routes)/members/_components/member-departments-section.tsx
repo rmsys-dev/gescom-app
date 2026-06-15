@@ -19,9 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { HttpError } from "@/lib/api/http-error"
 import { useOperatorPermissions } from "@/lib/permissions"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { useDepartmentsQuery } from "@/modules/departments/use-departments"
 import type { MemberDepartment, MemberDetail } from "@/modules/memberships/memberships.schema"
 import { mapMemberDepartmentPermissionEntries } from "@/modules/memberships/member-department-permissions"
@@ -126,11 +124,8 @@ export function MemberDepartmentsSection({
         input: { softDelete: true },
       })
       setDeleteTarget(null)
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível remover o departamento.")
-        return
-      }
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

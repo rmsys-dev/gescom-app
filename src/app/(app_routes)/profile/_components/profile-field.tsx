@@ -30,10 +30,8 @@ import {
 import { formatCpfCnpj, formatPhone } from "@/lib/formatters"
 import { getUserInitials } from "@/lib/user-initials"
 import { cn } from "@/lib/utils"
-import { HttpError } from "@/lib/api/http-error"
 import { cpfCnpjSchema } from "@/lib/validation/cpf-cnpj"
 import { phoneE164Schema } from "@/lib/validation/phone"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import type { MeResponse } from "@/modules/authentication/auth.schema"
 import {
   normalizeEmail,
@@ -308,12 +306,8 @@ function ProfilePersonalInfoFields({
       }
       setEditing(false)
       onUpdateSuccess?.()
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível atualizar o perfil.")
-        return
-      }
-      toast.error("Não foi possível atualizar o perfil.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

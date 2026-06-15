@@ -29,6 +29,7 @@ export type Department = z.infer<typeof departmentSchema>
 export const listDepartmentsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).optional(),
   offset: z.coerce.number().int().min(0).optional(),
+  status: departmentStatusSchema.optional(),
 })
 
 export type ListDepartmentsQuery = z.infer<typeof listDepartmentsQuerySchema>
@@ -38,6 +39,7 @@ export function buildDepartmentsQuery(query: ListDepartmentsQuery): string {
   const params = new URLSearchParams()
   if (parsed.limit !== undefined) params.set("limit", String(parsed.limit))
   if (parsed.offset !== undefined) params.set("offset", String(parsed.offset))
+  if (parsed.status !== undefined) params.set("status", parsed.status)
   const qs = params.toString()
   return qs ? `?${qs}` : ""
 }

@@ -1,8 +1,14 @@
 "use client"
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { CACHE } from "@/lib/react-query/cache-policy"
+import { useMutationWithToast } from "@/lib/react-query/use-mutation-with-toast"
 import type { ListMembersQuery } from "@/modules/memberships/memberships.schema"
+import {
+  memberQueryKey,
+  membersQueryKey,
+} from "@/modules/memberships/memberships-query-keys"
 import {
   addMemberDepartmentService,
   createMemberService,
@@ -16,16 +22,7 @@ import {
   updateMemberService,
 } from "@/modules/memberships/memberships.service"
 
-export function membersQueryKey(
-  enterpriseId: string,
-  filters?: ListMembersQuery
-) {
-  return ["memberships", enterpriseId, filters ?? {}] as const
-}
-
-export function memberQueryKey(enterpriseId: string, memberId: string) {
-  return ["memberships", enterpriseId, memberId] as const
-}
+export { memberQueryKey, membersQueryKey } from "@/modules/memberships/memberships-query-keys"
 
 export function useMembersQuery({
   enterpriseId,
@@ -40,7 +37,7 @@ export function useMembersQuery({
     queryKey: membersQueryKey(enterpriseId ?? "", filters),
     queryFn: () => listMembersService(enterpriseId!, filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: 0,
+    staleTime: CACHE.tenantList,
   })
 }
 
@@ -57,7 +54,7 @@ export function useMemberQuery({
     queryKey: memberQueryKey(enterpriseId ?? "", memberId ?? ""),
     queryFn: () => getMemberService(enterpriseId!, memberId!),
     enabled: enabled && Boolean(enterpriseId) && Boolean(memberId),
-    staleTime: 0,
+    staleTime: CACHE.tenantDetail,
   })
 }
 
@@ -77,34 +74,28 @@ function useInvalidateMembers(enterpriseId: string, memberId?: string) {
 
 export function useCreateMemberWithUserMutation(enterpriseId: string) {
   const invalidate = useInvalidateMembers(enterpriseId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: createMemberWithUserService.bind(null, enterpriseId),
-    onSuccess: () => {
-      invalidate()
-      toast.success("Membro criado com sucesso.")
-    },
+    successMessage: "Membro criado com sucesso.",
+    onSuccess: () => invalidate(),
   })
 }
 
 export function useInviteMemberMutation(enterpriseId: string) {
   const invalidate = useInvalidateMembers(enterpriseId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: inviteMemberService.bind(null, enterpriseId),
-    onSuccess: () => {
-      invalidate()
-      toast.success("Convite enviado com sucesso.")
-    },
+    successMessage: "Convite enviado com sucesso.",
+    onSuccess: () => invalidate(),
   })
 }
 
 export function useCreateMemberMutation(enterpriseId: string) {
   const invalidate = useInvalidateMembers(enterpriseId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: createMemberService.bind(null, enterpriseId),
-    onSuccess: () => {
-      invalidate()
-      toast.success("Vinculo criado com sucesso.")
-    },
+    successMessage: "Vinculo criado com sucesso.",
+    onSuccess: () => invalidate(),
   })
 }
 
@@ -113,7 +104,7 @@ export function useUpdateMemberMutation(
   memberId: string
 ) {
   const invalidate = useInvalidateMembers(enterpriseId, memberId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (input: Parameters<typeof updateMemberService>[2]) =>
       updateMemberService(enterpriseId, memberId, input),
     onSuccess: (_, variables) => {
@@ -132,13 +123,11 @@ export function useAddMemberDepartmentMutation(
   memberId: string
 ) {
   const invalidate = useInvalidateMembers(enterpriseId, memberId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (input: Parameters<typeof addMemberDepartmentService>[2]) =>
       addMemberDepartmentService(enterpriseId, memberId, input),
-    onSuccess: () => {
-      invalidate()
-      toast.success("Departamento vinculado.")
-    },
+    successMessage: "Departamento vinculado.",
+    onSuccess: () => invalidate(),
   })
 }
 
@@ -147,7 +136,7 @@ export function useUpdateMemberDepartmentMutation(
   memberId: string
 ) {
   const invalidate = useInvalidateMembers(enterpriseId, memberId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       memberDepartmentId,
       input,
@@ -178,7 +167,7 @@ export function useUpdateMemberPermissionDefaultMutation(
 ) {
   const invalidateMembers = useInvalidateMembers(enterpriseId, memberId)
   const queryClient = useQueryClient()
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       departmentId,
       input,
@@ -212,7 +201,7 @@ export function useUpdateMemberExtraPermissionMutation(
 ) {
   const invalidateMembers = useInvalidateMembers(enterpriseId, memberId)
   const queryClient = useQueryClient()
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       departmentId,
       input,

@@ -23,6 +23,8 @@ export const listUsersQuerySchema = z.object({
   registration: cpfCnpjSchema.optional(),
   email: z.string().trim().email().max(255).optional(),
   phone: phoneE164Schema.optional(),
+  /** Busca por nome (quando suportado pela API). */
+  userName: z.string().trim().min(2).max(255).optional(),
   limit: z.coerce.number().int().min(1).max(100).optional(),
   offset: z.coerce.number().int().min(0).optional(),
 })

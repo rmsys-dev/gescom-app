@@ -6,9 +6,7 @@ import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { HttpError } from "@/lib/api/http-error"
 import { isSafeInternalReturnUrl, withReturnUrl } from "@/lib/auth/return-url"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { useAuth } from "@/components/providers/authentication/auth-store"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -89,12 +87,8 @@ export function LoginForm({
         return
       }
       router.push("/home")
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Nao foi possivel autenticar.")
-        return
-      }
-      toast.error("Nao foi possivel autenticar. Tente novamente.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

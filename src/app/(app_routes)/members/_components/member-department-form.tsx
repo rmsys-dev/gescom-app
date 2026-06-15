@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
@@ -18,9 +18,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import { HttpError } from "@/lib/api/http-error"
 import { useOperatorPermissions } from "@/lib/permissions"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { useDepartmentsQuery } from "@/modules/departments/use-departments"
 import { useAddMemberDepartmentMutation } from "@/modules/memberships/use-members"
 
@@ -47,10 +45,12 @@ export function MemberDepartmentForm({
 
   const [departmentId, setDepartmentId] = useState("")
 
-  useEffect(() => {
-    if (!open) return
-    setDepartmentId("")
-  }, [open])
+  function handleOpenChange(nextOpen: boolean) {
+    if (nextOpen) {
+      setDepartmentId("")
+    }
+    onOpenChange(nextOpen)
+  }
 
   const catalogOptions =
     catalogQuery.data?.map((d) => ({
@@ -78,13 +78,9 @@ export function MemberDepartmentForm({
         departmentId,
         mainDepartment: makeMainDepartment,
       })
-      onOpenChange(false)
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível adicionar o departamento.")
-        return
-      }
-      toast.error("Operação falhou.")
+      handleOpenChange(false)
+    } catch {
+      // Erros de API são tratados pelo QueryClient global
     }
   }
 
@@ -95,7 +91,7 @@ export function MemberDepartmentForm({
     !!catalogQuery.error
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent className="sm:max-w-md">
         <SheetHeader>
           <SheetTitle>Adicionar departamento</SheetTitle>

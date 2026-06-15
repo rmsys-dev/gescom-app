@@ -49,7 +49,7 @@ export const authUserSchema = z.object({
 
 export type AuthUser = z.infer<typeof authUserSchema>
 
-export const enterpriseSchema = z.object({
+export const authEnterpriseSchema = z.object({
   id: z.uuid(),
   tradeName: z.string(),
   legalName: z.string(),
@@ -57,13 +57,18 @@ export const enterpriseSchema = z.object({
   class: enterpriseMemberClassSchema,
 })
 
-export type Enterprise = z.infer<typeof enterpriseSchema>
+export type AuthEnterprise = z.infer<typeof authEnterpriseSchema>
+
+/** @deprecated Use `authEnterpriseSchema` */
+export const enterpriseSchema = authEnterpriseSchema
+/** @deprecated Use `AuthEnterprise` */
+export type Enterprise = AuthEnterprise
 
 export const loginResponseSchema = z.object({
   accessToken: z.string().min(1),
   refreshToken: z.string().min(1),
   user: authUserSchema,
-  enterprises: z.array(enterpriseSchema),
+  enterprises: z.array(authEnterpriseSchema),
 })
 
 export type LoginResponse = z.infer<typeof loginResponseSchema>

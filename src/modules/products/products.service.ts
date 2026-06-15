@@ -1,5 +1,4 @@
-import { apiFetch } from "@/lib/api/client"
-import { paginatedEnvelopeSchema, successEnvelopeSchema } from "@/lib/api/envelope"
+import { fetchById, fetchPaginated } from "@/lib/api/paginated-fetch"
 import {
   icmsTaxationSchema,
   listProductNbsQuerySchema,
@@ -14,11 +13,7 @@ import {
   typeProductSchema,
   unitSchema,
 } from "@/modules/products/products-catalogs.schema"
-import { buildPaginationQuery } from "@/modules/products/products-query"
-import {
-  paginationQuerySchema,
-  type PaginationQuery,
-} from "@/modules/products/products-query"
+import type { PaginationQuery } from "@/modules/products/products-query"
 import {
   priceSchema,
   productApplicationSchema,
@@ -32,25 +27,16 @@ import {
   productSchema,
 } from "@/modules/products/products.schema"
 
-async function listPaginated<T extends { id: string }>(
+async function listPaginated<T>(
   path: string,
   itemSchema: import("zod").ZodType<T>,
   query: PaginationQuery & { search?: string; status?: string } = {}
 ) {
-  const parsed = paginationQuerySchema.parse(query)
-  const qs = buildPaginationQuery({
-    ...parsed,
-    search: "search" in query ? query.search : undefined,
-    status: "status" in query ? query.status : undefined,
-  })
-  const raw = await apiFetch<unknown>(`${path}${qs}`, { method: "GET" })
-  const envelope = paginatedEnvelopeSchema(itemSchema).parse(raw)
-  return { items: envelope.data, ...envelope.pagination }
+  return fetchPaginated(path, itemSchema, query)
 }
 
 async function getById<T>(path: string, itemSchema: import("zod").ZodType<T>) {
-  const raw = await apiFetch<unknown>(path, { method: "GET" })
-  return successEnvelopeSchema(itemSchema).parse(raw).data
+  return fetchById(path, itemSchema)
 }
 
 // --- Global products ---
@@ -59,10 +45,7 @@ export async function listProductsService(
   query: import("@/modules/products/products.schema").ListProductsQuery = {}
 ) {
   const parsed = listProductsQuerySchema.parse(query)
-  const qs = buildPaginationQuery(parsed)
-  const raw = await apiFetch<unknown>(`products${qs}`, { method: "GET" })
-  const envelope = paginatedEnvelopeSchema(productSchema).parse(raw)
-  return { items: envelope.data, ...envelope.pagination }
+  return fetchPaginated("products", productSchema, parsed)
 }
 
 export async function getProductService(productId: string) {
@@ -75,12 +58,7 @@ export async function listProductsEnterprisesService(
   query: import("@/modules/products/products.schema").ListProductsEnterprisesQuery = {}
 ) {
   const parsed = listProductsEnterprisesQuerySchema.parse(query)
-  const qs = buildPaginationQuery(parsed)
-  const raw = await apiFetch<unknown>(`products-enterprises${qs}`, {
-    method: "GET",
-  })
-  const envelope = paginatedEnvelopeSchema(productEnterpriseSchema).parse(raw)
-  return { items: envelope.data, ...envelope.pagination }
+  return fetchPaginated("products-enterprises", productEnterpriseSchema, parsed)
 }
 
 export async function getProductEnterpriseService(productEnterpriseId: string) {
@@ -170,10 +148,7 @@ export async function listProductsNbsService(
   query: import("@/modules/products/products-catalogs.schema").ListProductNbsQuery = {}
 ) {
   const parsed = listProductNbsQuerySchema.parse(query)
-  const qs = buildPaginationQuery(parsed)
-  const raw = await apiFetch<unknown>(`products-nbs${qs}`, { method: "GET" })
-  const envelope = paginatedEnvelopeSchema(productNbsSchema).parse(raw)
-  return { items: envelope.data, ...envelope.pagination }
+  return fetchPaginated("products-nbs", productNbsSchema, parsed)
 }
 
 export async function getProductNbsService(productsNbsId: string) {

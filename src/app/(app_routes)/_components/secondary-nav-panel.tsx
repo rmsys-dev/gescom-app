@@ -9,6 +9,7 @@ import {
   getNavGroupByKey,
   type NavGroupKey,
 } from "@/app/(app_routes)/_components/nav-groups"
+import { useListRoutePrefetch } from "@/lib/react-query/use-list-route-prefetch"
 import { cn } from "@/lib/utils"
 import { Pin } from "lucide-react"
 
@@ -23,6 +24,7 @@ export function SecondaryNavPanel({
 }: SecondaryNavPanelProps) {
   const pathname = usePathname()
   const group = getNavGroupByKey(activePanel)
+  const prefetchListRoute = useListRoutePrefetch()
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -62,6 +64,8 @@ export function SecondaryNavPanel({
               key={route.url}
               href={route.url}
               onClick={onClose}
+              onMouseEnter={() => prefetchListRoute(route.url)}
+              onFocus={() => prefetchListRoute(route.url)}
               className={cn(
                 "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
                 isActive

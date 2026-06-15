@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api/client"
-import { successEnvelopeSchema } from "@/lib/api/envelope"
+import { parseSuccessEnvelope } from "@/lib/api/parse-response"
 import {
   analyticsQuerySchema,
   budgetFunnelSchema,
@@ -33,7 +33,11 @@ async function getAnalytics<T>(
   const raw = await apiFetch<unknown>(`${ANALYTICS_BASE}${path}${qs}`, {
     method: "GET",
   })
-  return successEnvelopeSchema(schema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    schema,
+    `GET ${ANALYTICS_BASE}${path}`
+  )
 }
 
 export async function getRealizedOverviewService(query: AnalyticsQuery) {

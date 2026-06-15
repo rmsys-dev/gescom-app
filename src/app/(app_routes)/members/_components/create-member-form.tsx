@@ -14,8 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { HttpError } from "@/lib/api/http-error"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { MemberDepartmentsPicker } from "@/app/(app_routes)/members/_components/member-departments-picker"
 import { MEMBER_CLASS_OPTIONS } from "@/modules/memberships/member-class-label"
 import type { MembershipRouteConfig } from "@/modules/memberships/membership-route-config"
@@ -97,12 +95,8 @@ export function CreateMemberForm({
         )
       }
       router.push(`${config.basePath}/${result.member.id}`)
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, config.create.createError)
-        return
-      }
-      toast.error(config.create.createError)
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

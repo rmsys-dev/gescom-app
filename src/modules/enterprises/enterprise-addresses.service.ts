@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api/client"
-import { successEnvelopeSchema } from "@/lib/api/envelope"
+import { parseSuccessEnvelope } from "@/lib/api/parse-response"
 import { z } from "zod"
 import {
   createEnterpriseAddressRequestSchema,
@@ -30,7 +30,11 @@ export async function listEnterpriseAddressesService(
     `${addressesBase(enterpriseId)}${buildAddressesQuery(query)}`,
     { method: "GET" }
   )
-  return successEnvelopeSchema(z.array(enterpriseAddressSchema)).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    z.array(enterpriseAddressSchema),
+    `GET ${addressesBase(enterpriseId)}`
+  )
 }
 
 export async function createEnterpriseAddressService(
@@ -42,7 +46,11 @@ export async function createEnterpriseAddressService(
     method: "POST",
     body,
   })
-  return successEnvelopeSchema(enterpriseAddressSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    enterpriseAddressSchema,
+    `POST ${addressesBase(enterpriseId)}`
+  )
 }
 
 export async function patchEnterpriseAddressService(
@@ -55,5 +63,9 @@ export async function patchEnterpriseAddressService(
     `${addressesBase(enterpriseId)}/${addressId}`,
     { method: "PATCH", body }
   )
-  return successEnvelopeSchema(enterpriseAddressSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    enterpriseAddressSchema,
+    `PATCH ${addressesBase(enterpriseId)}/${addressId}`
+  )
 }

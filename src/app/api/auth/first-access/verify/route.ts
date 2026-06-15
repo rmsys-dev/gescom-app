@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { enforceRateLimit } from "@/lib/api/with-rate-limit"
 import { setAuthCookies } from "@/lib/auth/cookies"
 import { enterprisesSnapshotFromMe } from "@/lib/auth/enterprise-snapshot"
 import { getApiTimeoutMs, getServerApiBaseUrl } from "@/lib/auth/env"
@@ -13,6 +14,16 @@ import {
 } from "@/modules/authentication/first-access.schema"
 
 export async function POST(req: Request) {
+  const rateLimited = enforceRateLimit(
+    req,
+    "auth/first-access/verify",
+    5,
+    15 * 60 * 1000
+  )
+  if (rateLimited) {
+    return rateLimited
+  }
+
   try {
     const body = firstAccessVerifyRequestSchema.parse(await req.json())
     const res = await fetch(`${getServerApiBaseUrl()}/auth/first-access/verify`, {

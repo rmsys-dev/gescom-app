@@ -1,9 +1,35 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
-import { useAuth } from "@/components/providers/authentication/auth-store"
-import type { ListProductNbsQuery } from "@/modules/products/products-catalogs.schema"
+import { CACHE } from "@/lib/react-query/cache-policy"
+import { createCatalogListDetailHooks } from "@/lib/react-query/create-catalog-hooks"
+import type {
+  IcmsTaxation,
+  ListProductNbsQuery,
+  PisCofinsSituation,
+  ProductAnp,
+  ProductBrand,
+  ProductCest,
+  ProductGroup,
+  ProductNbs,
+  ProductNcm,
+  ProductSubgroup,
+  TypeProduct,
+  Unit,
+} from "@/modules/products/products-catalogs.schema"
 import type { PaginationQuery } from "@/modules/products/products-query"
+import { productsQueryKeys } from "@/modules/products/products-query-keys"
+import type {
+  ListProductsEnterprisesQuery,
+  ListProductsQuery,
+  Product,
+  ProductEnterprise,
+} from "@/modules/products/products.schema"
+import type {
+  Price,
+  ProductApplication,
+  ProductTaxation,
+  PromotionalPrice,
+} from "@/modules/products/products-tenant-extras.schema"
 import {
   getIcmsTaxationService,
   getPriceService,
@@ -40,107 +66,190 @@ import {
   listTypesProductsService,
   listUnitsService,
 } from "@/modules/products/products.service"
-import type {
-  ListProductsEnterprisesQuery,
-  ListProductsQuery,
-} from "@/modules/products/products.schema"
 
-const CATALOG_STALE_TIME = 5 * 60_000
-const TENANT_STALE_TIME = 0
+export { productsQueryKeys } from "@/modules/products/products-query-keys"
 
-function useActiveEnterpriseId() {
-  const { activeEnterprise } = useAuth()
-  return activeEnterprise?.id
-}
+const productsCatalogHooks = createCatalogListDetailHooks<
+  Product,
+  ListProductsQuery
+>({
+  listKey: productsQueryKeys.products,
+  detailKey: productsQueryKeys.product,
+  listFn: listProductsService,
+  getFn: getProductService,
+  staleTime: CACHE.globalCatalog,
+})
 
-export const productsQueryKeys = {
-  all: ["products"] as const,
-  products: (enterpriseId: string, filters?: ListProductsQuery) =>
-    ["products", enterpriseId, "global", filters ?? {}] as const,
-  product: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "global", id] as const,
-  enterprises: (enterpriseId: string, filters?: ListProductsEnterprisesQuery) =>
-    ["products", enterpriseId, "enterprises", filters ?? {}] as const,
-  enterprise: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "enterprises", id] as const,
-  prices: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "prices", filters ?? {}] as const,
-  price: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "prices", id] as const,
-  promotionalPrices: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "promotional-prices", filters ?? {}] as const,
-  promotionalPrice: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "promotional-prices", id] as const,
-  taxation: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "taxation", filters ?? {}] as const,
-  taxationItem: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "taxation", id] as const,
-  applications: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "applications", filters ?? {}] as const,
-  application: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "applications", id] as const,
-  units: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "catalogs", "units", filters ?? {}] as const,
-  unit: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "catalogs", "units", id] as const,
-  types: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "catalogs", "types", filters ?? {}] as const,
-  type: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "catalogs", "types", id] as const,
-  ncm: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "catalogs", "ncm", filters ?? {}] as const,
-  ncmItem: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "catalogs", "ncm", id] as const,
-  cest: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "catalogs", "cest", filters ?? {}] as const,
-  cestItem: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "catalogs", "cest", id] as const,
-  anp: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "catalogs", "anp", filters ?? {}] as const,
-  anpItem: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "catalogs", "anp", id] as const,
-  nbs: (enterpriseId: string, filters?: ListProductNbsQuery) =>
-    ["products", enterpriseId, "catalogs", "nbs", filters ?? {}] as const,
-  nbsItem: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "catalogs", "nbs", id] as const,
-  icms: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "catalogs", "icms", filters ?? {}] as const,
-  icmsItem: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "catalogs", "icms", id] as const,
-  groups: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "catalogs", "groups", filters ?? {}] as const,
-  group: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "catalogs", "groups", id] as const,
-  subgroups: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "catalogs", "subgroups", filters ?? {}] as const,
-  subgroup: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "catalogs", "subgroups", id] as const,
-  brands: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "catalogs", "brands", filters ?? {}] as const,
-  brand: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "catalogs", "brands", id] as const,
-  pisCofins: (enterpriseId: string, filters?: PaginationQuery) =>
-    ["products", enterpriseId, "catalogs", "pis-cofins", filters ?? {}] as const,
-  pisCofinsItem: (enterpriseId: string, id: string) =>
-    ["products", enterpriseId, "catalogs", "pis-cofins", id] as const,
-}
+const productsEnterprisesCatalogHooks = createCatalogListDetailHooks<
+  ProductEnterprise,
+  ListProductsEnterprisesQuery
+>({
+  listKey: productsQueryKeys.enterprises,
+  detailKey: productsQueryKeys.enterprise,
+  listFn: listProductsEnterprisesService,
+  getFn: getProductEnterpriseService,
+  staleTime: CACHE.tenantDetail,
+})
 
-export function useProductsQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: ListProductsQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.products(enterpriseId ?? "", filters),
-    queryFn: () => listProductsService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: CATALOG_STALE_TIME,
-  })
-}
+const pricesCatalogHooks = createCatalogListDetailHooks<Price, PaginationQuery>({
+  listKey: productsQueryKeys.prices,
+  detailKey: productsQueryKeys.price,
+  listFn: listPricesService,
+  getFn: getPriceService,
+  staleTime: CACHE.tenantDetail,
+})
 
+const promotionalPricesCatalogHooks = createCatalogListDetailHooks<
+  PromotionalPrice,
+  PaginationQuery
+>({
+  listKey: productsQueryKeys.promotionalPrices,
+  detailKey: productsQueryKeys.promotionalPrice,
+  listFn: listPromotionalPricesService,
+  getFn: getPromotionalPriceService,
+  staleTime: CACHE.tenantDetail,
+})
+
+const taxationCatalogHooks = createCatalogListDetailHooks<
+  ProductTaxation,
+  PaginationQuery
+>({
+  listKey: productsQueryKeys.taxation,
+  detailKey: productsQueryKeys.taxationItem,
+  listFn: listProductTaxationService,
+  getFn: getProductTaxationService,
+  staleTime: CACHE.tenantDetail,
+})
+
+const applicationsCatalogHooks = createCatalogListDetailHooks<
+  ProductApplication,
+  PaginationQuery
+>({
+  listKey: productsQueryKeys.applications,
+  detailKey: productsQueryKeys.application,
+  listFn: listProductApplicationsService,
+  getFn: getProductApplicationService,
+  staleTime: CACHE.tenantDetail,
+})
+
+const unitsCatalogHooks = createCatalogListDetailHooks<Unit, PaginationQuery>({
+  listKey: productsQueryKeys.units,
+  detailKey: productsQueryKeys.unit,
+  listFn: listUnitsService,
+  getFn: getUnitService,
+  staleTime: CACHE.globalCatalog,
+})
+
+const typesCatalogHooks = createCatalogListDetailHooks<
+  TypeProduct,
+  PaginationQuery
+>({
+  listKey: productsQueryKeys.types,
+  detailKey: productsQueryKeys.type,
+  listFn: listTypesProductsService,
+  getFn: getTypeProductService,
+  staleTime: CACHE.globalCatalog,
+})
+
+const ncmCatalogHooks = createCatalogListDetailHooks<
+  ProductNcm,
+  PaginationQuery
+>({
+  listKey: productsQueryKeys.ncm,
+  detailKey: productsQueryKeys.ncmItem,
+  listFn: listProductsNcmService,
+  getFn: getProductNcmService,
+  staleTime: CACHE.globalCatalog,
+})
+
+const cestCatalogHooks = createCatalogListDetailHooks<
+  ProductCest,
+  PaginationQuery
+>({
+  listKey: productsQueryKeys.cest,
+  detailKey: productsQueryKeys.cestItem,
+  listFn: listProductsCestService,
+  getFn: getProductCestService,
+  staleTime: CACHE.globalCatalog,
+})
+
+const anpCatalogHooks = createCatalogListDetailHooks<ProductAnp, PaginationQuery>(
+  {
+    listKey: productsQueryKeys.anp,
+    detailKey: productsQueryKeys.anpItem,
+    listFn: listProductsAnpService,
+    getFn: getProductAnpService,
+    staleTime: CACHE.globalCatalog,
+  }
+)
+
+const nbsCatalogHooks = createCatalogListDetailHooks<
+  ProductNbs,
+  ListProductNbsQuery
+>({
+  listKey: productsQueryKeys.nbs,
+  detailKey: productsQueryKeys.nbsItem,
+  listFn: listProductsNbsService,
+  getFn: getProductNbsService,
+  staleTime: CACHE.globalCatalog,
+})
+
+const icmsCatalogHooks = createCatalogListDetailHooks<
+  IcmsTaxation,
+  PaginationQuery
+>({
+  listKey: productsQueryKeys.icms,
+  detailKey: productsQueryKeys.icmsItem,
+  listFn: listIcmsTaxationService,
+  getFn: getIcmsTaxationService,
+  staleTime: CACHE.globalCatalog,
+})
+
+const groupsCatalogHooks = createCatalogListDetailHooks<
+  ProductGroup,
+  PaginationQuery
+>({
+  listKey: productsQueryKeys.groups,
+  detailKey: productsQueryKeys.group,
+  listFn: listProductGroupsService,
+  getFn: getProductGroupService,
+  staleTime: CACHE.globalCatalog,
+})
+
+const subgroupsCatalogHooks = createCatalogListDetailHooks<
+  ProductSubgroup,
+  PaginationQuery
+>({
+  listKey: productsQueryKeys.subgroups,
+  detailKey: productsQueryKeys.subgroup,
+  listFn: listProductSubgroupsService,
+  getFn: getProductSubgroupService,
+  staleTime: CACHE.globalCatalog,
+})
+
+const brandsCatalogHooks = createCatalogListDetailHooks<
+  ProductBrand,
+  PaginationQuery
+>({
+  listKey: productsQueryKeys.brands,
+  detailKey: productsQueryKeys.brand,
+  listFn: listProductBrandsService,
+  getFn: getProductBrandService,
+  staleTime: CACHE.globalCatalog,
+})
+
+const pisCofinsCatalogHooks = createCatalogListDetailHooks<
+  PisCofinsSituation,
+  PaginationQuery
+>({
+  listKey: productsQueryKeys.pisCofins,
+  detailKey: productsQueryKeys.pisCofinsItem,
+  listFn: listPisCofinsSituationService,
+  getFn: getPisCofinsSituationService,
+  staleTime: CACHE.globalCatalog,
+})
+
+export const useProductsQuery = productsCatalogHooks.useListQuery
 export function useProductQuery({
   productId,
   enabled = true,
@@ -148,31 +257,11 @@ export function useProductQuery({
   productId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.product(enterpriseId ?? "", productId ?? ""),
-    queryFn: () => getProductService(productId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(productId),
-    staleTime: CATALOG_STALE_TIME,
-  })
+  return productsCatalogHooks.useDetailQuery({ id: productId, enabled })
 }
 
-export function useProductsEnterprisesQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: ListProductsEnterprisesQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.enterprises(enterpriseId ?? "", filters),
-    queryFn: () => listProductsEnterprisesService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: TENANT_STALE_TIME,
-  })
-}
-
+export const useProductsEnterprisesQuery =
+  productsEnterprisesCatalogHooks.useListQuery
 export function useProductEnterpriseQuery({
   productEnterpriseId,
   enabled = true,
@@ -180,34 +269,13 @@ export function useProductEnterpriseQuery({
   productEnterpriseId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.enterprise(
-      enterpriseId ?? "",
-      productEnterpriseId ?? ""
-    ),
-    queryFn: () => getProductEnterpriseService(productEnterpriseId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(productEnterpriseId),
-    staleTime: TENANT_STALE_TIME,
+  return productsEnterprisesCatalogHooks.useDetailQuery({
+    id: productEnterpriseId,
+    enabled,
   })
 }
 
-export function usePricesQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.prices(enterpriseId ?? "", filters),
-    queryFn: () => listPricesService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: TENANT_STALE_TIME,
-  })
-}
-
+export const usePricesQuery = pricesCatalogHooks.useListQuery
 export function usePriceQuery({
   priceId,
   enabled = true,
@@ -215,31 +283,11 @@ export function usePriceQuery({
   priceId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.price(enterpriseId ?? "", priceId ?? ""),
-    queryFn: () => getPriceService(priceId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(priceId),
-    staleTime: TENANT_STALE_TIME,
-  })
+  return pricesCatalogHooks.useDetailQuery({ id: priceId, enabled })
 }
 
-export function usePromotionalPricesQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.promotionalPrices(enterpriseId ?? "", filters),
-    queryFn: () => listPromotionalPricesService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: TENANT_STALE_TIME,
-  })
-}
-
+export const usePromotionalPricesQuery =
+  promotionalPricesCatalogHooks.useListQuery
 export function usePromotionalPriceQuery({
   promotionalPriceId,
   enabled = true,
@@ -247,34 +295,13 @@ export function usePromotionalPriceQuery({
   promotionalPriceId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.promotionalPrice(
-      enterpriseId ?? "",
-      promotionalPriceId ?? ""
-    ),
-    queryFn: () => getPromotionalPriceService(promotionalPriceId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(promotionalPriceId),
-    staleTime: TENANT_STALE_TIME,
+  return promotionalPricesCatalogHooks.useDetailQuery({
+    id: promotionalPriceId,
+    enabled,
   })
 }
 
-export function useProductTaxationListQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.taxation(enterpriseId ?? "", filters),
-    queryFn: () => listProductTaxationService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: TENANT_STALE_TIME,
-  })
-}
-
+export const useProductTaxationListQuery = taxationCatalogHooks.useListQuery
 export function useProductTaxationQuery({
   productTaxationId,
   enabled = true,
@@ -282,34 +309,13 @@ export function useProductTaxationQuery({
   productTaxationId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.taxationItem(
-      enterpriseId ?? "",
-      productTaxationId ?? ""
-    ),
-    queryFn: () => getProductTaxationService(productTaxationId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(productTaxationId),
-    staleTime: TENANT_STALE_TIME,
+  return taxationCatalogHooks.useDetailQuery({
+    id: productTaxationId,
+    enabled,
   })
 }
 
-export function useProductApplicationsQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.applications(enterpriseId ?? "", filters),
-    queryFn: () => listProductApplicationsService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: TENANT_STALE_TIME,
-  })
-}
-
+export const useProductApplicationsQuery = applicationsCatalogHooks.useListQuery
 export function useProductApplicationQuery({
   applicationId,
   enabled = true,
@@ -317,34 +323,10 @@ export function useProductApplicationQuery({
   applicationId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.application(
-      enterpriseId ?? "",
-      applicationId ?? ""
-    ),
-    queryFn: () => getProductApplicationService(applicationId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(applicationId),
-    staleTime: TENANT_STALE_TIME,
-  })
+  return applicationsCatalogHooks.useDetailQuery({ id: applicationId, enabled })
 }
 
-export function useUnitsQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.units(enterpriseId ?? "", filters),
-    queryFn: () => listUnitsService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: CATALOG_STALE_TIME,
-  })
-}
-
+export const useUnitsQuery = unitsCatalogHooks.useListQuery
 export function useUnitQuery({
   unitId,
   enabled = true,
@@ -352,31 +334,10 @@ export function useUnitQuery({
   unitId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.unit(enterpriseId ?? "", unitId ?? ""),
-    queryFn: () => getUnitService(unitId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(unitId),
-    staleTime: CATALOG_STALE_TIME,
-  })
+  return unitsCatalogHooks.useDetailQuery({ id: unitId, enabled })
 }
 
-export function useTypesProductsQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.types(enterpriseId ?? "", filters),
-    queryFn: () => listTypesProductsService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: CATALOG_STALE_TIME,
-  })
-}
-
+export const useTypesProductsQuery = typesCatalogHooks.useListQuery
 export function useTypeProductQuery({
   typeProductId,
   enabled = true,
@@ -384,31 +345,10 @@ export function useTypeProductQuery({
   typeProductId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.type(enterpriseId ?? "", typeProductId ?? ""),
-    queryFn: () => getTypeProductService(typeProductId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(typeProductId),
-    staleTime: CATALOG_STALE_TIME,
-  })
+  return typesCatalogHooks.useDetailQuery({ id: typeProductId, enabled })
 }
 
-export function useProductsNcmQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.ncm(enterpriseId ?? "", filters),
-    queryFn: () => listProductsNcmService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: CATALOG_STALE_TIME,
-  })
-}
-
+export const useProductsNcmQuery = ncmCatalogHooks.useListQuery
 export function useProductNcmQuery({
   productsNcmId,
   enabled = true,
@@ -416,31 +356,10 @@ export function useProductNcmQuery({
   productsNcmId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.ncmItem(enterpriseId ?? "", productsNcmId ?? ""),
-    queryFn: () => getProductNcmService(productsNcmId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(productsNcmId),
-    staleTime: CATALOG_STALE_TIME,
-  })
+  return ncmCatalogHooks.useDetailQuery({ id: productsNcmId, enabled })
 }
 
-export function useProductsCestQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.cest(enterpriseId ?? "", filters),
-    queryFn: () => listProductsCestService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: CATALOG_STALE_TIME,
-  })
-}
-
+export const useProductsCestQuery = cestCatalogHooks.useListQuery
 export function useProductCestQuery({
   productsCestId,
   enabled = true,
@@ -448,34 +367,10 @@ export function useProductCestQuery({
   productsCestId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.cestItem(
-      enterpriseId ?? "",
-      productsCestId ?? ""
-    ),
-    queryFn: () => getProductCestService(productsCestId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(productsCestId),
-    staleTime: CATALOG_STALE_TIME,
-  })
+  return cestCatalogHooks.useDetailQuery({ id: productsCestId, enabled })
 }
 
-export function useProductsAnpQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.anp(enterpriseId ?? "", filters),
-    queryFn: () => listProductsAnpService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: CATALOG_STALE_TIME,
-  })
-}
-
+export const useProductsAnpQuery = anpCatalogHooks.useListQuery
 export function useProductAnpQuery({
   productsAnpId,
   enabled = true,
@@ -483,31 +378,10 @@ export function useProductAnpQuery({
   productsAnpId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.anpItem(enterpriseId ?? "", productsAnpId ?? ""),
-    queryFn: () => getProductAnpService(productsAnpId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(productsAnpId),
-    staleTime: CATALOG_STALE_TIME,
-  })
+  return anpCatalogHooks.useDetailQuery({ id: productsAnpId, enabled })
 }
 
-export function useProductsNbsQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: ListProductNbsQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.nbs(enterpriseId ?? "", filters),
-    queryFn: () => listProductsNbsService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: CATALOG_STALE_TIME,
-  })
-}
-
+export const useProductsNbsQuery = nbsCatalogHooks.useListQuery
 export function useProductNbsQuery({
   productsNbsId,
   enabled = true,
@@ -515,31 +389,10 @@ export function useProductNbsQuery({
   productsNbsId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.nbsItem(enterpriseId ?? "", productsNbsId ?? ""),
-    queryFn: () => getProductNbsService(productsNbsId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(productsNbsId),
-    staleTime: CATALOG_STALE_TIME,
-  })
+  return nbsCatalogHooks.useDetailQuery({ id: productsNbsId, enabled })
 }
 
-export function useIcmsTaxationQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.icms(enterpriseId ?? "", filters),
-    queryFn: () => listIcmsTaxationService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: CATALOG_STALE_TIME,
-  })
-}
-
+export const useIcmsTaxationQuery = icmsCatalogHooks.useListQuery
 export function useIcmsTaxationItemQuery({
   icmsTaxationId,
   enabled = true,
@@ -547,34 +400,10 @@ export function useIcmsTaxationItemQuery({
   icmsTaxationId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.icmsItem(
-      enterpriseId ?? "",
-      icmsTaxationId ?? ""
-    ),
-    queryFn: () => getIcmsTaxationService(icmsTaxationId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(icmsTaxationId),
-    staleTime: CATALOG_STALE_TIME,
-  })
+  return icmsCatalogHooks.useDetailQuery({ id: icmsTaxationId, enabled })
 }
 
-export function useProductGroupsQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.groups(enterpriseId ?? "", filters),
-    queryFn: () => listProductGroupsService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: CATALOG_STALE_TIME,
-  })
-}
-
+export const useProductGroupsQuery = groupsCatalogHooks.useListQuery
 export function useProductGroupQuery({
   productGroupId,
   enabled = true,
@@ -582,31 +411,10 @@ export function useProductGroupQuery({
   productGroupId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.group(enterpriseId ?? "", productGroupId ?? ""),
-    queryFn: () => getProductGroupService(productGroupId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(productGroupId),
-    staleTime: CATALOG_STALE_TIME,
-  })
+  return groupsCatalogHooks.useDetailQuery({ id: productGroupId, enabled })
 }
 
-export function useProductSubgroupsQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.subgroups(enterpriseId ?? "", filters),
-    queryFn: () => listProductSubgroupsService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: CATALOG_STALE_TIME,
-  })
-}
-
+export const useProductSubgroupsQuery = subgroupsCatalogHooks.useListQuery
 export function useProductSubgroupQuery({
   productSubgroupId,
   enabled = true,
@@ -614,34 +422,10 @@ export function useProductSubgroupQuery({
   productSubgroupId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.subgroup(
-      enterpriseId ?? "",
-      productSubgroupId ?? ""
-    ),
-    queryFn: () => getProductSubgroupService(productSubgroupId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(productSubgroupId),
-    staleTime: CATALOG_STALE_TIME,
-  })
+  return subgroupsCatalogHooks.useDetailQuery({ id: productSubgroupId, enabled })
 }
 
-export function useProductBrandsQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.brands(enterpriseId ?? "", filters),
-    queryFn: () => listProductBrandsService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: CATALOG_STALE_TIME,
-  })
-}
-
+export const useProductBrandsQuery = brandsCatalogHooks.useListQuery
 export function useProductBrandQuery({
   productBrandId,
   enabled = true,
@@ -649,31 +433,10 @@ export function useProductBrandQuery({
   productBrandId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.brand(enterpriseId ?? "", productBrandId ?? ""),
-    queryFn: () => getProductBrandService(productBrandId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(productBrandId),
-    staleTime: CATALOG_STALE_TIME,
-  })
+  return brandsCatalogHooks.useDetailQuery({ id: productBrandId, enabled })
 }
 
-export function usePisCofinsSituationQuery({
-  filters = {},
-  enabled = true,
-}: {
-  filters?: PaginationQuery
-  enabled?: boolean
-}) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.pisCofins(enterpriseId ?? "", filters),
-    queryFn: () => listPisCofinsSituationService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: CATALOG_STALE_TIME,
-  })
-}
-
+export const usePisCofinsSituationQuery = pisCofinsCatalogHooks.useListQuery
 export function usePisCofinsSituationItemQuery({
   pisCofinsSituationId,
   enabled = true,
@@ -681,14 +444,8 @@ export function usePisCofinsSituationItemQuery({
   pisCofinsSituationId: string | undefined
   enabled?: boolean
 }) {
-  const enterpriseId = useActiveEnterpriseId()
-  return useQuery({
-    queryKey: productsQueryKeys.pisCofinsItem(
-      enterpriseId ?? "",
-      pisCofinsSituationId ?? ""
-    ),
-    queryFn: () => getPisCofinsSituationService(pisCofinsSituationId!),
-    enabled: enabled && Boolean(enterpriseId) && Boolean(pisCofinsSituationId),
-    staleTime: CATALOG_STALE_TIME,
+  return pisCofinsCatalogHooks.useDetailQuery({
+    id: pisCofinsSituationId,
+    enabled,
   })
 }

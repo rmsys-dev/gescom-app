@@ -6,8 +6,6 @@ import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { HttpError } from "@/lib/api/http-error"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -88,12 +86,8 @@ export function PasswordResetForm({
       )
       setLastIdentifier(value)
       toast.success(response.message)
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Nao foi possivel solicitar o codigo.")
-        return
-      }
-      toast.error("Nao foi possivel solicitar o codigo. Tente novamente.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 
@@ -108,12 +102,8 @@ export function PasswordResetForm({
         buildLookupBody(identifierType, lastIdentifier)
       )
       toast.success(response.message)
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Nao foi possivel reenviar o codigo.")
-        return
-      }
-      toast.error("Nao foi possivel reenviar o codigo. Tente novamente.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

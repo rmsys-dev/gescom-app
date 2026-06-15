@@ -15,8 +15,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { HttpError } from "@/lib/api/http-error"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import {
   getHousingTypeLabel,
   getMaritalStatusLabel,
@@ -222,12 +220,8 @@ export function UserRelationshipsSection({
     try {
       await mutation.mutateAsync({ exists, input: body })
       setEditing(false)
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível guardar.")
-        return
-      }
-      toast.error("Não foi possível guardar.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

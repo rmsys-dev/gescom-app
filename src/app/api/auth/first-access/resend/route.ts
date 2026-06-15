@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { enforceRateLimit } from "@/lib/api/with-rate-limit"
 import { getApiTimeoutMs, getServerApiBaseUrl } from "@/lib/auth/env"
 import { jsonError } from "@/lib/auth/route-utils"
 import { HttpError } from "@/lib/api/http-error"
@@ -6,6 +7,16 @@ import { parseApiAckEnvelope } from "@/lib/auth/ack-route"
 import { firstAccessLookupRequestSchema } from "@/modules/authentication/first-access.schema"
 
 export async function POST(req: Request) {
+  const rateLimited = enforceRateLimit(
+    req,
+    "auth/first-access/resend",
+    5,
+    15 * 60 * 1000
+  )
+  if (rateLimited) {
+    return rateLimited
+  }
+
   try {
     const body = firstAccessLookupRequestSchema.parse(await req.json())
     const res = await fetch(`${getServerApiBaseUrl()}/auth/first-access/resend`, {

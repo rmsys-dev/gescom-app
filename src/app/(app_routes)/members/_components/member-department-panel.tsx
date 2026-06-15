@@ -2,13 +2,10 @@
 
 import { useMemo, useState } from "react"
 import { Layers, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 
 import { EnterprisePermissionBadge } from "@/app/(app_routes)/enterprise/_components/enterprise-permission-badge"
 import { MemberStatusBadge } from "@/app/(app_routes)/members/_components/member-status-badge"
 import { Button } from "@/components/ui/button"
-import { HttpError } from "@/lib/api/http-error"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import type { MemberDepartment } from "@/modules/memberships/memberships.schema"
 import type { MemberDepartmentPermissionEntry } from "@/modules/memberships/member-department-permissions"
 import {
@@ -71,12 +68,8 @@ export function MemberDepartmentPanel({
           status: checked ? "ALLOW" : "DENIED",
         },
       })
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível actualizar a permissão.")
-        return
-      }
-      toast.error("Não foi possível actualizar a permissão.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     } finally {
       setPendingPermission(null)
     }

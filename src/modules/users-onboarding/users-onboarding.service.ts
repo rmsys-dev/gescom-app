@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api/client"
-import { successEnvelopeSchema } from "@/lib/api/envelope"
+import { parseSuccessEnvelope } from "@/lib/api/parse-response"
 import {
   financialInfoSchema,
   patchFinancialInfoRequestSchema,
@@ -46,7 +46,11 @@ export async function getUserDetailsService(
     `${userOnboardingBase(enterpriseId, userId)}/details`,
     { method: "GET" }
   )
-  return successEnvelopeSchema(userDetailsResponseSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    userDetailsResponseSchema,
+    `GET ${userOnboardingBase(enterpriseId, userId)}/details`
+  )
 }
 
 export async function postPersonalInfoService(
@@ -55,11 +59,9 @@ export async function postPersonalInfoService(
   input: PostPersonalInfoRequest
 ) {
   const body = postPersonalInfoRequestSchema.parse(input)
-  const raw = await apiFetch<unknown>(
-    `${userOnboardingBase(enterpriseId, userId)}/personal-info`,
-    { method: "POST", body }
-  )
-  return successEnvelopeSchema(personalInfoSchema).parse(raw).data
+  const path = `${userOnboardingBase(enterpriseId, userId)}/personal-info`
+  const raw = await apiFetch<unknown>(path, { method: "POST", body })
+  return parseSuccessEnvelope(raw, personalInfoSchema, `POST ${path}`)
 }
 
 export async function patchPersonalInfoService(
@@ -68,11 +70,9 @@ export async function patchPersonalInfoService(
   input: PatchPersonalInfoRequest
 ) {
   const body = patchPersonalInfoRequestSchema.parse(input)
-  const raw = await apiFetch<unknown>(
-    `${userOnboardingBase(enterpriseId, userId)}/personal-info`,
-    { method: "PATCH", body }
-  )
-  return successEnvelopeSchema(personalInfoSchema).parse(raw).data
+  const path = `${userOnboardingBase(enterpriseId, userId)}/personal-info`
+  const raw = await apiFetch<unknown>(path, { method: "PATCH", body })
+  return parseSuccessEnvelope(raw, personalInfoSchema, `PATCH ${path}`)
 }
 
 export async function postUserAddressService(
@@ -81,11 +81,9 @@ export async function postUserAddressService(
   input: PostUserAddressRequest
 ) {
   const body = postUserAddressRequestSchema.parse(input)
-  const raw = await apiFetch<unknown>(
-    `${userOnboardingBase(enterpriseId, userId)}/addresses`,
-    { method: "POST", body }
-  )
-  return successEnvelopeSchema(userAddressSchema).parse(raw).data
+  const path = `${userOnboardingBase(enterpriseId, userId)}/addresses`
+  const raw = await apiFetch<unknown>(path, { method: "POST", body })
+  return parseSuccessEnvelope(raw, userAddressSchema, `POST ${path}`)
 }
 
 export async function patchUserAddressService(
@@ -95,11 +93,9 @@ export async function patchUserAddressService(
   input: PatchUserAddressRequest
 ) {
   const body = patchUserAddressRequestSchema.parse(input)
-  const raw = await apiFetch<unknown>(
-    `${userOnboardingBase(enterpriseId, userId)}/addresses/${addressId}`,
-    { method: "PATCH", body }
-  )
-  return successEnvelopeSchema(userAddressSchema).parse(raw).data
+  const path = `${userOnboardingBase(enterpriseId, userId)}/addresses/${addressId}`
+  const raw = await apiFetch<unknown>(path, { method: "PATCH", body })
+  return parseSuccessEnvelope(raw, userAddressSchema, `PATCH ${path}`)
 }
 
 export async function postUserContactService(
@@ -108,11 +104,9 @@ export async function postUserContactService(
   input: PostUserContactRequest
 ) {
   const body = postUserContactRequestSchema.parse(input)
-  const raw = await apiFetch<unknown>(
-    `${userOnboardingBase(enterpriseId, userId)}/contacts`,
-    { method: "POST", body }
-  )
-  return successEnvelopeSchema(userContactSchema).parse(raw).data
+  const path = `${userOnboardingBase(enterpriseId, userId)}/contacts`
+  const raw = await apiFetch<unknown>(path, { method: "POST", body })
+  return parseSuccessEnvelope(raw, userContactSchema, `POST ${path}`)
 }
 
 export async function patchUserContactService(
@@ -122,11 +116,9 @@ export async function patchUserContactService(
   input: PatchUserContactRequest
 ) {
   const body = patchUserContactRequestSchema.parse(input)
-  const raw = await apiFetch<unknown>(
-    `${userOnboardingBase(enterpriseId, userId)}/contacts/${contactId}`,
-    { method: "PATCH", body }
-  )
-  return successEnvelopeSchema(userContactSchema).parse(raw).data
+  const path = `${userOnboardingBase(enterpriseId, userId)}/contacts/${contactId}`
+  const raw = await apiFetch<unknown>(path, { method: "PATCH", body })
+  return parseSuccessEnvelope(raw, userContactSchema, `PATCH ${path}`)
 }
 
 export async function postRelationshipsService(
@@ -135,11 +127,9 @@ export async function postRelationshipsService(
   input: PostRelationshipsRequest
 ) {
   const body = postRelationshipsRequestSchema.parse(input)
-  const raw = await apiFetch<unknown>(
-    `${userOnboardingBase(enterpriseId, userId)}/relationships`,
-    { method: "POST", body }
-  )
-  return successEnvelopeSchema(relationshipsSchema).parse(raw).data
+  const path = `${userOnboardingBase(enterpriseId, userId)}/relationships`
+  const raw = await apiFetch<unknown>(path, { method: "POST", body })
+  return parseSuccessEnvelope(raw, relationshipsSchema, `POST ${path}`)
 }
 
 export async function patchRelationshipsService(
@@ -148,11 +138,9 @@ export async function patchRelationshipsService(
   input: PatchRelationshipsRequest
 ) {
   const body = patchRelationshipsRequestSchema.parse(input)
-  const raw = await apiFetch<unknown>(
-    `${userOnboardingBase(enterpriseId, userId)}/relationships`,
-    { method: "PATCH", body }
-  )
-  return successEnvelopeSchema(relationshipsSchema).parse(raw).data
+  const path = `${userOnboardingBase(enterpriseId, userId)}/relationships`
+  const raw = await apiFetch<unknown>(path, { method: "PATCH", body })
+  return parseSuccessEnvelope(raw, relationshipsSchema, `PATCH ${path}`)
 }
 
 export async function postTaxInfosService(
@@ -161,11 +149,9 @@ export async function postTaxInfosService(
   input: PostTaxInfosRequest
 ) {
   const body = postTaxInfosRequestSchema.parse(input)
-  const raw = await apiFetch<unknown>(
-    `${userOnboardingBase(enterpriseId, userId)}/tax-infos`,
-    { method: "POST", body }
-  )
-  return successEnvelopeSchema(taxInfosSchema).parse(raw).data
+  const path = `${userOnboardingBase(enterpriseId, userId)}/tax-infos`
+  const raw = await apiFetch<unknown>(path, { method: "POST", body })
+  return parseSuccessEnvelope(raw, taxInfosSchema, `POST ${path}`)
 }
 
 export async function patchTaxInfosService(
@@ -174,11 +160,9 @@ export async function patchTaxInfosService(
   input: PatchTaxInfosRequest
 ) {
   const body = patchTaxInfosRequestSchema.parse(input)
-  const raw = await apiFetch<unknown>(
-    `${userOnboardingBase(enterpriseId, userId)}/tax-infos`,
-    { method: "PATCH", body }
-  )
-  return successEnvelopeSchema(taxInfosSchema).parse(raw).data
+  const path = `${userOnboardingBase(enterpriseId, userId)}/tax-infos`
+  const raw = await apiFetch<unknown>(path, { method: "PATCH", body })
+  return parseSuccessEnvelope(raw, taxInfosSchema, `PATCH ${path}`)
 }
 
 export async function postFinancialInfoService(
@@ -187,11 +171,9 @@ export async function postFinancialInfoService(
   input: PostFinancialInfoRequest
 ) {
   const body = postFinancialInfoRequestSchema.parse(input)
-  const raw = await apiFetch<unknown>(
-    `${userOnboardingBase(enterpriseId, userId)}/financial-info`,
-    { method: "POST", body }
-  )
-  return successEnvelopeSchema(financialInfoSchema).parse(raw).data
+  const path = `${userOnboardingBase(enterpriseId, userId)}/financial-info`
+  const raw = await apiFetch<unknown>(path, { method: "POST", body })
+  return parseSuccessEnvelope(raw, financialInfoSchema, `POST ${path}`)
 }
 
 export async function patchFinancialInfoService(
@@ -200,9 +182,7 @@ export async function patchFinancialInfoService(
   input: PatchFinancialInfoRequest
 ) {
   const body = patchFinancialInfoRequestSchema.parse(input)
-  const raw = await apiFetch<unknown>(
-    `${userOnboardingBase(enterpriseId, userId)}/financial-info`,
-    { method: "PATCH", body }
-  )
-  return successEnvelopeSchema(financialInfoSchema).parse(raw).data
+  const path = `${userOnboardingBase(enterpriseId, userId)}/financial-info`
+  const raw = await apiFetch<unknown>(path, { method: "PATCH", body })
+  return parseSuccessEnvelope(raw, financialInfoSchema, `PATCH ${path}`)
 }

@@ -36,7 +36,7 @@ export const enterpriseAddressTypeSchema = z.enum([
 
 export type EnterpriseAddressType = z.infer<typeof enterpriseAddressTypeSchema>
 
-export const enterpriseSchema = z.object({
+export const enterpriseRecordSchema = z.object({
   id: z.uuid(),
   status: enterpriseStatusSchema,
   registration: enterpriseResponseRegistrationSchema,
@@ -56,7 +56,12 @@ export const enterpriseSchema = z.object({
   deletedAt: z.string().nullable(),
 })
 
-export type Enterprise = z.infer<typeof enterpriseSchema>
+export type EnterpriseRecord = z.infer<typeof enterpriseRecordSchema>
+
+/** @deprecated Use `enterpriseRecordSchema` */
+export const enterpriseSchema = enterpriseRecordSchema
+/** @deprecated Use `EnterpriseRecord` */
+export type Enterprise = EnterpriseRecord
 
 export const enterpriseAddressSchema = z.object({
   id: z.uuid(),
@@ -84,7 +89,7 @@ export const enterpriseSequenceSchema = z.object({
 
 export type EnterpriseSequence = z.infer<typeof enterpriseSequenceSchema>
 
-export const enterpriseDetailSchema = enterpriseSchema.extend({
+export const enterpriseDetailSchema = enterpriseRecordSchema.extend({
   addresses: z.array(enterpriseAddressSchema),
   sequences: z.array(enterpriseSequenceSchema),
 })

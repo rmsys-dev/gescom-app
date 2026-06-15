@@ -16,25 +16,10 @@ import type {
   ListSalesQuery,
 } from "@/modules/sales/sales.schema"
 
-const SALES_STALE_TIME = 0
+import { CACHE } from "@/lib/react-query/cache-policy"
+import { salesQueryKeys } from "@/modules/sales/sales-query-keys"
 
-export const salesQueryKeys = {
-  all: ["sales"] as const,
-  list: (enterpriseId: string, filters?: ListSalesQuery) =>
-    ["sales", enterpriseId, "list", filters ?? {}] as const,
-  detail: (enterpriseId: string, id: string) =>
-    ["sales", enterpriseId, "detail", id] as const,
-  returns: (enterpriseId: string, saleId: string) =>
-    ["sales", enterpriseId, "returns", saleId] as const,
-  returnDetail: (enterpriseId: string, saleId: string, returnId: string) =>
-    ["sales", enterpriseId, "returns", saleId, returnId] as const,
-  budgetConversions: (enterpriseId: string, saleId: string) =>
-    ["sales", enterpriseId, "budget-conversions", saleId] as const,
-  paymentTypes: (enterpriseId: string, filters?: ListPaymentTypesQuery) =>
-    ["sales", enterpriseId, "payment-types", filters ?? {}] as const,
-  paymentType: (enterpriseId: string, id: string) =>
-    ["sales", enterpriseId, "payment-types", id] as const,
-}
+export { salesQueryKeys } from "@/modules/sales/sales-query-keys"
 
 export function useSalesQuery({
   enterpriseId,
@@ -49,7 +34,7 @@ export function useSalesQuery({
     queryKey: salesQueryKeys.list(enterpriseId ?? "", filters),
     queryFn: () => listSalesService(filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: SALES_STALE_TIME,
+    staleTime: CACHE.tenantList,
   })
 }
 
@@ -66,7 +51,7 @@ export function useSaleQuery({
     queryKey: salesQueryKeys.detail(enterpriseId ?? "", saleId),
     queryFn: () => getSaleService(saleId),
     enabled: enabled && Boolean(enterpriseId) && Boolean(saleId),
-    staleTime: SALES_STALE_TIME,
+    staleTime: CACHE.tenantDetail,
   })
 }
 
@@ -83,7 +68,7 @@ export function useSaleReturnsQuery({
     queryKey: salesQueryKeys.returns(enterpriseId ?? "", saleId),
     queryFn: () => listSaleReturnsService(saleId),
     enabled: enabled && Boolean(enterpriseId) && Boolean(saleId),
-    staleTime: SALES_STALE_TIME,
+    staleTime: CACHE.tenantList,
   })
 }
 
@@ -103,7 +88,7 @@ export function useSaleReturnQuery({
     queryFn: () => getSaleReturnService(saleId, returnId),
     enabled:
       enabled && Boolean(enterpriseId) && Boolean(saleId) && Boolean(returnId),
-    staleTime: SALES_STALE_TIME,
+    staleTime: CACHE.tenantDetail,
   })
 }
 
@@ -120,7 +105,7 @@ export function useBudgetConversionsQuery({
     queryKey: salesQueryKeys.budgetConversions(enterpriseId ?? "", saleId),
     queryFn: () => listBudgetConversionsService(saleId),
     enabled: enabled && Boolean(enterpriseId) && Boolean(saleId),
-    staleTime: SALES_STALE_TIME,
+    staleTime: CACHE.tenantList,
   })
 }
 
@@ -137,7 +122,7 @@ export function usePaymentTypesQuery({
     queryKey: salesQueryKeys.paymentTypes(enterpriseId ?? "", filters),
     queryFn: () => listPaymentTypesService(filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: 5 * 60_000,
+    staleTime: CACHE.tenantCatalog,
   })
 }
 
@@ -154,6 +139,6 @@ export function usePaymentTypeQuery({
     queryKey: salesQueryKeys.paymentType(enterpriseId ?? "", paymentTypeId),
     queryFn: () => getPaymentTypeService(paymentTypeId),
     enabled: enabled && Boolean(enterpriseId) && Boolean(paymentTypeId),
-    staleTime: 5 * 60_000,
+    staleTime: CACHE.tenantDetail,
   })
 }

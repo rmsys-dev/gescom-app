@@ -1,7 +1,8 @@
 "use client"
 
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useMutationWithToast } from "@/lib/react-query/use-mutation-with-toast"
 import {
   createEnterpriseAddressService,
   patchEnterpriseAddressService,
@@ -10,7 +11,7 @@ import type {
   CreateEnterpriseAddressRequest,
   PatchEnterpriseAddressRequest,
 } from "@/modules/enterprises/enterprise-addresses.schema"
-import { enterpriseDetailQueryKey } from "@/modules/enterprises/use-enterprises"
+import { enterpriseDetailQueryKey } from "@/modules/enterprises/enterprises-query-keys"
 
 export function enterpriseAddressesQueryKey(
   enterpriseId: string,
@@ -30,19 +31,17 @@ function useInvalidateEnterpriseDetail(enterpriseId: string) {
 
 export function useCreateEnterpriseAddressMutation(enterpriseId: string) {
   const invalidate = useInvalidateEnterpriseDetail(enterpriseId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: (input: CreateEnterpriseAddressRequest) =>
       createEnterpriseAddressService(enterpriseId, input),
-    onSuccess: () => {
-      invalidate()
-      toast.success("Endereço cadastrado com sucesso.")
-    },
+    successMessage: "Endereço cadastrado com sucesso.",
+    onSuccess: () => invalidate(),
   })
 }
 
 export function usePatchEnterpriseAddressMutation(enterpriseId: string) {
   const invalidate = useInvalidateEnterpriseDetail(enterpriseId)
-  return useMutation({
+  return useMutationWithToast({
     mutationFn: ({
       addressId,
       input,

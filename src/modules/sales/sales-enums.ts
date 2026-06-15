@@ -45,6 +45,4 @@ export const stockMovementTypeSchema = z.enum([
 ])
 export type StockMovementType = z.infer<typeof stockMovementTypeSchema>
 
-export const decimalSchema = z
-  .union([z.string(), z.number()])
-  .transform((v) => (typeof v === "number" ? String(v) : v))
+export { decimalSchema } from "@/lib/schemas/decimal"

@@ -2,19 +2,19 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { useAuth } from "@/components/providers/authentication/auth-store"
+import { CACHE } from "@/lib/react-query/cache-policy"
+import { useAuthSession } from "@/lib/auth/use-auth-session"
 import {
   getEnterpriseByIdService,
   updateEnterpriseService,
 } from "@/modules/enterprises/enterprises.service"
+import { enterpriseDetailQueryKey } from "@/modules/enterprises/enterprises-query-keys"
 import type {
   EnterpriseDetail,
   UpdateEnterpriseRequest,
 } from "@/modules/enterprises/enterprises.schema"
 
-export function enterpriseDetailQueryKey(enterpriseId: string) {
-  return ["enterprises", enterpriseId, "detail"] as const
-}
+export { enterpriseDetailQueryKey } from "@/modules/enterprises/enterprises-query-keys"
 
 export function useEnterpriseDetailQuery({
   enterpriseId,
@@ -27,13 +27,13 @@ export function useEnterpriseDetailQuery({
     queryKey: enterpriseDetailQueryKey(enterpriseId ?? ""),
     queryFn: () => getEnterpriseByIdService(enterpriseId!),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: 0,
+    staleTime: CACHE.tenantDetail,
   })
 }
 
 export function useUpdateEnterpriseMutation(enterpriseId: string) {
   const queryClient = useQueryClient()
-  const { refreshSession } = useAuth()
+  const { refreshSession } = useAuthSession()
 
   return useMutation({
     mutationFn: (input: UpdateEnterpriseRequest) =>

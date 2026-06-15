@@ -6,8 +6,6 @@ import { useMutation } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { HttpError } from "@/lib/api/http-error"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -94,12 +92,8 @@ export function PasswordResetVerifyForm({
 
       toast.success(response.message)
       router.push("/auth/login")
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Nao foi possivel redefinir a senha.")
-        return
-      }
-      toast.error("Nao foi possivel redefinir a senha. Tente novamente.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

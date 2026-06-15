@@ -1,5 +1,8 @@
 import { apiFetch } from "@/lib/api/client"
-import { paginatedEnvelopeSchema, successEnvelopeSchema } from "@/lib/api/envelope"
+import {
+  parsePaginatedEnvelope,
+  parseSuccessEnvelope,
+} from "@/lib/api/parse-response"
 import {
   addMemberDepartmentRequestSchema,
   createMemberRequestSchema,
@@ -53,8 +56,11 @@ export async function listMembersService(
     `${membersBase(enterpriseId)}${buildMembersQuery(query)}`,
     { method: "GET" }
   )
-  const envelope = paginatedEnvelopeSchema(memberListItemSchema).parse(raw)
-  return { items: envelope.data, ...envelope.pagination }
+  return parsePaginatedEnvelope(
+    raw,
+    memberListItemSchema,
+    `GET ${membersBase(enterpriseId)}`
+  )
 }
 
 export async function getMemberService(enterpriseId: string, memberId: string) {
@@ -62,7 +68,11 @@ export async function getMemberService(enterpriseId: string, memberId: string) {
     `${membersBase(enterpriseId)}/${memberId}`,
     { method: "GET" }
   )
-  return successEnvelopeSchema(memberDetailSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    memberDetailSchema,
+    `GET ${membersBase(enterpriseId)}/${memberId}`
+  )
 }
 
 export async function createMemberWithUserService(
@@ -74,7 +84,11 @@ export async function createMemberWithUserService(
     `${membersBase(enterpriseId)}/create-with-user`,
     { method: "POST", body }
   )
-  return successEnvelopeSchema(createMemberWithUserResponseSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    createMemberWithUserResponseSchema,
+    `POST ${membersBase(enterpriseId)}/create-with-user`
+  )
 }
 
 export async function inviteMemberService(
@@ -86,7 +100,11 @@ export async function inviteMemberService(
     method: "POST",
     body,
   })
-  return successEnvelopeSchema(inviteMemberResponseSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    inviteMemberResponseSchema,
+    `POST ${membersBase(enterpriseId)}/invite`
+  )
 }
 
 export async function createMemberService(
@@ -98,7 +116,11 @@ export async function createMemberService(
     method: "POST",
     body,
   })
-  return successEnvelopeSchema(memberSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    memberSchema,
+    `POST ${membersBase(enterpriseId)}`
+  )
 }
 
 export async function updateMemberService(
@@ -111,7 +133,11 @@ export async function updateMemberService(
     `${membersBase(enterpriseId)}/${memberId}`,
     { method: "PATCH", body }
   )
-  return successEnvelopeSchema(memberSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    memberSchema,
+    `PATCH ${membersBase(enterpriseId)}/${memberId}`
+  )
 }
 
 export async function addMemberDepartmentService(
@@ -124,7 +150,11 @@ export async function addMemberDepartmentService(
     `${membersBase(enterpriseId)}/${memberId}/departments`,
     { method: "POST", body }
   )
-  return successEnvelopeSchema(memberDepartmentMutationSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    memberDepartmentMutationSchema,
+    `POST ${membersBase(enterpriseId)}/${memberId}/departments`
+  )
 }
 
 export async function updateMemberDepartmentService(
@@ -138,7 +168,11 @@ export async function updateMemberDepartmentService(
     `${membersBase(enterpriseId)}/${memberId}/departments/${memberDepartmentId}`,
     { method: "PATCH", body }
   )
-  return successEnvelopeSchema(memberDepartmentMutationSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    memberDepartmentMutationSchema,
+    `PATCH ${membersBase(enterpriseId)}/${memberId}/departments/${memberDepartmentId}`
+  )
 }
 
 export async function updateMemberPermissionDefaultService(
@@ -152,7 +186,11 @@ export async function updateMemberPermissionDefaultService(
     `${membersBase(enterpriseId)}/${memberId}/departments/${departmentId}/permissions-default`,
     { method: "PATCH", body }
   )
-  return successEnvelopeSchema(memberPermissionSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    memberPermissionSchema,
+    `PATCH ${membersBase(enterpriseId)}/${memberId}/departments/${departmentId}/permissions-default`
+  )
 }
 
 export async function updateMemberExtraPermissionService(
@@ -166,5 +204,9 @@ export async function updateMemberExtraPermissionService(
     `${membersBase(enterpriseId)}/${memberId}/departments/${departmentId}/extra-permissions`,
     { method: "PATCH", body }
   )
-  return successEnvelopeSchema(memberPermissionSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    memberPermissionSchema,
+    `PATCH ${membersBase(enterpriseId)}/${memberId}/departments/${departmentId}/extra-permissions`
+  )
 }

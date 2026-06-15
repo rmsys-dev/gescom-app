@@ -2,14 +2,15 @@
 
 import { useMemo } from "react"
 import { useQueries } from "@tanstack/react-query"
+import { GEO_CATALOG_STALE_TIME_MS } from "@/modules/addresses/addresses-cache"
 import {
-  addressCepsQueryKey,
+  addressCepByIdQueryKey,
   addressCitiesQueryKey,
   addressCountriesQueryKey,
   addressStatesQueryKey,
-} from "@/modules/addresses/use-address-catalog"
+} from "@/modules/addresses/addresses-query-keys"
 import {
-  listCepsService,
+  getCepByIdService,
   listCitiesService,
   listCountriesService,
   listStatesService,
@@ -48,8 +49,8 @@ export function useResolveAddressDisplay<T extends GeoAddressRef>(
     () => [...new Set(addresses.map((a) => a.stateId))],
     [addresses]
   )
-  const uniqueCityIds = useMemo(
-    () => [...new Set(addresses.map((a) => a.cityId))],
+  const uniqueCepIds = useMemo(
+    () => [...new Set(addresses.map((a) => a.cepId))],
     [addresses]
   )
 
@@ -59,7 +60,7 @@ export function useResolveAddressDisplay<T extends GeoAddressRef>(
         queryKey: addressCountriesQueryKey,
         queryFn: () => listCountriesService(),
         enabled: enabled && addresses.length > 0,
-        staleTime: 60_000,
+        staleTime: GEO_CATALOG_STALE_TIME_MS,
       },
     ],
   })
@@ -69,7 +70,7 @@ export function useResolveAddressDisplay<T extends GeoAddressRef>(
       queryKey: addressStatesQueryKey(countryId),
       queryFn: () => listStatesService(countryId),
       enabled: enabled && addresses.length > 0,
-      staleTime: 60_000,
+      staleTime: GEO_CATALOG_STALE_TIME_MS,
     })),
   })
 
@@ -78,16 +79,16 @@ export function useResolveAddressDisplay<T extends GeoAddressRef>(
       queryKey: addressCitiesQueryKey(stateId),
       queryFn: () => listCitiesService(stateId),
       enabled: enabled && addresses.length > 0,
-      staleTime: 60_000,
+      staleTime: GEO_CATALOG_STALE_TIME_MS,
     })),
   })
 
   const cepsQueries = useQueries({
-    queries: uniqueCityIds.map((cityId) => ({
-      queryKey: addressCepsQueryKey(cityId),
-      queryFn: () => listCepsService(cityId),
+    queries: uniqueCepIds.map((cepId) => ({
+      queryKey: addressCepByIdQueryKey(cepId),
+      queryFn: () => getCepByIdService(cepId),
       enabled: enabled && addresses.length > 0,
-      staleTime: 60_000,
+      staleTime: GEO_CATALOG_STALE_TIME_MS,
     })),
   })
 
@@ -126,15 +127,15 @@ export function useResolveAddressDisplay<T extends GeoAddressRef>(
       }
     >()
     for (const q of cepsQueries) {
-      for (const c of q.data ?? []) {
-        cepMap.set(c.id, {
-          cepNumber: c.cepNumber,
-          address: c.address,
-          neighborhood: c.neighborhood,
-          number: c.number,
-          complement: c.complement,
-        })
-      }
+      const c = q.data
+      if (!c) continue
+      cepMap.set(c.id, {
+        cepNumber: c.cepNumber,
+        address: c.address,
+        neighborhood: c.neighborhood,
+        number: c.number,
+        complement: c.complement,
+      })
     }
 
     return (address: T): AddressDisplay => {

@@ -6,7 +6,7 @@ import { toast } from "sonner"
 
 import { HttpError } from "@/lib/api/http-error"
 import { useAuth } from "@/components/providers/authentication/auth-store"
-import type { Enterprise } from "@/modules/authentication/auth.schema"
+import type { AuthEnterprise } from "@/modules/authentication/auth.schema"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -38,7 +38,7 @@ export function EnterpriseDropdown() {
     }
   }, [activeEnterprise, enterprises])
 
-  async function onSelect(enterprise: Enterprise) {
+  async function onSelect(enterprise: AuthEnterprise) {
     if (enterprise.id === activeEnterprise?.id) {
       return
     }

@@ -8,8 +8,6 @@ import {
   ProfileEditActions,
   ProfileField,
 } from "@/app/(app_routes)/profile/_components/profile-field"
-import { HttpError } from "@/lib/api/http-error"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import {
   useCepsQuery,
   useCitiesQuery,
@@ -204,12 +202,8 @@ export function UserAddressCreateForm({
         adressType,
       })
       onSaved()
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível adicionar o endereço.")
-        return
-      }
-      toast.error("Não foi possível adicionar o endereço.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

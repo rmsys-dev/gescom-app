@@ -11,8 +11,8 @@ import {
 import { useQueryClient } from "@tanstack/react-query"
 import type {
   ActiveEnterprise,
+  AuthEnterprise,
   AuthUser,
-  Enterprise,
   MeResponse,
 } from "@/modules/authentication/auth.schema"
 import type {
@@ -30,13 +30,13 @@ import {
 
 type AuthStoreValue = {
   user: AuthUser | null
-  enterprises: Enterprise[]
+  enterprises: AuthEnterprise[]
   activeEnterprise: ActiveEnterprise | null
   hydrated: boolean
   isAuthenticated: boolean
   signIn: (payload: LoginClientResponse) => void
   refreshSession: () => Promise<SessionBootstrap>
-  switchToEnterprise: (enterprise: Enterprise) => Promise<void>
+  switchToEnterprise: (enterprise: AuthEnterprise) => Promise<void>
   signOut: () => void
   logout: () => Promise<void>
 }
@@ -61,7 +61,7 @@ function seedAccountMeQuery(
   queryClient.setQueryData([...ACCOUNT_QUERY_KEY], payload)
 }
 
-function enterpriseToActive(ent: Enterprise): ActiveEnterprise {
+function enterpriseToActive(ent: AuthEnterprise): ActiveEnterprise {
   return {
     id: ent.id,
     tradeName: ent.tradeName,
@@ -88,7 +88,7 @@ const AuthContext = createContext<AuthStoreValue | null>(null)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient()
   const [user, setUser] = useState<AuthUser | null>(null)
-  const [enterprises, setEnterprises] = useState<Enterprise[]>([])
+  const [enterprises, setEnterprises] = useState<AuthEnterprise[]>([])
   const [activeEnterprise, setActiveEnterpriseState] =
     useState<ActiveEnterprise | null>(null)
   const [hydrated, setHydrated] = useState(false)
@@ -163,7 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [invalidateAccountQueries, queryClient, signOut])
 
   const switchToEnterprise = useCallback(
-    async (enterprise: Enterprise) => {
+    async (enterprise: AuthEnterprise) => {
       const res = await switchEnterpriseService(enterprise.id)
       const me = await fetchAuthMe()
       setUser(meUserToAuthUser(me.user))

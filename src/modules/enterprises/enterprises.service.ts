@@ -1,10 +1,13 @@
 import { apiFetch } from "@/lib/api/client"
-import { paginatedEnvelopeSchema, successEnvelopeSchema } from "@/lib/api/envelope"
+import {
+  parsePaginatedEnvelope,
+  parseSuccessEnvelope,
+} from "@/lib/api/parse-response"
 import {
   buildEnterprisesQuery,
   enterpriseDetailSchema,
   enterpriseListItemSchema,
-  enterpriseSchema,
+  enterpriseRecordSchema,
   updateEnterpriseRequestSchema,
   type ListEnterprisesQuery,
   type UpdateEnterpriseRequest,
@@ -13,15 +16,22 @@ import {
 export async function listEnterprisesService(query: ListEnterprisesQuery = {}) {
   const qs = buildEnterprisesQuery(query)
   const raw = await apiFetch<unknown>(`enterprises${qs}`, { method: "GET" })
-  const envelope = paginatedEnvelopeSchema(enterpriseListItemSchema).parse(raw)
-  return { items: envelope.data, ...envelope.pagination }
+  return parsePaginatedEnvelope(
+    raw,
+    enterpriseListItemSchema,
+    "GET /enterprises"
+  )
 }
 
 export async function getEnterpriseByIdService(enterpriseId: string) {
   const raw = await apiFetch<unknown>(`enterprises/${enterpriseId}`, {
     method: "GET",
   })
-  return successEnvelopeSchema(enterpriseDetailSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    enterpriseDetailSchema,
+    `GET /enterprises/${enterpriseId}`
+  )
 }
 
 export async function updateEnterpriseService(
@@ -33,5 +43,9 @@ export async function updateEnterpriseService(
     method: "PATCH",
     body,
   })
-  return successEnvelopeSchema(enterpriseSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    enterpriseRecordSchema,
+    `PATCH /enterprises/${enterpriseId}`
+  )
 }

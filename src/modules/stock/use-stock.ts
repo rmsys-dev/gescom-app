@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 
+import { useActiveEnterpriseId } from "@/lib/tenant/use-active-enterprise-id"
 import {
   listStockBatchBalancesService,
   listStockBatchesService,
@@ -16,25 +17,10 @@ import type {
   PaginationQuery,
 } from "@/modules/stock/stock.schema"
 
-const STOCK_STALE_TIME = 0
+import { CACHE } from "@/lib/react-query/cache-policy"
+import { stockQueryKeys } from "@/modules/stock/stock-query-keys"
 
-export const stockQueryKeys = {
-  all: ["stock"] as const,
-  sectors: (filters?: PaginationQuery) =>
-    ["stock", "sectors", filters ?? {}] as const,
-  locations: (filters?: PaginationQuery) =>
-    ["stock", "locations", filters ?? {}] as const,
-  batches: (filters?: PaginationQuery) =>
-    ["stock", "batches", filters ?? {}] as const,
-  sectorRentals: (filters?: PaginationQuery) =>
-    ["stock", "sector-rentals", filters ?? {}] as const,
-  batchBalances: (filters?: PaginationQuery) =>
-    ["stock", "batch-balances", filters ?? {}] as const,
-  minMax: (filters?: PaginationQuery) =>
-    ["stock", "min-max", filters ?? {}] as const,
-  movements: (filters?: ListStockMovementsQuery) =>
-    ["stock", "movements", filters ?? {}] as const,
-}
+export { stockQueryKeys } from "@/modules/stock/stock-query-keys"
 
 type ListHookOptions = {
   filters?: PaginationQuery | ListStockMovementsQuery
@@ -45,11 +31,12 @@ export function useStockSectorsQuery({
   filters = {},
   enabled = true,
 }: ListHookOptions = {}) {
+  const enterpriseId = useActiveEnterpriseId()
   return useQuery({
-    queryKey: stockQueryKeys.sectors(filters),
+    queryKey: stockQueryKeys.sectors(enterpriseId ?? "", filters),
     queryFn: () => listStockSectorsService(filters),
-    enabled,
-    staleTime: STOCK_STALE_TIME,
+    enabled: enabled && Boolean(enterpriseId),
+    staleTime: CACHE.tenantList,
   })
 }
 
@@ -57,11 +44,12 @@ export function useStockLocationsQuery({
   filters = {},
   enabled = true,
 }: ListHookOptions = {}) {
+  const enterpriseId = useActiveEnterpriseId()
   return useQuery({
-    queryKey: stockQueryKeys.locations(filters),
+    queryKey: stockQueryKeys.locations(enterpriseId ?? "", filters),
     queryFn: () => listStockLocationsService(filters),
-    enabled,
-    staleTime: STOCK_STALE_TIME,
+    enabled: enabled && Boolean(enterpriseId),
+    staleTime: CACHE.tenantList,
   })
 }
 
@@ -69,11 +57,12 @@ export function useStockBatchesQuery({
   filters = {},
   enabled = true,
 }: ListHookOptions = {}) {
+  const enterpriseId = useActiveEnterpriseId()
   return useQuery({
-    queryKey: stockQueryKeys.batches(filters),
+    queryKey: stockQueryKeys.batches(enterpriseId ?? "", filters),
     queryFn: () => listStockBatchesService(filters),
-    enabled,
-    staleTime: STOCK_STALE_TIME,
+    enabled: enabled && Boolean(enterpriseId),
+    staleTime: CACHE.tenantList,
   })
 }
 
@@ -81,11 +70,12 @@ export function useStockSectorRentalsQuery({
   filters = {},
   enabled = true,
 }: ListHookOptions = {}) {
+  const enterpriseId = useActiveEnterpriseId()
   return useQuery({
-    queryKey: stockQueryKeys.sectorRentals(filters),
+    queryKey: stockQueryKeys.sectorRentals(enterpriseId ?? "", filters),
     queryFn: () => listStockSectorRentalsService(filters),
-    enabled,
-    staleTime: STOCK_STALE_TIME,
+    enabled: enabled && Boolean(enterpriseId),
+    staleTime: CACHE.tenantList,
   })
 }
 
@@ -93,11 +83,12 @@ export function useStockBatchBalancesQuery({
   filters = {},
   enabled = true,
 }: ListHookOptions = {}) {
+  const enterpriseId = useActiveEnterpriseId()
   return useQuery({
-    queryKey: stockQueryKeys.batchBalances(filters),
+    queryKey: stockQueryKeys.batchBalances(enterpriseId ?? "", filters),
     queryFn: () => listStockBatchBalancesService(filters),
-    enabled,
-    staleTime: STOCK_STALE_TIME,
+    enabled: enabled && Boolean(enterpriseId),
+    staleTime: CACHE.tenantList,
   })
 }
 
@@ -105,11 +96,12 @@ export function useStockMinMaxQuery({
   filters = {},
   enabled = true,
 }: ListHookOptions = {}) {
+  const enterpriseId = useActiveEnterpriseId()
   return useQuery({
-    queryKey: stockQueryKeys.minMax(filters),
+    queryKey: stockQueryKeys.minMax(enterpriseId ?? "", filters),
     queryFn: () => listStockMinMaxService(filters),
-    enabled,
-    staleTime: STOCK_STALE_TIME,
+    enabled: enabled && Boolean(enterpriseId),
+    staleTime: CACHE.tenantList,
   })
 }
 
@@ -117,11 +109,12 @@ export function useStockMovementsQuery({
   filters = {},
   enabled = true,
 }: ListHookOptions = {}) {
+  const enterpriseId = useActiveEnterpriseId()
+  const movementFilters = filters as ListStockMovementsQuery
   return useQuery({
-    queryKey: stockQueryKeys.movements(filters as ListStockMovementsQuery),
-    queryFn: () =>
-      listStockMovementsService(filters as ListStockMovementsQuery),
-    enabled,
-    staleTime: STOCK_STALE_TIME,
+    queryKey: stockQueryKeys.movements(enterpriseId ?? "", movementFilters),
+    queryFn: () => listStockMovementsService(movementFilters),
+    enabled: enabled && Boolean(enterpriseId),
+    staleTime: CACHE.tenantList,
   })
 }

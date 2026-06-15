@@ -14,6 +14,7 @@ import { MembershipDetailContentLoading } from "@/app/(app_routes)/members/_comp
 import { UserOnboardingPanel } from "@/app/(app_routes)/profile/_components/onboarding/user-onboarding-panel"
 import { MemberDepartmentsSection } from "@/app/(app_routes)/members/_components/member-departments-section"
 import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
+import { PermissionRouteGuard } from "@/components/guards/permission-route-guard"
 import {
   Card,
   CardContent,
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/card"
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
 import { HttpError } from "@/lib/api/http-error"
-import { useOperatorPermissions } from "@/lib/permissions"
+import { useOperatorPermissions, PERMISSION_CODES } from "@/lib/permissions"
 import type { MembershipRouteConfig } from "@/modules/memberships/membership-route-config"
 import { useMemberQuery } from "@/modules/memberships/use-members"
 import { buildEmptyUserDetails } from "@/modules/users-onboarding/users-onboarding-empty"
@@ -110,26 +111,10 @@ export function MemberDetailPageContent({
       Boolean(memberId),
   })
 
-  if (!ready || !perms.isReady) {
+  if (!ready) {
     return (
       <main className="mx-auto w-full p-4 md:p-8">
         <MembershipDetailContentLoading config={config} />
-      </main>
-    )
-  }
-
-  if (perms.isError) {
-    return (
-      <main className="mx-auto w-full max-w-lg space-y-6 p-4 md:p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Não foi possível carregar permissões</CardTitle>
-            <CardDescription>
-              Não foi possível obter as permissões da sessão. Tente atualizar a
-              página ou iniciar sessão novamente.
-            </CardDescription>
-          </CardHeader>
-        </Card>
       </main>
     )
   }
@@ -148,24 +133,18 @@ export function MemberDetailPageContent({
     )
   }
 
-  if (!perms.canConsultMembers) {
-    return (
-      <main className="mx-auto w-full max-w-lg space-y-6 p-4 md:p-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Sem permissão</CardTitle>
-            <CardDescription>
-              Necessita da permissão consultar_membros.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </main>
-    )
-  }
-
   const displayName = data?.user.userName.trim() || undefined
 
   return (
+    <PermissionRouteGuard
+      check={(p) => p.canConsultMembers}
+      permissionLabel={PERMISSION_CODES.consultarMembros}
+      loading={
+        <main className="mx-auto w-full p-4 md:p-8">
+          <MembershipDetailContentLoading config={config} />
+        </main>
+      }
+    >
     <main className="mx-auto w-full space-y-6 p-4 md:p-8">
       <RouteBreadcrumb currentLabel={displayName} />
       {isPending && <MembershipDetailContentLoading config={config} />}
@@ -303,5 +282,6 @@ export function MemberDetailPageContent({
         </div>
       )}
     </main>
+    </PermissionRouteGuard>
   )
 }

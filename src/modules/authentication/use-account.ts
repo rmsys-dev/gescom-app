@@ -1,15 +1,15 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { useAuth } from "@/components/providers/authentication/auth-store"
+import { useAuthSession } from "@/lib/auth/use-auth-session"
 import { HttpError } from "@/lib/api/http-error"
 import { fetchAuthMe, meUserToAuthUser } from "@/modules/authentication/auth.service"
 import type { MeResponse } from "@/modules/authentication/auth.schema"
 
-const ME_STALE_TIME_MS = 5 * 60_000
+import { CACHE } from "@/lib/react-query/cache-policy"
 
 function useMeQueryEnabled() {
-  const { hydrated, isAuthenticated } = useAuth()
+  const { hydrated, isAuthenticated } = useAuthSession()
   return {
     enabled: hydrated && isAuthenticated,
   }
@@ -18,7 +18,7 @@ function useMeQueryEnabled() {
 /** Resposta completa de `GET /auth/me` (utilizador, empresa do token, permissões). */
 export function useMeQuery() {
   const { enabled } = useMeQueryEnabled()
-  const { signOut } = useAuth()
+  const { signOut } = useAuthSession()
   return useQuery({
     queryKey: ["account", "me"],
     queryFn: async (): Promise<MeResponse> => {
@@ -32,7 +32,7 @@ export function useMeQuery() {
       }
     },
     enabled,
-    staleTime: ME_STALE_TIME_MS,
+    staleTime: CACHE.account,
   })
 }
 
@@ -43,7 +43,7 @@ export function useAccountProfileQuery() {
     queryKey: ["account", "me"],
     queryFn: async () => fetchAuthMe(),
     enabled,
-    staleTime: ME_STALE_TIME_MS,
+    staleTime: CACHE.account,
     select: (me) => meUserToAuthUser(me.user),
   })
 }

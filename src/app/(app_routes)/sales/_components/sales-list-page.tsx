@@ -211,6 +211,7 @@ export function SalesListPage({ config, leading }: SalesListPageProps) {
             total={tableTotal}
             limit={tableLimit}
             offset={tableOffset}
+            enterpriseId={enterpriseId}
             config={config}
             emptyTitle={config.labels.emptyList}
             emptyHint={config.labels.emptyListHint}

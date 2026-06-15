@@ -11,7 +11,6 @@ import {
   getRealizedByPaymentTypeService,
   getRealizedBySellerService,
   getRealizedOverviewService,
-  getRealizedReturnsService,
   getRealizedTimeseriesService,
   getRealizedTopProductsService,
   getReceivablesAgingService,
@@ -19,10 +18,10 @@ import {
 } from "@/modules/sales/sales-analytics.service"
 import type { DashboardFilters } from "@/modules/sales/sales-constants"
 
-const ANALYTICS_STALE_TIME = 60_000
+import { CACHE } from "@/lib/react-query/cache-policy"
 
 export const salesAnalyticsQueryKeys = {
-  all: ["sales-analytics"] as const,
+  all: (enterpriseId: string) => ["sales-analytics", enterpriseId] as const,
   realizedOverview: (enterpriseId: string, filters: AnalyticsQuery) =>
     ["sales-analytics", enterpriseId, "realized-overview", filters] as const,
   realizedTimeseries: (enterpriseId: string, filters: AnalyticsQuery) =>
@@ -33,8 +32,6 @@ export const salesAnalyticsQueryKeys = {
     ["sales-analytics", enterpriseId, "by-seller", filters] as const,
   topProducts: (enterpriseId: string, filters: AnalyticsQuery) =>
     ["sales-analytics", enterpriseId, "top-products", filters] as const,
-  returns: (enterpriseId: string, filters: AnalyticsQuery) =>
-    ["sales-analytics", enterpriseId, "returns", filters] as const,
   pipelineOverview: (enterpriseId: string, filters: AnalyticsQuery) =>
     ["sales-analytics", enterpriseId, "pipeline-overview", filters] as const,
   budgetFunnel: (enterpriseId: string, filters: AnalyticsQuery) =>
@@ -81,7 +78,7 @@ export function useRealizedOverviewQuery({
     queryKey: salesAnalyticsQueryKeys.realizedOverview(enterpriseId ?? "", filters),
     queryFn: () => getRealizedOverviewService(filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: ANALYTICS_STALE_TIME,
+    staleTime: CACHE.analytics,
   })
 }
 
@@ -94,7 +91,7 @@ export function useRealizedTimeseriesQuery({
     queryKey: salesAnalyticsQueryKeys.realizedTimeseries(enterpriseId ?? "", filters),
     queryFn: () => getRealizedTimeseriesService(filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: ANALYTICS_STALE_TIME,
+    staleTime: CACHE.analytics,
   })
 }
 
@@ -107,7 +104,7 @@ export function useRealizedByPaymentTypeQuery({
     queryKey: salesAnalyticsQueryKeys.byPaymentType(enterpriseId ?? "", filters),
     queryFn: () => getRealizedByPaymentTypeService(filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: ANALYTICS_STALE_TIME,
+    staleTime: CACHE.analytics,
   })
 }
 
@@ -120,7 +117,7 @@ export function useRealizedBySellerQuery({
     queryKey: salesAnalyticsQueryKeys.bySeller(enterpriseId ?? "", filters),
     queryFn: () => getRealizedBySellerService(filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: ANALYTICS_STALE_TIME,
+    staleTime: CACHE.analytics,
   })
 }
 
@@ -133,20 +130,7 @@ export function useRealizedTopProductsQuery({
     queryKey: salesAnalyticsQueryKeys.topProducts(enterpriseId ?? "", filters),
     queryFn: () => getRealizedTopProductsService(filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: ANALYTICS_STALE_TIME,
-  })
-}
-
-export function useRealizedReturnsAnalyticsQuery({
-  enterpriseId,
-  filters,
-  enabled = true,
-}: AnalyticsQueryOpts) {
-  return useQuery({
-    queryKey: salesAnalyticsQueryKeys.returns(enterpriseId ?? "", filters),
-    queryFn: () => getRealizedReturnsService(filters),
-    enabled: enabled && Boolean(enterpriseId),
-    staleTime: ANALYTICS_STALE_TIME,
+    staleTime: CACHE.analytics,
   })
 }
 
@@ -159,7 +143,7 @@ export function usePipelineOverviewQuery({
     queryKey: salesAnalyticsQueryKeys.pipelineOverview(enterpriseId ?? "", filters),
     queryFn: () => getPipelineOverviewService(filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: ANALYTICS_STALE_TIME,
+    staleTime: CACHE.analytics,
   })
 }
 
@@ -172,7 +156,7 @@ export function useBudgetFunnelQuery({
     queryKey: salesAnalyticsQueryKeys.budgetFunnel(enterpriseId ?? "", filters),
     queryFn: () => getPipelineBudgetsFunnelService(filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: ANALYTICS_STALE_TIME,
+    staleTime: CACHE.analytics,
   })
 }
 
@@ -185,7 +169,7 @@ export function useOperationsStatusBreakdownQuery({
     queryKey: salesAnalyticsQueryKeys.statusBreakdown(enterpriseId ?? "", filters),
     queryFn: () => getOperationsStatusBreakdownService(filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: ANALYTICS_STALE_TIME,
+    staleTime: CACHE.analytics,
   })
 }
 
@@ -198,7 +182,7 @@ export function useOperationsCancellationsQuery({
     queryKey: salesAnalyticsQueryKeys.cancellations(enterpriseId ?? "", filters),
     queryFn: () => getOperationsCancellationsService(filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: ANALYTICS_STALE_TIME,
+    staleTime: CACHE.analytics,
   })
 }
 
@@ -211,7 +195,7 @@ export function useReceivablesSummaryQuery({
     queryKey: salesAnalyticsQueryKeys.receivablesSummary(enterpriseId ?? "", filters),
     queryFn: () => getReceivablesSummaryService(filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: ANALYTICS_STALE_TIME,
+    staleTime: CACHE.analytics,
   })
 }
 
@@ -224,6 +208,6 @@ export function useReceivablesAgingQuery({
     queryKey: salesAnalyticsQueryKeys.receivablesAging(enterpriseId ?? "", filters),
     queryFn: () => getReceivablesAgingService(filters),
     enabled: enabled && Boolean(enterpriseId),
-    staleTime: ANALYTICS_STALE_TIME,
+    staleTime: CACHE.analytics,
   })
 }

@@ -13,10 +13,9 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { useAuth } from "@/components/providers/authentication/auth-store"
-import { HttpError } from "@/lib/api/http-error"
 import { isSafeInternalReturnUrl } from "@/lib/auth/return-url"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
-import type { Enterprise } from "@/modules/authentication/auth.schema"
+import { toastApiError } from "@/modules/authentication/http-error-feedback"
+import type { AuthEnterprise } from "@/modules/authentication/auth.schema"
 import { useMinLoadingDisplay } from "@/hooks/use-min-loading-display"
 import { Loader2 } from "lucide-react"
 
@@ -46,18 +45,14 @@ function SelectEnterprisePageContent() {
     }
   }, [hydrated, isAuthenticated, enterprises.length, returnUrl, router])
 
-  async function onSelect(enterprise: Enterprise) {
+  async function onSelect(enterprise: AuthEnterprise) {
     setLoadingId(enterprise.id)
     try {
       await switchToEnterprise(enterprise)
       toast.success("Empresa selecionada.")
       router.push(isSafeInternalReturnUrl(returnUrl) ? returnUrl : "/home")
     } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível mudar de empresa.")
-        return
-      }
-      toast.error("Não foi possível mudar de empresa.")
+      toastApiError(error, "Não foi possível mudar de empresa.")
     } finally {
       setLoadingId(null)
     }

@@ -14,11 +14,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import { HttpError } from "@/lib/api/http-error"
 import { cpfCnpjSchema } from "@/lib/validation/cpf-cnpj"
 import { phoneE164Schema } from "@/lib/validation/phone"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
-import { memberQueryKey } from "@/modules/memberships/use-members"
+import { memberQueryKey } from "@/modules/memberships/memberships-query-keys"
 import type { MemberUserSummary } from "@/modules/memberships/memberships.schema"
 import {
   normalizeEmail,
@@ -111,12 +109,8 @@ export function UserBasicEditForm({
         })
       }
       onOpenChange(false)
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Nao foi possivel atualizar o utilizador.")
-        return
-      }
-      toast.error("Nao foi possivel atualizar o utilizador.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

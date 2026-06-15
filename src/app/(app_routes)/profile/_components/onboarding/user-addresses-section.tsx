@@ -18,9 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { HttpError } from "@/lib/api/http-error"
 import { useResolveAddressDisplay } from "@/modules/addresses/use-resolve-address-display"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { getUserAddressTypeLabel } from "@/modules/users-onboarding/users-onboarding-labels"
 import type {
   UserAddress,
@@ -71,10 +69,8 @@ export function UserAddressesSection({
       if (editingAddress?.id === deleteTarget.id) {
         setEditingTarget(null)
       }
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível remover o endereço.")
-      }
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 
@@ -275,12 +271,8 @@ function AddressListItem({
         input,
       })
       onSaved()
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível atualizar o endereço.")
-        return
-      }
-      toast.error("Não foi possível atualizar o endereço.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

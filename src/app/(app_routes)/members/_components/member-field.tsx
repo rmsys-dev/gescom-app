@@ -36,12 +36,10 @@ import {
 import { MemberClassBadge } from "@/app/(app_routes)/members/_components/member-class-badge"
 import { MemberStatusBadge } from "@/app/(app_routes)/members/_components/member-status-badge"
 import { formatCpfCnpj, formatDateOnly, formatPhone } from "@/lib/formatters"
-import { HttpError } from "@/lib/api/http-error"
 import { getUserInitials } from "@/lib/user-initials"
 import { cn } from "@/lib/utils"
 import { cpfCnpjSchema } from "@/lib/validation/cpf-cnpj"
 import { phoneE164Schema } from "@/lib/validation/phone"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import {
   getMemberClassLabel,
   MEMBER_CLASS_OPTIONS,
@@ -62,8 +60,8 @@ import {
   normalizePhone,
   normalizeRegistration,
 } from "@/modules/memberships/memberships-rules"
+import { memberQueryKey } from "@/modules/memberships/memberships-query-keys"
 import {
-  memberQueryKey,
   useMembersQuery,
   useUpdateMemberMutation,
 } from "@/modules/memberships/use-members"
@@ -373,12 +371,8 @@ export function MemberUserInfoCard({
       })
       setEditing(false)
       onUpdateSuccess?.()
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível atualizar o usuário.")
-        return
-      }
-      toast.error("Não foi possível atualizar o usuário.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 
@@ -535,12 +529,8 @@ export function MemberLinkCard({
       await mutation.mutateAsync(patch)
       setEditing(false)
       onUpdateSuccess?.()
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, config.detail.updateLinkError)
-        return
-      }
-      toast.error(config.detail.updateLinkError)
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 
@@ -549,12 +539,8 @@ export function MemberLinkCard({
       await mutation.mutateAsync({ softDelete: true })
       setConfirmDelete(false)
       router.push(config.basePath)
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, config.detail.inactivateError)
-        return
-      }
-      toast.error(config.detail.inactivateError)
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

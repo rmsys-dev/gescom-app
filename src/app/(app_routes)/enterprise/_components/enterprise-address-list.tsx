@@ -2,12 +2,9 @@
 
 import { useState } from "react"
 import { MapPin, Pencil, Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import { ConfirmSoftDeleteDialog } from "@/components/global/confirm-soft-delete-dialog"
 import { EnterpriseAddressForm } from "@/app/(app_routes)/enterprise/_components/enterprise-address-form"
 import { Button } from "@/components/ui/button"
-import { HttpError } from "@/lib/api/http-error"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { useResolveEnterpriseAddressDisplay } from "@/modules/addresses/use-resolve-enterprise-address-display"
 import { getEnterpriseAddressTypeLabel } from "@/modules/enterprises/enterprise-address-type-label"
 import type { EnterpriseAddress } from "@/modules/enterprises/enterprises.schema"
@@ -108,12 +105,8 @@ export function EnterpriseAddressList({
         input: { softDelete: true },
       })
       setDeleteTarget(null)
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível remover o endereço.")
-        return
-      }
-      toast.error("Operação falhou.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

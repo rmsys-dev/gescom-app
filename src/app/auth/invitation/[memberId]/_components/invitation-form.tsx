@@ -6,9 +6,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { HttpError } from "@/lib/api/http-error"
 import { useAuth } from "@/components/providers/authentication/auth-store"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -119,12 +117,8 @@ export function InvitationForm({
       }
 
       router.push("/home")
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Nao foi possivel aceitar o convite.")
-        return
-      }
-      toast.error("Nao foi possivel aceitar o convite. Tente novamente.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 
@@ -139,12 +133,8 @@ export function InvitationForm({
       const response = await declineMutation.mutateAsync()
       toast.success(response?.message ?? "Convite recusado.")
       router.push("/home")
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Nao foi possivel recusar o convite.")
-        return
-      }
-      toast.error("Nao foi possivel recusar o convite. Tente novamente.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 
@@ -158,12 +148,8 @@ export function InvitationForm({
     try {
       const response = await resendMutation.mutateAsync()
       toast.success(response?.message ?? "Codigo reenviado.")
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Nao foi possivel reenviar o codigo.")
-        return
-      }
-      toast.error("Nao foi possivel reenviar o codigo. Tente novamente.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

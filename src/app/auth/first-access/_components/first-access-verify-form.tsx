@@ -6,9 +6,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { HttpError } from "@/lib/api/http-error"
 import { useAuth } from "@/components/providers/authentication/auth-store"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -108,12 +106,8 @@ export function FirstAccessVerifyForm({
       }
 
       router.push("/home")
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Nao foi possivel concluir o primeiro acesso.")
-        return
-      }
-      toast.error("Nao foi possivel concluir o primeiro acesso. Tente novamente.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

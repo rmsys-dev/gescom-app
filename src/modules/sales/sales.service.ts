@@ -1,7 +1,10 @@
 import { z } from "zod"
 
 import { apiFetch } from "@/lib/api/client"
-import { paginatedEnvelopeSchema, successEnvelopeSchema } from "@/lib/api/envelope"
+import {
+  parsePaginatedEnvelope,
+  parseSuccessEnvelope,
+} from "@/lib/api/parse-response"
 import {
   buildPaymentTypesQuery,
   buildSalesQuery,
@@ -38,20 +41,23 @@ export async function listSalesService(query: ListSalesQuery = {}) {
   const parsed = listSalesQuerySchema.parse(query)
   const qs = buildSalesQuery(parsed)
   const raw = await apiFetch<unknown>(`sales${qs}`, { method: "GET" })
-  const envelope = paginatedEnvelopeSchema(saleSummarySchema).parse(raw)
-  return { items: envelope.data, ...envelope.pagination }
+  return parsePaginatedEnvelope(raw, saleSummarySchema, "GET /sales")
 }
 
 export async function getSaleService(saleId: string) {
   const raw = await apiFetch<unknown>(`sales/${saleId}`, { method: "GET" })
-  return successEnvelopeSchema(saleDetailSchema).parse(raw).data
+  return parseSuccessEnvelope(raw, saleDetailSchema, `GET /sales/${saleId}`)
 }
 
 export async function listSaleReturnsService(saleId: string) {
   const raw = await apiFetch<unknown>(`sales/${saleId}/returns`, {
     method: "GET",
   })
-  return successEnvelopeSchema(z.array(saleReturnSchema)).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    z.array(saleReturnSchema),
+    `GET /sales/${saleId}/returns`
+  )
 }
 
 export async function getSaleReturnService(
@@ -62,7 +68,11 @@ export async function getSaleReturnService(
     `sales/${saleId}/returns/${salesReturnId}`,
     { method: "GET" }
   )
-  return successEnvelopeSchema(saleReturnDetailSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    saleReturnDetailSchema,
+    `GET /sales/${saleId}/returns/${salesReturnId}`
+  )
 }
 
 export async function listBudgetConversionsService(saleId: string) {
@@ -70,7 +80,11 @@ export async function listBudgetConversionsService(saleId: string) {
     `sales/${saleId}/budget-conversions`,
     { method: "GET" }
   )
-  return successEnvelopeSchema(z.array(budgetConversionSchema)).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    z.array(budgetConversionSchema),
+    `GET /sales/${saleId}/budget-conversions`
+  )
 }
 
 export async function listPaymentTypesService(
@@ -79,21 +93,24 @@ export async function listPaymentTypesService(
   const parsed = listPaymentTypesQuerySchema.parse(query)
   const qs = buildPaymentTypesQuery(parsed)
   const raw = await apiFetch<unknown>(`payment-types${qs}`, { method: "GET" })
-  const envelope = paginatedEnvelopeSchema(paymentTypeSchema).parse(raw)
-  return { items: envelope.data, ...envelope.pagination }
+  return parsePaginatedEnvelope(raw, paymentTypeSchema, "GET /payment-types")
 }
 
 export async function getPaymentTypeService(paymentTypeId: string) {
   const raw = await apiFetch<unknown>(`payment-types/${paymentTypeId}`, {
     method: "GET",
   })
-  return successEnvelopeSchema(paymentTypeSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    paymentTypeSchema,
+    `GET /payment-types/${paymentTypeId}`
+  )
 }
 
 export async function createSaleService(input: CreateSaleRequest) {
   const body = createSaleRequestSchema.parse(input)
   const raw = await apiFetch<unknown>("sales", { method: "POST", body })
-  return successEnvelopeSchema(saleDetailSchema).parse(raw).data
+  return parseSuccessEnvelope(raw, saleDetailSchema, "POST /sales")
 }
 
 export async function updateSaleService(
@@ -105,14 +122,18 @@ export async function updateSaleService(
     method: "PATCH",
     body,
   })
-  return successEnvelopeSchema(saleDetailSchema).parse(raw).data
+  return parseSuccessEnvelope(raw, saleDetailSchema, `PATCH /sales/${saleId}`)
 }
 
 export async function recalculateTotalsService(saleId: string) {
   const raw = await apiFetch<unknown>(`sales/${saleId}/recalculate-totals`, {
     method: "POST",
   })
-  return successEnvelopeSchema(saleDetailSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    saleDetailSchema,
+    `POST /sales/${saleId}/recalculate-totals`
+  )
 }
 
 export async function convertToSaleService(
@@ -124,7 +145,11 @@ export async function convertToSaleService(
     method: "POST",
     body,
   })
-  return successEnvelopeSchema(saleDetailSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    saleDetailSchema,
+    `POST /sales/${saleId}/convert-to-sale`
+  )
 }
 
 export async function addSaleItemService(
@@ -136,7 +161,11 @@ export async function addSaleItemService(
     method: "POST",
     body,
   })
-  return successEnvelopeSchema(saleItemSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    saleItemSchema,
+    `POST /sales/${saleId}/items`
+  )
 }
 
 export async function updateSaleItemService(
@@ -149,7 +178,11 @@ export async function updateSaleItemService(
     method: "PATCH",
     body,
   })
-  return successEnvelopeSchema(saleItemSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    saleItemSchema,
+    `PATCH /sales/${saleId}/items/${saleItemId}`
+  )
 }
 
 export async function removeSaleItemService(saleId: string, saleItemId: string) {
@@ -167,7 +200,11 @@ export async function createPartialReturnService(
     method: "POST",
     body,
   })
-  return successEnvelopeSchema(saleReturnDetailSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    saleReturnDetailSchema,
+    `POST /sales/${saleId}/returns/partial`
+  )
 }
 
 export async function createFullReturnService(
@@ -179,5 +216,9 @@ export async function createFullReturnService(
     method: "POST",
     body,
   })
-  return successEnvelopeSchema(saleReturnDetailSchema).parse(raw).data
+  return parseSuccessEnvelope(
+    raw,
+    saleReturnDetailSchema,
+    `POST /sales/${saleId}/returns/full`
+  )
 }

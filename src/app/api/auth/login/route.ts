@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { enforceRateLimit } from "@/lib/api/with-rate-limit"
 import { setAuthCookies } from "@/lib/auth/cookies"
 import { getApiTimeoutMs, getServerApiBaseUrl } from "@/lib/auth/env"
 import { jsonError } from "@/lib/auth/route-utils"
@@ -11,6 +12,11 @@ import {
 } from "@/modules/authentication/auth.schema"
 
 export async function POST(req: Request) {
+  const rateLimited = enforceRateLimit(req, "auth/login", 10, 15 * 60 * 1000)
+  if (rateLimited) {
+    return rateLimited
+  }
+
   try {
     const body = loginRequestSchema.parse(await req.json())
     const res = await fetch(`${getServerApiBaseUrl()}/auth/login`, {

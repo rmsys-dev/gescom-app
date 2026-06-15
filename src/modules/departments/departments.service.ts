@@ -1,28 +1,31 @@
-import { apiFetch } from "@/lib/api/client"
-import { paginatedEnvelopeSchema, successEnvelopeSchema } from "@/lib/api/envelope"
+import { fetchAllPages } from "@/lib/api/fetch-all-pages"
+import { fetchById, fetchPaginated } from "@/lib/api/paginated-fetch"
 import {
-  buildDepartmentsQuery,
   departmentSchema,
   type Department,
   type ListDepartmentsQuery,
 } from "@/modules/departments/departments.schema"
 
+const DEPARTMENTS_PAGE_SIZE = 100
+/** Limite de páginas ao carregar departamentos ativos (até 2000 registros). */
+const DEPARTMENTS_MAX_FETCH_PAGES = 20
+
 export async function listDepartmentsService(query: ListDepartmentsQuery = {}) {
-  const qs = buildDepartmentsQuery(query)
-  const raw = await apiFetch<unknown>(`departments${qs}`, { method: "GET" })
-  const envelope = paginatedEnvelopeSchema(departmentSchema).parse(raw)
-  return { items: envelope.data, ...envelope.pagination }
+  return fetchPaginated("departments", departmentSchema, query)
 }
 
 export async function getDepartmentService(departmentId: string): Promise<Department> {
-  const raw = await apiFetch<unknown>(`departments/${departmentId}`, {
-    method: "GET",
-  })
-  return successEnvelopeSchema(departmentSchema).parse(raw).data
+  return fetchById(`departments/${departmentId}`, departmentSchema)
 }
 
 export async function listActiveDepartmentsService() {
-  const { items } = await listDepartmentsService({ limit: 100, offset: 0 })
+  const { items } = await fetchAllPages({
+    pageSize: DEPARTMENTS_PAGE_SIZE,
+    maxPages: DEPARTMENTS_MAX_FETCH_PAGES,
+    fetchPage: (offset, limit) =>
+      listDepartmentsService({ limit, offset, status: "ATIVO" }),
+  })
+
   return items
     .filter((d) => d.status === "ATIVO")
     .slice()

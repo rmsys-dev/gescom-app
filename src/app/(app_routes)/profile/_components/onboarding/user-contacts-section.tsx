@@ -17,9 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { HttpError } from "@/lib/api/http-error"
 import { formatPhone } from "@/lib/formatters"
-import { toastHttpError } from "@/modules/authentication/http-error-feedback"
 import {
   getUserContactTypeLabel,
   USER_CONTACT_TYPE_OPTIONS,
@@ -229,11 +227,9 @@ export function UserContactsSection({
               if (editingContact?.id === deleteTarget.id) {
                 setEditingTarget(null)
               }
-            } catch (error) {
-              if (error instanceof HttpError) {
-                toastHttpError(error, "Não foi possível remover o contato.")
-              }
-            }
+            } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
+    }
           }}
         />
       )}
@@ -317,12 +313,8 @@ function ContactListItem({
         input: patch,
       })
       onSaved()
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível guardar o contato.")
-        return
-      }
-      toast.error("Não foi possível guardar o contato.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 
@@ -416,12 +408,8 @@ function ContactCreateForm({
         body as { type: UserContactType; phone?: string; email?: string; whatsapp?: string }
       )
       onSaved()
-    } catch (error) {
-      if (error instanceof HttpError) {
-        toastHttpError(error, "Não foi possível guardar o contato.")
-        return
-      }
-      toast.error("Não foi possível guardar o contato.")
+    } catch {
+      /* erros de mutação tratados globalmente pelo QueryClient */
     }
   }
 

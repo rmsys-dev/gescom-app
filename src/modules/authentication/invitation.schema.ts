@@ -1,7 +1,7 @@
 import { z } from "zod"
 import {
   authUserSchema,
-  enterpriseSchema,
+  authEnterpriseSchema,
   loginTypeSchema,
 } from "@/modules/authentication/auth.schema"
 import { sixDigitCodeSchema } from "@/lib/validation/code"
@@ -33,7 +33,7 @@ export const invitationAcceptResponseSchema = z.object({
   accessToken: z.string().min(1),
   refreshToken: z.string().min(1),
   user: authUserSchema,
-  enterprises: z.array(enterpriseSchema),
+  enterprises: z.array(authEnterpriseSchema),
 })
 
 export type InvitationAcceptResponse = z.infer<

@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useMemo, useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
@@ -33,6 +34,7 @@ import {
 } from "@/modules/sales/sales-constants"
 import {
   dashboardFiltersToAnalyticsQuery,
+  salesAnalyticsQueryKeys,
   useBudgetFunnelQuery,
   useOperationsCancellationsQuery,
   useOperationsStatusBreakdownQuery,
@@ -49,6 +51,7 @@ import {
 export default function SalesDashboardPage() {
   const { ready, enterpriseId } = useRequireEnterprise()
   const perms = useOperatorPermissions()
+  const queryClient = useQueryClient()
 
   const [draftFilters, setDraftFilters] = useState<DashboardFilters>(
     defaultDashboardFilters()
@@ -107,50 +110,55 @@ export default function SalesDashboardPage() {
     filters: baseQuery,
     enabled,
   })
+
+  const primaryReady =
+    realizedOverview.isSuccess || realizedOverview.isError
+  const secondaryEnabled = enabled && primaryReady
+
   const timeseries = useRealizedTimeseriesQuery({
     enterpriseId,
     filters: timeseriesQuery,
-    enabled,
+    enabled: secondaryEnabled,
   })
   const byPaymentType = useRealizedByPaymentTypeQuery({
     enterpriseId,
     filters: rankingQuery,
-    enabled,
+    enabled: secondaryEnabled,
   })
   const bySeller = useRealizedBySellerQuery({
     enterpriseId,
     filters: rankingQuery,
-    enabled,
+    enabled: secondaryEnabled,
   })
   const topProducts = useRealizedTopProductsQuery({
     enterpriseId,
     filters: topProductsQuery,
-    enabled,
+    enabled: secondaryEnabled,
   })
   const budgetFunnel = useBudgetFunnelQuery({
     enterpriseId,
     filters: baseQuery,
-    enabled,
+    enabled: secondaryEnabled,
   })
   const statusBreakdown = useOperationsStatusBreakdownQuery({
     enterpriseId,
     filters: baseQuery,
-    enabled,
+    enabled: secondaryEnabled,
   })
   const cancellations = useOperationsCancellationsQuery({
     enterpriseId,
     filters: baseQuery,
-    enabled,
+    enabled: secondaryEnabled,
   })
   const receivablesSummary = useReceivablesSummaryQuery({
     enterpriseId,
     filters: receivablesQuery,
-    enabled,
+    enabled: secondaryEnabled,
   })
   const receivablesAging = useReceivablesAgingQuery({
     enterpriseId,
     filters: receivablesQuery,
-    enabled,
+    enabled: secondaryEnabled,
   })
 
   const applyFilters = useCallback(() => {
@@ -170,19 +178,12 @@ export default function SalesDashboardPage() {
     setUseCustomRange(false)
   }, [])
 
-  function refreshAll() {
-    void realizedOverview.refetch()
-    void pipelineOverview.refetch()
-    void timeseries.refetch()
-    void byPaymentType.refetch()
-    void bySeller.refetch()
-    void topProducts.refetch()
-    void budgetFunnel.refetch()
-    void statusBreakdown.refetch()
-    void cancellations.refetch()
-    void receivablesSummary.refetch()
-    void receivablesAging.refetch()
-  }
+  const refreshAll = useCallback(() => {
+    if (!enterpriseId) return
+    void queryClient.invalidateQueries({
+      queryKey: salesAnalyticsQueryKeys.all(enterpriseId),
+    })
+  }, [enterpriseId, queryClient])
 
   const isRefreshing =
     realizedOverview.isFetching ||

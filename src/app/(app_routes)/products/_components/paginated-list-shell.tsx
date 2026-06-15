@@ -2,6 +2,10 @@
 
 import type { ReactNode } from "react"
 import {
+  PermissionDeniedCard,
+  PermissionsErrorCard,
+} from "@/components/guards/permission-cards"
+import {
   Card,
   CardContent,
   CardDescription,
@@ -10,40 +14,7 @@ import {
 } from "@/components/ui/card"
 import { HttpError } from "@/lib/api/http-error"
 
-export function PermissionDeniedCard({
-  permissionLabel,
-}: {
-  permissionLabel: string
-}) {
-  return (
-    <main className="mx-auto flex w-full max-w-lg flex-col gap-6 p-4 md:p-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>Sem permissão</CardTitle>
-          <CardDescription>
-            Necessita da permissão {permissionLabel} para ver esta área.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-    </main>
-  )
-}
-
-export function PermissionsErrorCard() {
-  return (
-    <main className="mx-auto flex w-full max-w-lg flex-col gap-6 p-4 md:p-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>Não foi possível carregar permissões</CardTitle>
-          <CardDescription>
-            Não foi possível obter as permissões da sessão. Tente atualizar a
-            página ou iniciar sessão novamente.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-    </main>
-  )
-}
+export { PermissionDeniedCard, PermissionsErrorCard }
 
 export function ListErrorCard({
   title,
@@ -85,9 +56,11 @@ export function ListErrorCard({
 export function StaleDataBanner({
   message,
   title = "Não foi possível atualizar a lista.",
+  showStaleNote = true,
 }: {
   message: string
   title?: string
+  showStaleNote?: boolean
 }) {
   return (
     <div
@@ -96,7 +69,8 @@ export function StaleDataBanner({
     >
       <p className="font-medium">{title}</p>
       <p className="mt-1 text-amber-900/90 dark:text-amber-50/90">
-        {message}. Os valores abaixo podem estar desatualizados.
+        {message}
+        {showStaleNote ? ". Os valores abaixo podem estar desatualizados." : ""}
       </p>
     </div>
   )

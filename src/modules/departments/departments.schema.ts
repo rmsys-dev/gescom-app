@@ -1,5 +1,10 @@
 import { z } from "zod"
 
+import {
+  paginationQuerySchema,
+  type PaginationQuery,
+} from "@/lib/schemas/pagination"
+
 export const departmentStatusSchema = z.enum([
   "ATIVO",
   "INATIVO",
@@ -26,20 +31,7 @@ export const departmentSchema = z.object({
 
 export type Department = z.infer<typeof departmentSchema>
 
-export const listDepartmentsQuerySchema = z.object({
-  limit: z.coerce.number().int().min(1).max(100).optional(),
-  offset: z.coerce.number().int().min(0).optional(),
-  status: departmentStatusSchema.optional(),
-})
+/** GET /departments aceita apenas paginação; a API retorna só registros ATIVO. */
+export const listDepartmentsQuerySchema = paginationQuerySchema
 
-export type ListDepartmentsQuery = z.infer<typeof listDepartmentsQuerySchema>
-
-export function buildDepartmentsQuery(query: ListDepartmentsQuery): string {
-  const parsed = listDepartmentsQuerySchema.parse(query)
-  const params = new URLSearchParams()
-  if (parsed.limit !== undefined) params.set("limit", String(parsed.limit))
-  if (parsed.offset !== undefined) params.set("offset", String(parsed.offset))
-  if (parsed.status !== undefined) params.set("status", parsed.status)
-  const qs = params.toString()
-  return qs ? `?${qs}` : ""
-}
+export type ListDepartmentsQuery = PaginationQuery

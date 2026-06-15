@@ -22,12 +22,8 @@ export async function listActiveDepartmentsService() {
   const { items } = await fetchAllPages({
     pageSize: DEPARTMENTS_PAGE_SIZE,
     maxPages: DEPARTMENTS_MAX_FETCH_PAGES,
-    fetchPage: (offset, limit) =>
-      listDepartmentsService({ limit, offset, status: "ATIVO" }),
+    fetchPage: (offset, limit) => listDepartmentsService({ limit, offset }),
   })
 
   return items
-    .filter((d) => d.status === "ATIVO")
-    .slice()
-    .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"))
 }

@@ -9,10 +9,8 @@ export type CatalogSlug =
   | "anp"
   | "nbs"
   | "icms"
-  | "groups"
-  | "subgroups"
-  | "brands"
   | "pis-cofins"
+  | "taxation"
 
 export type CatalogConfig = {
   slug: CatalogSlug
@@ -27,10 +25,8 @@ export type CatalogConfig = {
     | "canConsultAnp"
     | "canConsultNbs"
     | "canConsultIcmsTaxation"
-    | "canConsultProductGroups"
-    | "canConsultProductSubgroups"
-    | "canConsultProductBrands"
     | "canConsultPisCofins"
+    | "canConsultProductTaxation"
   basePath: string
   supportsSearch?: boolean
 }
@@ -94,36 +90,20 @@ export const CATALOG_CONFIGS: CatalogConfig[] = [
     basePath: "/products/catalogs/icms",
   },
   {
-    slug: "groups",
-    title: "Grupos",
-    description: "Grupos de produto",
-    permissionLabel: "consultar_grupos_produto",
-    permissionKey: "canConsultProductGroups",
-    basePath: "/products/catalogs/groups",
-  },
-  {
-    slug: "subgroups",
-    title: "Subgrupos",
-    description: "Subgrupos de produto",
-    permissionLabel: "consultar_subgrupos_produto",
-    permissionKey: "canConsultProductSubgroups",
-    basePath: "/products/catalogs/subgroups",
-  },
-  {
-    slug: "brands",
-    title: "Marcas",
-    description: "Marcas de produto",
-    permissionLabel: "consultar_marcas_produto",
-    permissionKey: "canConsultProductBrands",
-    basePath: "/products/catalogs/brands",
-  },
-  {
     slug: "pis-cofins",
     title: "PIS/COFINS",
     description: "Situações CST PIS/COFINS",
     permissionLabel: "consultar_situacao_pis_cofins",
     permissionKey: "canConsultPisCofins",
     basePath: "/products/catalogs/pis-cofins",
+  },
+  {
+    slug: "taxation",
+    title: "Tributação de produtos",
+    description: "Tributação PIS/COFINS e ICMS por produto",
+    permissionLabel: "consultar_tributacao_produto",
+    permissionKey: "canConsultProductTaxation",
+    basePath: "/products/catalogs/taxation",
   },
 ]
 

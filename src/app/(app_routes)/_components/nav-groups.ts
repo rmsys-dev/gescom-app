@@ -4,7 +4,6 @@ import {
   Building2,
   DollarSign,
   Contact,
-  Globe,
   Handshake,
   HelpCircle,
   Home,
@@ -22,6 +21,10 @@ import {
   Layers,
   Gauge,
   History,
+  Boxes,
+  CirclePile,
+  Tag,
+  Percent,
 } from "lucide-react"
 
 import { isSidebarPathActive } from "@/app/(app_routes)/_components/route-labels"
@@ -81,7 +84,10 @@ export const NAV_GROUPS: NavGroup[] = [
     icon: Package,
     routes: [
       { title: "Produtos", url: "/products", icon: Package },
-      { title: "Catálogo global", url: "/products/global", icon: Globe },
+      { title: "Grupos", url: "/products/groups", icon: Boxes},
+      { title: "Subgrupos", url: "/products/subgroups", icon: CirclePile},
+      { title: "Marcas", url: "/products/brands", icon: Tag},
+      { title: "Promoções", url: "/products/promotional-prices", icon: Percent},
       { title: "Catálogos", url: "/products/catalogs", icon: BookOpen },
     ],
   },

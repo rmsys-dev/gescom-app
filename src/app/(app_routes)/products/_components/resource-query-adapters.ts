@@ -3,15 +3,12 @@
 import {
   useIcmsTaxationItemQuery,
   usePisCofinsSituationItemQuery,
-  usePriceQuery,
   useProductAnpQuery,
-  useProductApplicationQuery,
   useProductBrandQuery,
   useProductCestQuery,
   useProductGroupQuery,
   useProductNbsQuery,
   useProductNcmQuery,
-  useProductQuery,
   useProductSubgroupQuery,
   useProductTaxationQuery,
   usePromotionalPriceQuery,
@@ -24,24 +21,12 @@ type DetailQueryOpts = {
   enabled: boolean
 }
 
-export function usePriceDetailData({ id, enabled }: DetailQueryOpts) {
-  return usePriceQuery({ priceId: id, enabled })
-}
-
 export function usePromotionalPriceDetailData({ id, enabled }: DetailQueryOpts) {
   return usePromotionalPriceQuery({ promotionalPriceId: id, enabled })
 }
 
 export function useProductTaxationDetailData({ id, enabled }: DetailQueryOpts) {
   return useProductTaxationQuery({ productTaxationId: id, enabled })
-}
-
-export function useProductApplicationDetailData({ id, enabled }: DetailQueryOpts) {
-  return useProductApplicationQuery({ applicationId: id, enabled })
-}
-
-export function useProductDetailData({ id, enabled }: DetailQueryOpts) {
-  return useProductQuery({ productId: id, enabled })
 }
 
 export function useUnitDetailData({ id, enabled }: DetailQueryOpts) {

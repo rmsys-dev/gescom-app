@@ -12,7 +12,37 @@ import {
   saleTypeSchema,
 } from "@/modules/sales/sales-enums"
 
-export const saleSummarySchema = z.object({
+function normalizeSaleSummaryRow(data: unknown): unknown {
+  if (!data || typeof data !== "object") return data
+  const row = data as Record<string, unknown>
+  const legacyUserName =
+    typeof row.UserName === "string" ? row.UserName : undefined
+  const sellerLegalName =
+    (typeof row.sellerLegalName === "string" ? row.sellerLegalName : undefined) ??
+    (typeof row.userLegalName === "string" ? row.userLegalName : undefined) ??
+    legacyUserName
+  const userLegalName =
+    (typeof row.userLegalName === "string" ? row.userLegalName : undefined) ??
+    sellerLegalName ??
+    legacyUserName
+  const userId = typeof row.userId === "string" ? row.userId : undefined
+  const sellerId =
+    typeof row.sellerId === "string" ? row.sellerId : userId
+
+  if (!sellerLegalName || !userLegalName || !userId || !sellerId) {
+    return data
+  }
+
+  return {
+    ...row,
+    userId,
+    userLegalName,
+    sellerId,
+    sellerLegalName,
+  }
+}
+
+const saleSummaryObjectSchema = z.object({
   id: z.uuid(),
   orderNumber: z.number().int(),
   userId: z.uuid(),
@@ -35,6 +65,12 @@ export const saleSummarySchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string().nullable(),
 })
+
+function withSaleSummaryPreprocess<T extends z.ZodTypeAny>(schema: T) {
+  return z.preprocess(normalizeSaleSummaryRow, schema)
+}
+
+export const saleSummarySchema = withSaleSummaryPreprocess(saleSummaryObjectSchema)
 
 export type SaleSummary = z.infer<typeof saleSummarySchema>
 
@@ -97,12 +133,14 @@ export const sourceBudgetSummarySchema = z.object({
 
 export type SourceBudgetSummary = z.infer<typeof sourceBudgetSummarySchema>
 
-export const saleDetailSchema = saleSummarySchema.extend({
-  items: z.array(saleItemSchema).default([]),
-  payments: z.array(salePaymentSchema).default([]),
-  generatedSales: z.array(generatedSaleSummarySchema).optional(),
-  sourceBudget: sourceBudgetSummarySchema.nullable().optional(),
-})
+export const saleDetailSchema = withSaleSummaryPreprocess(
+  saleSummaryObjectSchema.extend({
+    items: z.array(saleItemSchema).default([]),
+    payments: z.array(salePaymentSchema).default([]),
+    generatedSales: z.array(generatedSaleSummarySchema).optional(),
+    sourceBudget: sourceBudgetSummarySchema.nullable().optional(),
+  })
+)
 
 export type SaleDetail = z.infer<typeof saleDetailSchema>
 

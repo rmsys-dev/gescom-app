@@ -45,6 +45,18 @@ export const PERMISSION_CODES = {
   consultarEstoqueMinMax: "consultar_estoque_min_max",
   consultarMovimentosEstoque: "consultar_movimentos_estoque",
   incluirMovimentosEstoque: "incluir_movimentos_estoque",
+  incluirVendas: "incluir_vendas",
+  alterarVendas: "alterar_vendas",
+  gerarVendas: "gerar_vendas",
+  incluirDevolucoesVendas: "incluir_devolucoes_vendas",
+  incluirProdutos: "incluir_produtos",
+  alterarProdutos: "alterar_produtos",
+  consultarTiposRede: "consultar_tipos_rede",
+  incluirTiposRede: "incluir_tipos_rede",
+  alterarTiposRede: "alterar_tipos_rede",
+  consultarTiposFornecedorCliente: "consultar_tipos_fornecedor_cliente",
+  incluirTiposFornecedorCliente: "incluir_tipos_fornecedor_cliente",
+  alterarTiposFornecedorCliente: "alterar_tipos_fornecedor_cliente",
 } as const
 
 /** Normaliza slugs da API (`consultar_membros`) para comparação estável. */
@@ -207,6 +219,39 @@ export function useOperatorPermissions() {
       canIncludeStockMovements: canPermission(
         set,
         PERMISSION_CODES.incluirMovimentosEstoque
+      ),
+      canIncludeSales: canPermission(set, PERMISSION_CODES.incluirVendas),
+      canAlterSales: canPermission(set, PERMISSION_CODES.alterarVendas),
+      canGenerateSales: canPermission(set, PERMISSION_CODES.gerarVendas),
+      canIncludeSaleReturns: canPermission(
+        set,
+        PERMISSION_CODES.incluirDevolucoesVendas
+      ),
+      canIncludeProducts: canPermission(set, PERMISSION_CODES.incluirProdutos),
+      canAlterProducts: canPermission(set, PERMISSION_CODES.alterarProdutos),
+      canConsultTypeNetworks: canPermission(
+        set,
+        PERMISSION_CODES.consultarTiposRede
+      ),
+      canIncludeTypeNetworks: canPermission(
+        set,
+        PERMISSION_CODES.incluirTiposRede
+      ),
+      canAlterTypeNetworks: canPermission(
+        set,
+        PERMISSION_CODES.alterarTiposRede
+      ),
+      canConsultTypeSupplierCustomers: canPermission(
+        set,
+        PERMISSION_CODES.consultarTiposFornecedorCliente
+      ),
+      canIncludeTypeSupplierCustomers: canPermission(
+        set,
+        PERMISSION_CODES.incluirTiposFornecedorCliente
+      ),
+      canAlterTypeSupplierCustomers: canPermission(
+        set,
+        PERMISSION_CODES.alterarTiposFornecedorCliente
       ),
       canCreateMemberWithUser:
         canPermission(set, PERMISSION_CODES.incluirUsuarios) &&

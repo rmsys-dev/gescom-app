@@ -30,7 +30,6 @@ function buildUsersQuery(query: ListUsersQuery): string {
   if (parsed.registration) params.set("registration", parsed.registration)
   if (parsed.email) params.set("email", parsed.email)
   if (parsed.phone) params.set("phone", parsed.phone)
-  if (parsed.userName) params.set("userName", parsed.userName)
   if (parsed.limit !== undefined) params.set("limit", String(parsed.limit))
   if (parsed.offset !== undefined) params.set("offset", String(parsed.offset))
   const qs = params.toString()

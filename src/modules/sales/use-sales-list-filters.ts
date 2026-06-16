@@ -16,7 +16,7 @@ import {
 } from "@/modules/sales/sales-rules"
 import type { ListSalesQuery } from "@/modules/sales/sales.schema"
 
-export const SALES_CLIENT_SEARCH_LIMIT = 100
+export const SALES_CLIENT_DATE_SEARCH_LIMIT = 100
 
 function validateDateRange(dateFilters: SalesDateFilters): boolean {
   const dateFrom = dateFilters.dateFrom?.trim()
@@ -35,14 +35,14 @@ function buildSearchFilters(
   dateFilters: SalesDateFilters
 ): ListSalesQuery | null {
   const dateActive = hasActiveSalesDateFilters(dateFilters)
-  const needsClientFetch = dateActive || parsed.kind === "name"
+  const needsClientDateFetch = dateActive
 
   const base: ListSalesQuery = {
     ...defaults,
     status: defaults.type === "ORCAMENTO" ? undefined : draftFilters.status,
     budgetClosureSituation: draftFilters.budgetClosureSituation,
-    limit: needsClientFetch
-      ? SALES_CLIENT_SEARCH_LIMIT
+    limit: needsClientDateFetch
+      ? SALES_CLIENT_DATE_SEARCH_LIMIT
       : (draftFilters.limit ?? defaults.limit),
     offset: 0,
     orderNumber: undefined,
@@ -62,7 +62,7 @@ function buildSearchFilters(
         )
         return null
       }
-      return base
+      return { ...base, seller: parsed.name, client: parsed.name }
   }
 }
 
@@ -71,14 +71,17 @@ export function useSalesListFilters(config: SalesListRouteConfig) {
   const defaults = useMemo(() => config.defaultListFilters(), [config])
 
   const [searchTerm, setSearchTerm] = useState("")
-  const [nameSearchFilter, setNameSearchFilter] = useState<string | undefined>()
   const [draftFilters, setDraftFilters] = useState<ListSalesQuery>(defaults)
   const [appliedFilters, setAppliedFilters] = useState<ListSalesQuery>(defaults)
   const [draftDateFilters, setDraftDateFilters] = useState(defaultSalesDateFilters)
   const [appliedDateFilters, setAppliedDateFilters] = useState(defaultSalesDateFilters)
 
   const isClientDatePagination = hasActiveSalesDateFilters(appliedDateFilters)
-  const isClientNamePagination = Boolean(nameSearchFilter)
+  const isClientNamePagination = Boolean(
+    appliedFilters.seller &&
+      appliedFilters.client &&
+      appliedFilters.seller === appliedFilters.client
+  )
   const isClientPagination = isClientDatePagination || isClientNamePagination
 
   const applySearch = useCallback((): boolean => {
@@ -93,7 +96,6 @@ export function useSalesListFilters(config: SalesListRouteConfig) {
     )
     if (!next) return false
 
-    setNameSearchFilter(parsed.kind === "name" ? parsed.name : undefined)
     setDraftFilters(next)
     setAppliedFilters(next)
     setAppliedDateFilters({ ...draftDateFilters })
@@ -112,7 +114,6 @@ export function useSalesListFilters(config: SalesListRouteConfig) {
     )
     if (!next) return false
 
-    setNameSearchFilter(parsed.kind === "name" ? parsed.name : undefined)
     setAppliedFilters(next)
     setAppliedDateFilters({ ...draftDateFilters })
     return true
@@ -131,7 +132,6 @@ export function useSalesListFilters(config: SalesListRouteConfig) {
     const reset = config.defaultListFilters()
     const resetDate = defaultSalesDateFilters()
     setSearchTerm("")
-    setNameSearchFilter(undefined)
     setDraftFilters(reset)
     setAppliedFilters(reset)
     setDraftDateFilters(resetDate)
@@ -150,7 +150,6 @@ export function useSalesListFilters(config: SalesListRouteConfig) {
   return {
     searchTerm,
     setSearchTerm,
-    nameSearchFilter,
     draftFilters,
     setDraftFilters,
     appliedFilters,

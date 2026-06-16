@@ -58,11 +58,19 @@ export function useCepsQuery(
   enabled = true
 ) {
   const digits = cepNumber?.replace(/\D/g, "") ?? ""
+  const canSearchByCepOnly = digits.length === 8
+  const canSearchByCity = Boolean(cityId)
   return useQuery({
     queryKey: addressCepsQueryKey(cityId ?? "", digits || undefined),
-    queryFn: () => listCepsService(cityId!, digits || undefined),
+    queryFn: () =>
+      listCepsService({
+        cityId: cityId || undefined,
+        cepNumber: digits || undefined,
+      }),
     enabled:
-      enabled && Boolean(cityId) && (!digits || digits.length === 8),
+      enabled &&
+      (canSearchByCity || canSearchByCepOnly) &&
+      (!digits || digits.length === 8),
     staleTime: digits ? GEO_CEP_SEARCH_STALE_TIME_MS : GEO_CATALOG_STALE_TIME_MS,
   })
 }

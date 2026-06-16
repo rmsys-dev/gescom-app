@@ -18,7 +18,6 @@ import {
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
 import { useOperatorPermissions } from "@/lib/permissions"
 import { filterSalesItemsByDate } from "@/modules/sales/sales-client-filters"
-import { filterSalesBySearchTerm } from "@/modules/sales/sales-rules"
 import type { SalesListRouteConfig } from "@/modules/sales/sales-route-config"
 import { useSalesListFilters } from "@/modules/sales/use-sales-list-filters"
 import { useSalesQuery } from "@/modules/sales/use-sales"
@@ -36,7 +35,6 @@ export function SalesListPage({ config, leading }: SalesListPageProps) {
   const {
     searchTerm,
     setSearchTerm,
-    nameSearchFilter,
     draftFilters,
     setDraftFilters,
     appliedFilters,
@@ -65,12 +63,8 @@ export function SalesListPage({ config, leading }: SalesListPageProps) {
 
   const filteredItems = useMemo(() => {
     if (!data) return []
-    let items = data.items
-    if (nameSearchFilter) {
-      items = filterSalesBySearchTerm(items, nameSearchFilter)
-    }
-    return filterSalesItemsByDate(items, appliedDateFilters)
-  }, [data, nameSearchFilter, appliedDateFilters])
+    return filterSalesItemsByDate(data.items, appliedDateFilters)
+  }, [data, appliedDateFilters])
 
   const tableItems = useMemo(() => {
     if (!isClientPagination) return filteredItems

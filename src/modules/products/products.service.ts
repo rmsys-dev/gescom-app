@@ -68,6 +68,13 @@ export async function getProductEnterpriseService(productEnterpriseId: string) {
   )
 }
 
+export async function getProductEnterpriseByCodeService(code: number) {
+  return getById(
+    `products-enterprises/code/${code}`,
+    productEnterpriseSchema
+  )
+}
+
 // --- Tenant extras ---
 
 export async function listPricesService(query: PaginationQuery = {}) {

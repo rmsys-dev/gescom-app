@@ -1,5 +1,7 @@
 "use client"
 
+import { useQuery } from "@tanstack/react-query"
+
 import { CACHE } from "@/lib/react-query/cache-policy"
 import { createCatalogListDetailHooks } from "@/lib/react-query/create-catalog-hooks"
 import type {
@@ -38,6 +40,7 @@ import {
   getProductBrandService,
   getProductCestService,
   getProductEnterpriseService,
+  getProductEnterpriseByCodeService,
   getProductGroupService,
   getProductNbsService,
   getProductNcmService,
@@ -272,6 +275,23 @@ export function useProductEnterpriseQuery({
   return productsEnterprisesCatalogHooks.useDetailQuery({
     id: productEnterpriseId,
     enabled,
+  })
+}
+
+export function useProductEnterpriseByCodeQuery({
+  enterpriseId,
+  code,
+  enabled = true,
+}: {
+  enterpriseId: string | undefined
+  code: number | undefined
+  enabled?: boolean
+}) {
+  return useQuery({
+    queryKey: productsQueryKeys.enterpriseByCode(enterpriseId ?? "", code ?? 0),
+    queryFn: () => getProductEnterpriseByCodeService(code!),
+    enabled: enabled && Boolean(enterpriseId) && code !== undefined && code > 0,
+    staleTime: CACHE.tenantDetail,
   })
 }
 

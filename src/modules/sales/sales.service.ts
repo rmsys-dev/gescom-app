@@ -12,6 +12,11 @@ import {
   listSalesQuerySchema,
 } from "@/modules/sales/sales-query"
 import {
+  isUnifiedNameSearchQuery,
+  mergeSalesById,
+  SALES_UNIFIED_NAME_SEARCH_FETCH_LIMIT,
+} from "@/modules/sales/sales-rules"
+import {
   budgetConversionSchema,
   convertBudgetToSaleRequestSchema,
   createFullReturnRequestSchema,
@@ -37,11 +42,39 @@ import {
   type UpdateSaleRequest,
 } from "@/modules/sales/sales.schema"
 
-export async function listSalesService(query: ListSalesQuery = {}) {
+async function listSalesPage(query: ListSalesQuery) {
   const parsed = listSalesQuerySchema.parse(query)
   const qs = buildSalesQuery(parsed)
   const raw = await apiFetch<unknown>(`sales${qs}`, { method: "GET" })
   return parsePaginatedEnvelope(raw, saleSummarySchema, "GET /sales")
+}
+
+export async function listSalesService(query: ListSalesQuery = {}) {
+  const parsed = listSalesQuerySchema.parse(query)
+
+  if (isUnifiedNameSearchQuery(parsed)) {
+    const term = parsed.seller!.trim()
+    const baseQuery: ListSalesQuery = {
+      ...parsed,
+      seller: undefined,
+      client: undefined,
+      limit: SALES_UNIFIED_NAME_SEARCH_FETCH_LIMIT,
+      offset: 0,
+    }
+    const [bySeller, byClient] = await Promise.all([
+      listSalesPage({ ...baseQuery, seller: term }),
+      listSalesPage({ ...baseQuery, client: term }),
+    ])
+    const items = mergeSalesById([...bySeller.items, ...byClient.items])
+    return {
+      items,
+      total: items.length,
+      limit: parsed.limit ?? 50,
+      offset: parsed.offset ?? 0,
+    }
+  }
+
+  return listSalesPage(parsed)
 }
 
 export async function getSaleService(saleId: string) {
@@ -211,10 +244,10 @@ export async function createFullReturnService(
   saleId: string,
   input: CreateFullReturnRequest = {}
 ) {
-  const body = createFullReturnRequestSchema.parse(input)
+  const parsed = createFullReturnRequestSchema.parse(input)
   const raw = await apiFetch<unknown>(`sales/${saleId}/returns/full`, {
     method: "POST",
-    body,
+    ...(parsed.notes !== undefined ? { body: parsed } : {}),
   })
   return parseSuccessEnvelope(
     raw,

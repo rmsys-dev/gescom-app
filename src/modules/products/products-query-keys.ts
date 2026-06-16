@@ -15,6 +15,8 @@ export const productsQueryKeys = {
     ["products", enterpriseId, "enterprises", filters ?? {}] as const,
   enterprise: (enterpriseId: string, id: string) =>
     ["products", enterpriseId, "enterprises", id] as const,
+  enterpriseByCode: (enterpriseId: string, code: number) =>
+    ["products", enterpriseId, "enterprises", "code", code] as const,
   prices: (enterpriseId: string, filters?: PaginationQuery) =>
     ["products", enterpriseId, "prices", filters ?? {}] as const,
   price: (enterpriseId: string, id: string) =>

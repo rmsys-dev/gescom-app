@@ -1,15 +1,15 @@
 "use client"
 
-import { createElement, useEffect, useState } from "react"
-import { MapPin } from "lucide-react"
+import { useEffect, useState } from "react"
+// import { MapPin } from "lucide-react"
 
-import {
-  useGeolocationCoords,
-  useHeaderWeather,
-  weatherCodeToIcon,
-} from "@/app/(app_routes)/_components/use-header-weather"
-import { Separator } from "@/components/ui/separator"
-import { Skeleton } from "@/components/ui/skeleton"
+// import {
+//   useGeolocationCoords,
+//   useHeaderWeather,
+//   weatherCodeToIcon,
+// } from "@/app/(app_routes)/_components/use-header-weather"
+// import { Separator } from "@/components/ui/separator"
+// import { Skeleton } from "@/components/ui/skeleton"
 
 type LiveClock = {
   dateLabel: string
@@ -61,32 +61,32 @@ function useLiveClock(): LiveClock {
   return clock
 }
 
-function WeatherSkeleton() {
-  return (
-    <div className="flex items-center gap-2" aria-hidden>
-      <Skeleton className="size-5 shrink-0 rounded-full bg-border/70" />
-      <div className="grid gap-1 leading-tight">
-        <Skeleton className="h-5 w-9 bg-border/70" />
-        <div className="flex items-center gap-1">
-          <Skeleton className="size-3 shrink-0 rounded-full bg-border/70" />
-          <Skeleton className="h-3 w-20 bg-border/70 sm:w-24" />
-        </div>
-      </div>
-    </div>
-  )
-}
+// function WeatherSkeleton() {
+//   return (
+//     <div className="flex items-center gap-2" aria-hidden>
+//       <Skeleton className="size-5 shrink-0 rounded-full bg-border/70" />
+//       <div className="grid gap-1 leading-tight">
+//         <Skeleton className="h-5 w-9 bg-border/70" />
+//         <div className="flex items-center gap-1">
+//           <Skeleton className="size-3 shrink-0 rounded-full bg-border/70" />
+//           <Skeleton className="h-3 w-20 bg-border/70 sm:w-24" />
+//         </div>
+//       </div>
+//     </div>
+//   )
+// }
 
 export function NavHeaderDateTimeWeather() {
   const { dateLabel, timeLabel } = useLiveClock()
-  const coords = useGeolocationCoords()
-  const { data: weather, isPending } = useHeaderWeather(coords)
+  // const coords = useGeolocationCoords()
+  // const { data: weather, isPending } = useHeaderWeather(coords)
 
-  const isWeatherLoading = coords === null || isPending
-  const temperatureLabel =
-    weather?.temperature === null || weather?.temperature === undefined
-      ? "—°"
-      : `${weather.temperature}°`
-  const cityLabel = weather?.city ?? null
+  // const isWeatherLoading = coords === null || isPending
+  // const temperatureLabel =
+  //   weather?.temperature === null || weather?.temperature === undefined
+  //     ? "—°"
+  //     : `${weather.temperature}°`
+  // const cityLabel = weather?.city ?? null
 
   return (
     <div
@@ -98,7 +98,7 @@ export function NavHeaderDateTimeWeather() {
         <span className="text-lg font-bold">{timeLabel}</span>
       </div>
 
-      <Separator
+      {/* <Separator
         orientation="vertical"
         className="data-[orientation=vertical]:h-auto"
       />
@@ -131,7 +131,7 @@ export function NavHeaderDateTimeWeather() {
             </div>
           </>
         )}
-      </div>
+      </div> */}
     </div>
   )
 }

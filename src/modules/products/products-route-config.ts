@@ -19,6 +19,12 @@ export type ProductsListRouteConfig = {
     loadListErrorTitle: string
     emptyList: string
     emptyListHint: string
+    loadingDetail: string
+    loadDetailError: string
+    loadDetailErrorTitle: string
+    invalidIdTitle: string
+    invalidIdDescription: string
+    staleDetailTitle: string
   }
   list: {
     filtersFormId: string
@@ -37,6 +43,12 @@ export const PRODUCTS_ROUTE_CONFIG: ProductsListRouteConfig = {
     loadListErrorTitle: "Erro ao carregar produtos",
     emptyList: "Nenhum produto encontrado",
     emptyListHint: "Ajuste os filtros ou refine a pesquisa.",
+    loadingDetail: "A carregar produto",
+    loadDetailError: "Não foi possível carregar o produto.",
+    loadDetailErrorTitle: "Erro ao carregar produto",
+    invalidIdTitle: "Identificador inválido",
+    invalidIdDescription: "O ID do produto não é válido.",
+    staleDetailTitle: "Não foi possível atualizar os dados.",
   },
   list: {
     filtersFormId: "products-filters-form",
@@ -55,6 +67,12 @@ export const PROMOTIONAL_PRICES_ROUTE_CONFIG: ProductsListRouteConfig = {
     loadListErrorTitle: "Erro ao carregar preços promocionais",
     emptyList: "Nenhum preço promocional encontrado",
     emptyListHint: "Não há promoções cadastradas para esta empresa.",
+    loadingDetail: "A carregar preço promocional",
+    loadDetailError: "Não foi possível carregar o preço promocional.",
+    loadDetailErrorTitle: "Erro ao carregar preço promocional",
+    invalidIdTitle: "Identificador inválido",
+    invalidIdDescription: "O ID informado não é válido.",
+    staleDetailTitle: "Não foi possível atualizar os dados.",
   },
   list: {
     filtersFormId: "promotional-prices-filters-form",

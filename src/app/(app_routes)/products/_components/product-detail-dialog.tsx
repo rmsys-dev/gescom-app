@@ -5,6 +5,7 @@ import {
   useProductPriceForEnterprise,
 } from "@/app/(app_routes)/products/_components/product-detail-view"
 import { ProductDetailContentLoading } from "@/app/(app_routes)/products/_components/products-route-loading"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardDescription,
@@ -15,6 +16,7 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
@@ -26,6 +28,8 @@ import {
   usePricesQuery,
   useProductEnterpriseQuery,
 } from "@/modules/products/use-products"
+import { Pencil } from "lucide-react"
+import Link from "next/link"
 
 type ProductDetailDialogProps = {
   productEnterpriseId: string
@@ -95,9 +99,24 @@ export function ProductDetailDialog({
           )}
 
           {product && !isPending && (
-            <ProductDetailView product={product} price={price} />
+            <ProductDetailView
+              product={product}
+              price={price}
+              canConsultPrices={perms.canConsultPrices}
+            />
           )}
         </div>
+
+        {product && !isPending && (
+          <SheetFooter className="shrink-0 border-t px-6 py-4">
+            <Button variant="default" size="sm" asChild>
+              <Link href={`${config.basePath}/${product.id}`}>
+                <Pencil className="size-4" aria-hidden />
+                Editar
+              </Link>
+            </Button>
+          </SheetFooter>
+        )}
       </SheetContent>
     </Sheet>
   )

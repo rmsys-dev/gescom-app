@@ -1,21 +1,12 @@
 "use client"
 
-import type { ReactNode } from "react"
 import { SearchX } from "lucide-react"
 
 import { PaginatedListControls } from "@/app/(app_routes)/products/_components/paginated-list-controls"
 import { Button } from "@/components/ui/button"
 import {
   Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
-
-export type ResourceCardField<T> = {
-  label: string
-  value: (item: T) => ReactNode
-}
 
 type PaginatedResourceGridProps<T extends { id: string }> = {
   items: T[]
@@ -27,7 +18,6 @@ type PaginatedResourceGridProps<T extends { id: string }> = {
   emptyTitle: string
   emptyDescription: string
   cardTitle: (item: T) => string
-  cardFields?: ResourceCardField<T>[]
   onClearFilters?: () => void
   listLabel?: string
 }
@@ -42,7 +32,6 @@ export function PaginatedResourceGrid<T extends { id: string }>({
   emptyTitle,
   emptyDescription,
   cardTitle,
-  cardFields = [],
   onClearFilters,
   listLabel = "Lista de registros",
 }: PaginatedResourceGridProps<T>) {
@@ -80,24 +69,10 @@ export function PaginatedResourceGrid<T extends { id: string }>({
       >
         {items.map((item) => (
           <li key={item.id}>
-            <Card className="h-full">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base leading-snug">
-                  {cardTitle(item)}
-                </CardTitle>
-              </CardHeader>
-              {cardFields.length > 0 && (
-                <CardContent className="space-y-2 pt-0">
-                  {cardFields.map((field) => (
-                    <div key={field.label} className="text-sm">
-                      <span className="text-muted-foreground">
-                        {field.label}:{" "}
-                      </span>
-                      <span className="font-medium">{field.value(item)}</span>
-                    </div>
-                  ))}
-                </CardContent>
-              )}
+            <Card className="h-full flex items-center justify-center">
+              <p className="text-center text-sm text-foreground">
+                {cardTitle(item)}
+              </p>
             </Card>
           </li>
         ))}

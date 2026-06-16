@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils"
 
 export function ProductsContentLoading() {
   return (
@@ -64,9 +65,28 @@ export function ProductDetailContentLoading({
       aria-busy="true"
       aria-label="A carregar produto"
     >
-      {!compact && <Skeleton className="h-8 w-64" />}
-      <Skeleton className="h-40 w-full rounded-lg" />
-      <Skeleton className="h-32 w-full rounded-lg" />
+      {!compact && (
+        <>
+          <Skeleton className="h-4 w-48" />
+          <Skeleton className="h-44 w-full rounded-lg" />
+        </>
+      )}
+      <div
+        className={cn(
+          "grid gap-4",
+          compact ? "grid-cols-1" : "sm:grid-cols-2 lg:grid-cols-2"
+        )}
+      >
+        <Skeleton className="h-36 w-full rounded-lg" />
+        <Skeleton className="h-36 w-full rounded-lg" />
+        {!compact && (
+          <>
+            <Skeleton className="h-40 w-full rounded-lg" />
+            <Skeleton className="h-40 w-full rounded-lg" />
+            <Skeleton className="col-span-full h-32 w-full rounded-lg" />
+          </>
+        )}
+      </div>
     </div>
   )
 }

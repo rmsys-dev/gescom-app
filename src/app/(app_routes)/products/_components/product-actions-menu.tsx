@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ExternalLink, Eye, MoreVertical } from "lucide-react"
+import { Eye, MoreVertical, Pencil } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -53,8 +53,8 @@ export function ProductActionsMenu({
             href={detailHref}
             className="flex cursor-pointer items-center gap-2"
           >
-            <ExternalLink className="size-4 shrink-0" aria-hidden />
-            Ver detalhe completo
+            <Pencil className="size-4 shrink-0" aria-hidden />
+            Editar
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

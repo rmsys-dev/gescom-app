@@ -13,7 +13,6 @@ import {
 } from "@/app/(app_routes)/products/_components/paginated-list-shell"
 import {
   PaginatedResourceGrid,
-  type ResourceCardField,
 } from "@/app/(app_routes)/products/_components/paginated-resource-grid"
 import {
   PaginatedResourceTable,
@@ -43,7 +42,6 @@ type TenantResourceListViewProps<T extends { id: string }> = {
   layout?: "table" | "grid"
   columns?: ResourceColumn<T>[]
   cardTitle?: (item: T) => string
-  cardFields?: ResourceCardField<T>[]
   mobileTitle?: (item: T) => string
   mobileSubtitle?: (item: T) => string
   emptyTitle?: string
@@ -62,7 +60,6 @@ export function TenantResourceListView<T extends { id: string }>({
   layout = "table",
   columns = [],
   cardTitle,
-  cardFields,
   mobileTitle,
   mobileSubtitle,
   emptyTitle = "Nenhum registro encontrado",
@@ -167,7 +164,6 @@ export function TenantResourceListView<T extends { id: string }>({
               emptyTitle={emptyTitle}
               emptyDescription={emptyHint}
               cardTitle={resolvedCardTitle}
-              cardFields={cardFields}
               listLabel={`Lista de ${title.toLowerCase()}`}
             />
           ) : (

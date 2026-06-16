@@ -1,7 +1,6 @@
 "use client"
 
 import { ProductStatusBadge } from "@/app/(app_routes)/products/_components/product-status-badge"
-import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import {
   Card,
   CardContent,
@@ -9,20 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { formatCurrency, formatDateOnly } from "@/lib/formatters"
 import type { ProductEnterprise } from "@/modules/products/products.schema"
 import type { Price, ProductApplication, ProductTaxation, PromotionalPrice } from "@/modules/products/products-tenant-extras.schema"
-
-export function ProductEnterpriseDetailHeader({
-  description,
-}: {
-  description: string
-}) {
-  return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <RouteBreadcrumb currentLabel={description} />
-    </div>
-  )
-}
 
 export function ProductEnterpriseInfoCard({
   product,
@@ -109,23 +97,25 @@ export function ProductPriceSection({
           <dl className="grid gap-2 sm:grid-cols-2">
             <div>
               <dt className="text-xs text-muted-foreground">Preço de venda</dt>
-              <dd className="text-lg font-semibold">{price.price}</dd>
+              <dd className="text-lg font-semibold tabular-nums">
+                {formatCurrency(price.price)}
+              </dd>
             </div>
             {price.priceCost && (
               <div>
                 <dt className="text-xs text-muted-foreground">Custo</dt>
-                <dd>{price.priceCost}</dd>
+                <dd className="tabular-nums">{formatCurrency(price.priceCost)}</dd>
               </div>
             )}
             {price.averageCost && (
               <div>
                 <dt className="text-xs text-muted-foreground">Custo médio</dt>
-                <dd>{price.averageCost}</dd>
+                <dd className="tabular-nums">{formatCurrency(price.averageCost)}</dd>
               </div>
             )}
           </dl>
         ) : (
-          <p className="text-sm text-muted-foreground">Sem preço registado.</p>
+          <p className="text-sm text-muted-foreground">Sem preço registrado.</p>
         )}
       </CardContent>
     </Card>
@@ -147,18 +137,17 @@ export function ProductPromotionalPricesSection({
       </CardHeader>
       <CardContent>
         {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhuma promoção activa.</p>
+          <p className="text-sm text-muted-foreground">Nenhuma promoção ativa.</p>
         ) : (
           <ul className="space-y-3">
             {items.map((p) => (
               <li key={p.id} className="rounded-md border p-3 text-sm">
-                <p className="font-medium">{p.price}</p>
+                <p className="font-medium tabular-nums">{formatCurrency(p.price)}</p>
                 {p.description && (
                   <p className="text-muted-foreground">{p.description}</p>
                 )}
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {new Date(p.startDate).toLocaleDateString("pt-BR")} –{" "}
-                  {new Date(p.endDate).toLocaleDateString("pt-BR")}
+                  {formatDateOnly(p.startDate)} – {formatDateOnly(p.endDate)}
                 </p>
               </li>
             ))}
@@ -184,7 +173,7 @@ export function ProductTaxationSection({
       </CardHeader>
       <CardContent>
         {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Sem tributação registada.</p>
+          <p className="text-sm text-muted-foreground">Sem tributação registrada.</p>
         ) : (
           <ul className="space-y-2 text-sm">
             {items.map((t) => (
@@ -215,7 +204,7 @@ export function ProductApplicationsSection({
       </CardHeader>
       <CardContent>
         {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Sem aplicações registadas.</p>
+          <p className="text-sm text-muted-foreground">Sem aplicações registradas.</p>
         ) : (
           <ul className="list-inside list-disc text-sm">
             {items.map((a) => (

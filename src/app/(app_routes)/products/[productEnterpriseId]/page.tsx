@@ -7,7 +7,6 @@ import { z } from "zod"
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import {
   ProductApplicationsSection,
-  ProductEnterpriseDetailHeader,
   ProductEnterpriseInfoCard,
   ProductPriceSection,
   ProductPromotionalPricesSection,
@@ -15,11 +14,14 @@ import {
 } from "@/app/(app_routes)/products/_components/product-enterprise-field"
 import { ProductDetailContentLoading } from "@/app/(app_routes)/products/_components/products-route-loading"
 import {
+  ListErrorCard,
+  PaginatedListLayout,
   PermissionDeniedCard,
   PermissionsErrorCard,
-  ListErrorCard,
+  StaleDataBanner,
   useListErrorState,
 } from "@/app/(app_routes)/products/_components/paginated-list-shell"
+import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import {
   Card,
   CardDescription,
@@ -119,9 +121,9 @@ export default function ProductEnterpriseDetailPage() {
 
   if (!ready || !perms.isReady) {
     return (
-      <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
-        <ProductDetailContentLoading />
-      </main>
+      <PaginatedListLayout loading={<ProductDetailContentLoading />}>
+        {null}
+      </PaginatedListLayout>
     )
   }
 
@@ -132,21 +134,22 @@ export default function ProductEnterpriseDetailPage() {
 
   if (!productEnterpriseId) {
     return (
-      <main className="mx-auto flex w-full max-w-lg flex-col gap-6 p-4 md:p-8">
-        <Card>
+      <PaginatedListLayout loading={null}>
+        <Card className="max-w-lg">
           <CardHeader>
             <CardTitle>Identificador inválido</CardTitle>
             <CardDescription>O ID do produto não é válido.</CardDescription>
           </CardHeader>
         </Card>
-      </main>
+      </PaginatedListLayout>
     )
   }
 
   return (
-    <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
-      {isPending && <ProductDetailContentLoading />}
-
+    <PaginatedListLayout
+      loading={isPending ? <ProductDetailContentLoading /> : null}
+    >
+      {Boolean(error) && product && <StaleDataBanner message={errMessage} />}
       {error && !product && !isPending && (
         <ListErrorCard
           title="Erro ao carregar produto"
@@ -154,10 +157,14 @@ export default function ProductEnterpriseDetailPage() {
           meta={errMeta}
         />
       )}
-
       {product && !isPending && (
         <div className="space-y-6">
-          <ProductEnterpriseDetailHeader description={product.description} />
+          <div className="flex flex-col gap-2">
+            <RouteBreadcrumb currentLabel={product.description} />
+            <h1 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
+              {product.description}
+            </h1>
+          </div>
           <ProductEnterpriseInfoCard product={product} />
           <div className="grid gap-6 lg:grid-cols-2">
             <ProductPriceSection
@@ -179,6 +186,6 @@ export default function ProductEnterpriseDetailPage() {
           </div>
         </div>
       )}
-    </main>
+    </PaginatedListLayout>
   )
 }

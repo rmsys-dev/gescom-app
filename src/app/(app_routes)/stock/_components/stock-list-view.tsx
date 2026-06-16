@@ -80,6 +80,20 @@ export function StockListView<T extends { id: string }>({
     `Não foi possível carregar ${config.title.toLowerCase()}.`
   )
 
+  const tableTotal = data?.total ?? 0
+  const tableOffset = data?.offset ?? 0
+  const tableLimit = appliedFilters.limit ?? data?.limit ?? 50
+  const rangeStart = tableTotal === 0 ? 0 : tableOffset + 1
+  const rangeEnd = Math.min(tableOffset + tableLimit, tableTotal)
+
+  const setPageOffset = useCallback((offset: number) => {
+    setAppliedFilters((f) => ({ ...f, offset }))
+  }, [])
+
+  const setLimit = useCallback((limit: number) => {
+    setAppliedFilters((f) => ({ ...f, limit, offset: 0 }))
+  }, [])
+
   if (!ready || !perms.isReady) {
     return (
       <PaginatedListLayout loading={<ProductsContentLoading />}>{null}</PaginatedListLayout>
@@ -106,29 +120,41 @@ export function StockListView<T extends { id: string }>({
           <div className="flex flex-col gap-2">
             <RouteBreadcrumb />
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight">
+              <h1 className="text-2xl font-bold tracking-tight">
                 {config.title}
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                {config.description} · {data.total} registo(s)
+                {config.description}
               </p>
             </div>
           </div>
 
+          <p
+            className="text-sm text-muted-foreground"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {tableTotal === 1
+              ? "1 registro encontrado"
+              : `Mostrando ${rangeStart}–${rangeEnd} de ${tableTotal} registros`}
+          </p>
+
           <PaginatedResourceTable
             items={data.items}
-            total={data.total}
-            limit={data.limit}
-            offset={data.offset}
-            onPageChange={(offset) =>
-              setAppliedFilters((f) => ({ ...f, offset }))
-            }
+            total={tableTotal}
+            limit={tableLimit}
+            offset={tableOffset}
+            onPageChange={setPageOffset}
+            onLimitChange={setLimit}
             basePath={config.basePath}
-            emptyTitle="Nenhum registo encontrado"
+            showDetailLink
+            emptyTitle="Nenhum registro encontrado"
             emptyDescription="Não há itens de estoque para exibir."
             columns={columns}
             mobileTitle={mobileTitle}
             mobileSubtitle={mobileSubtitle}
+            listLabel={`Lista de ${config.title.toLowerCase()}`}
           />
         </div>
       )}

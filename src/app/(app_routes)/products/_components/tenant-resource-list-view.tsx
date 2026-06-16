@@ -12,6 +12,10 @@ import {
   useListErrorState,
 } from "@/app/(app_routes)/products/_components/paginated-list-shell"
 import {
+  PaginatedResourceGrid,
+  type ResourceCardField,
+} from "@/app/(app_routes)/products/_components/paginated-resource-grid"
+import {
   PaginatedResourceTable,
   type ResourceColumn,
 } from "@/app/(app_routes)/products/_components/paginated-resource-table"
@@ -36,10 +40,14 @@ type TenantResourceListViewProps<T extends { id: string }> = {
   description: string
   permissionLabel: string
   canConsult: boolean
-  basePath: string
-  columns: ResourceColumn<T>[]
-  mobileTitle: (item: T) => string
+  layout?: "table" | "grid"
+  columns?: ResourceColumn<T>[]
+  cardTitle?: (item: T) => string
+  cardFields?: ResourceCardField<T>[]
+  mobileTitle?: (item: T) => string
   mobileSubtitle?: (item: T) => string
+  emptyTitle?: string
+  emptyHint?: string
   useListData: (opts: {
     filters: PaginationQuery
     enabled: boolean
@@ -51,21 +59,25 @@ export function TenantResourceListView<T extends { id: string }>({
   description,
   permissionLabel,
   canConsult,
-  basePath,
-  columns,
+  layout = "table",
+  columns = [],
+  cardTitle,
+  cardFields,
   mobileTitle,
   mobileSubtitle,
+  emptyTitle = "Nenhum registro encontrado",
+  emptyHint = "Não há itens para listar.",
   useListData,
 }: TenantResourceListViewProps<T>) {
   const { ready } = useRequireEnterprise()
   const perms = useOperatorPermissions()
-  const [filters, setFilters] = useState<PaginationQuery>({
+  const [appliedFilters, setAppliedFilters] = useState<PaginationQuery>({
     limit: DEFAULT_LIMIT,
     offset: 0,
   })
 
   const { data, error, isPending, isFetching, refetch } = useListData({
-    filters,
+    filters: appliedFilters,
     enabled: ready && perms.isReady && canConsult,
   })
 
@@ -83,6 +95,22 @@ export function TenantResourceListView<T extends { id: string }>({
     error,
     `Não foi possível carregar ${title.toLowerCase()}.`
   )
+
+  const tableTotal = data?.total ?? 0
+  const tableOffset = data?.offset ?? 0
+  const tableLimit = appliedFilters.limit ?? data?.limit ?? DEFAULT_LIMIT
+  const rangeStart = tableTotal === 0 ? 0 : tableOffset + 1
+  const rangeEnd = Math.min(tableOffset + tableLimit, tableTotal)
+
+  const setPageOffset = useCallback((offset: number) => {
+    setAppliedFilters((f) => ({ ...f, offset }))
+  }, [])
+
+  const setLimit = useCallback((limit: number) => {
+    setAppliedFilters((f) => ({ ...f, limit, offset: 0 }))
+  }, [])
+
+  const resolvedCardTitle = cardTitle ?? mobileTitle ?? (() => "")
 
   if (!ready || !perms.isReady) {
     return (
@@ -107,32 +135,59 @@ export function TenantResourceListView<T extends { id: string }>({
       )}
       {data && !isPending && (
         <div className="space-y-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex flex-col gap-2">
-                  <RouteBreadcrumb />
-                  <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {description} · {data.total} registo(s)
-                    </p>
-                  </div>
-                </div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-2">
+              <RouteBreadcrumb />
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+                <p className="mt-1 text-sm text-muted-foreground">{description}</p>
               </div>
-              <PaginatedResourceTable
-                items={data.items}
-                total={data.total}
-                limit={data.limit}
-                offset={data.offset}
-                onPageChange={(offset) => setFilters((f) => ({ ...f, offset }))}
-                basePath={basePath}
-                emptyTitle="Nenhum registo encontrado"
-                emptyDescription="Não há itens para listar."
-                columns={columns}
-                mobileTitle={mobileTitle}
-                mobileSubtitle={mobileSubtitle}
-              />
             </div>
+          </div>
+
+          <p
+            className="text-sm text-muted-foreground"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {tableTotal === 1
+              ? "1 registro encontrado"
+              : `Mostrando ${rangeStart}–${rangeEnd} de ${tableTotal} registros`}
+          </p>
+
+          {layout === "grid" ? (
+            <PaginatedResourceGrid
+              items={data.items}
+              total={tableTotal}
+              limit={tableLimit}
+              offset={tableOffset}
+              onPageChange={setPageOffset}
+              onLimitChange={setLimit}
+              emptyTitle={emptyTitle}
+              emptyDescription={emptyHint}
+              cardTitle={resolvedCardTitle}
+              cardFields={cardFields}
+              listLabel={`Lista de ${title.toLowerCase()}`}
+            />
+          ) : (
+            <PaginatedResourceTable
+              items={data.items}
+              total={tableTotal}
+              limit={tableLimit}
+              offset={tableOffset}
+              onPageChange={setPageOffset}
+              onLimitChange={setLimit}
+              emptyTitle={emptyTitle}
+              emptyDescription={emptyHint}
+              columns={columns}
+              mobileTitle={mobileTitle ?? resolvedCardTitle}
+              mobileSubtitle={mobileSubtitle}
+              listLabel={`Lista de ${title.toLowerCase()}`}
+            />
           )}
+        </div>
+      )}
     </PaginatedListLayout>
   )
 }

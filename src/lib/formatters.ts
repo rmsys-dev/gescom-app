@@ -126,6 +126,34 @@ export function formatPersonName(value: string | null | undefined): string {
     .join(" ")
 }
 
+export function formatProfitMargin(
+  value: string | number | null | undefined
+): string {
+  if (value === null || value === undefined || value === "") return EMPTY_DISPLAY
+  const num =
+    typeof value === "string" ? Number.parseFloat(value.trim()) : value
+  if (Number.isNaN(num)) return EMPTY_DISPLAY
+  return `${new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(num)}%`
+}
+
+export function formatCurrency(
+  value: string | number | null | undefined
+): string {
+  if (value === null || value === undefined || value === "") return EMPTY_DISPLAY
+  const num =
+    typeof value === "string" ? Number.parseFloat(value.trim()) : value
+  if (Number.isNaN(num)) return EMPTY_DISPLAY
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(num)
+}
+
 export function formatPhone(value: string | null | undefined): string {
   if (!value?.trim()) return EMPTY_DISPLAY
 

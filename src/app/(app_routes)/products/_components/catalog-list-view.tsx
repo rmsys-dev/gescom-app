@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useState } from "react"
+import { Loader2, Search, X } from "lucide-react"
 import { toast } from "sonner"
 
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
@@ -24,7 +25,6 @@ import {
 import { ProductsContentLoading } from "@/app/(app_routes)/products/_components/products-route-loading"
 import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
 import { Button } from "@/components/ui/button"
-import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { useOperatorPermissions } from "@/lib/permissions"
 import type { PaginationQuery } from "@/modules/products/products-query"
@@ -65,9 +65,7 @@ export function CatalogListView<T extends { id: string }>({
     ? DEFAULT_NBS_FILTERS
     : DEFAULT_CATALOG_FILTERS
 
-  const [draftFilters, setDraftFilters] = useState<
-    PaginationQuery | ListProductNbsQuery
-  >(initialFilters)
+  const [searchTerm, setSearchTerm] = useState("")
   const [appliedFilters, setAppliedFilters] = useState<
     PaginationQuery | ListProductNbsQuery
   >(initialFilters)
@@ -87,29 +85,22 @@ export function CatalogListView<T extends { id: string }>({
     enabled: perms.isReady && !perms.isError && canConsult,
   })
 
-  const applyFilters = useCallback(() => {
-    const searchValue =
-      "search" in draftFilters && typeof draftFilters.search === "string"
-        ? draftFilters.search
-        : undefined
-    const rawSearch =
-      config.supportsSearch && searchValue !== undefined
-        ? searchValue.trim()
-        : undefined
-    if (rawSearch !== undefined && rawSearch.length === 0) {
+  const applySearch = useCallback(() => {
+    if (!config.supportsSearch) return
+    const search = searchTerm.trim()
+    if (search.length > 0 && search.length < 1) {
       toast.error("A pesquisa deve ter pelo menos 1 caractere.")
       return
     }
-    const search = rawSearch && rawSearch.length > 0 ? rawSearch : undefined
     setAppliedFilters({
-      ...draftFilters,
+      ...appliedFilters,
       offset: 0,
-      search,
+      search: search.length > 0 ? search : undefined,
     } as typeof appliedFilters)
-  }, [config.supportsSearch, draftFilters])
+  }, [config.supportsSearch, searchTerm, appliedFilters])
 
   const clearFilters = useCallback(() => {
-    setDraftFilters(initialFilters)
+    setSearchTerm("")
     setAppliedFilters(initialFilters)
   }, [initialFilters])
 
@@ -117,6 +108,20 @@ export function CatalogListView<T extends { id: string }>({
     error,
     `Não foi possível carregar ${config.title.toLowerCase()}.`
   )
+
+  const tableTotal = data?.total ?? 0
+  const tableOffset = data?.offset ?? 0
+  const tableLimit = appliedFilters.limit ?? data?.limit ?? 50
+  const rangeStart = tableTotal === 0 ? 0 : tableOffset + 1
+  const rangeEnd = Math.min(tableOffset + tableLimit, tableTotal)
+
+  const setPageOffset = useCallback((offset: number) => {
+    setAppliedFilters((f) => ({ ...f, offset }))
+  }, [])
+
+  const setLimit = useCallback((limit: number) => {
+    setAppliedFilters((f) => ({ ...f, limit, offset: 0 }))
+  }, [])
 
   if (!perms.isReady) {
     return (
@@ -141,69 +146,128 @@ export function CatalogListView<T extends { id: string }>({
       )}
       {data && !isPending && (
         <div className="space-y-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex flex-col gap-2">
-                  <RouteBreadcrumb />
-                  <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">
-                      {config.title}
-                    </h1>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {config.description} · {data.total} registo(s)
-                    </p>
-                  </div>
-                </div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-2">
+              <RouteBreadcrumb />
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">
+                  {config.title}
+                </h1>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {config.description}
+                </p>
               </div>
+            </div>
+          </div>
 
-              {config.supportsSearch && (
-                <div className="rounded-lg border bg-card p-4 shadow-sm">
-                  <Field>
-                    <FieldLabel htmlFor="catalog-search">Pesquisa</FieldLabel>
+          {config.supportsSearch && (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                applySearch()
+              }}
+            >
+              <div className="space-y-4 rounded-lg border bg-card p-4 shadow-sm">
+                <div>
+                  <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Busca
+                  </p>
+                  <div className="relative">
+                    <Search
+                      className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                      aria-hidden
+                    />
                     <Input
                       id="catalog-search"
-                      value={
-                        config.supportsSearch &&
-                        "search" in draftFilters &&
-                        typeof draftFilters.search === "string"
-                          ? draftFilters.search
-                          : ""
-                      }
-                      onChange={(e) =>
-                        setDraftFilters({
-                          ...draftFilters,
-                          search: e.target.value || undefined,
-                        } as ListProductNbsQuery)
-                      }
+                      type="search"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault()
+                          applySearch()
+                        }
+                      }}
+                      placeholder="Pesquisar NBS"
+                      className="pl-9 pr-9"
+                      disabled={isFetching && !isPending}
+                      aria-label="Pesquisar NBS"
                     />
-                  </Field>
-                  <div className="mt-4 flex gap-2">
-                    <Button type="button" onClick={applyFilters}>
-                      Aplicar
-                    </Button>
-                    <Button type="button" variant="outline" onClick={clearFilters}>
-                      Limpar
-                    </Button>
+                    {searchTerm && (
+                      <button
+                        type="button"
+                        onClick={() => setSearchTerm("")}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                        aria-label="Limpar busca"
+                        disabled={isFetching && !isPending}
+                      >
+                        <X className="size-4" aria-hidden />
+                      </button>
+                    )}
                   </div>
                 </div>
-              )}
-
-              <PaginatedResourceTable
-                items={data.items}
-                total={data.total}
-                limit={data.limit}
-                offset={data.offset}
-                onPageChange={(offset) =>
-                  setAppliedFilters((f) => ({ ...f, offset }))
-                }
-                basePath={config.basePath}
-                emptyTitle="Nenhum registo encontrado"
-                emptyDescription="Não há itens neste catálogo."
-                columns={columns}
-                mobileTitle={mobileTitle}
-                mobileSubtitle={mobileSubtitle}
-              />
-            </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    onClick={applySearch}
+                    disabled={isFetching && !isPending}
+                    tooltip="Buscar NBS"
+                  >
+                    {isFetching && !isPending ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin" aria-hidden />
+                        Buscando...
+                      </>
+                    ) : (
+                      <>
+                        <Search className="size-4" aria-hidden />
+                        Buscar
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={clearFilters}
+                    disabled={isFetching && !isPending}
+                    tooltip="Limpar filtros"
+                  >
+                    <X className="size-4" aria-hidden />
+                    Limpar
+                  </Button>
+                </div>
+              </div>
+            </form>
           )}
+
+          <p
+            className="text-sm text-muted-foreground"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {tableTotal === 1
+              ? "1 registro encontrado"
+              : `Mostrando ${rangeStart}–${rangeEnd} de ${tableTotal} registros`}
+          </p>
+
+          <PaginatedResourceTable
+            items={data.items}
+            total={tableTotal}
+            limit={tableLimit}
+            offset={tableOffset}
+            onPageChange={setPageOffset}
+            onLimitChange={setLimit}
+            onClearFilters={config.supportsSearch ? clearFilters : undefined}
+            emptyTitle="Nenhum registro encontrado"
+            emptyDescription="Não há itens neste catálogo."
+            columns={columns}
+            mobileTitle={mobileTitle}
+            mobileSubtitle={mobileSubtitle}
+            listLabel={`Lista de ${config.title.toLowerCase()}`}
+          />
+        </div>
+      )}
     </PaginatedListLayout>
   )
 }

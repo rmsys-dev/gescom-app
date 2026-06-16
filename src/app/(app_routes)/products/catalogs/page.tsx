@@ -35,21 +35,31 @@ export default function CatalogsHubPage() {
   }
 
   return (
-    <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
-      <RouteBreadcrumb />
+    <PaginatedListLayout loading={null}>
+      <div className="space-y-6">
+        <div className="flex flex-col gap-2">
+          <RouteBreadcrumb />
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Catálogos</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Consulte os catálogos fiscais e de referência de produtos
+            </p>
+          </div>
+        </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {visibleCatalogs.map((catalog) => (
-          <Link key={catalog.slug} href={catalog.basePath}>
-            <Card className="h-full transition-colors hover:bg-muted/30">
-              <CardHeader>
-                <CardTitle className="text-base">{catalog.title}</CardTitle>
-                <CardDescription>{catalog.description}</CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
-        ))}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {visibleCatalogs.map((catalog) => (
+            <Link key={catalog.slug} href={catalog.basePath}>
+              <Card className="h-full transition-colors hover:bg-muted/30">
+                <CardHeader>
+                  <CardTitle className="text-base">{catalog.title}</CardTitle>
+                  <CardDescription>{catalog.description}</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
-    </main>
+    </PaginatedListLayout>
   )
 }

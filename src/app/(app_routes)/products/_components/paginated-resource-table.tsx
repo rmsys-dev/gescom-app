@@ -2,8 +2,11 @@
 
 import type { ReactNode } from "react"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Eye } from "lucide-react"
+import { Eye, SearchX } from "lucide-react"
+
+import { PaginatedListControls } from "@/app/(app_routes)/products/_components/paginated-list-controls"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 export type ResourceColumn<T> = {
   header: string
@@ -18,12 +21,16 @@ type PaginatedResourceTableProps<T extends { id: string }> = {
   limit: number
   offset: number
   onPageChange: (offset: number) => void
-  basePath: string
+  onLimitChange?: (limit: number) => void
+  basePath?: string
+  showDetailLink?: boolean
   emptyTitle: string
   emptyDescription: string
   columns: ResourceColumn<T>[]
   mobileTitle: (item: T) => string
   mobileSubtitle?: (item: T) => string
+  onClearFilters?: () => void
+  listLabel?: string
 }
 
 export function PaginatedResourceTable<T extends { id: string }>({
@@ -32,43 +39,41 @@ export function PaginatedResourceTable<T extends { id: string }>({
   limit,
   offset,
   onPageChange,
+  onLimitChange,
   basePath,
+  showDetailLink = false,
   emptyTitle,
   emptyDescription,
   columns,
   mobileTitle,
   mobileSubtitle,
+  onClearFilters,
+  listLabel = "Lista de registros",
 }: PaginatedResourceTableProps<T>) {
-  const page = Math.floor(offset / limit) + 1
-  const totalPages = Math.max(1, Math.ceil(total / limit))
-  const canPrev = offset > 0
-  const canNext = offset + limit < total
-
-  function renderDataRow(item: T) {
-    return (
-      <tr key={item.id} className="border-b last:border-0">
-        {columns.map((col) => (
-          <td key={col.header} className="px-4 py-3">
-            {col.cell(item)}
-          </td>
-        ))}
-        <td className="px-4 py-3 text-right">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href={`${basePath}/${item.id}`}>
-              <Eye className="mr-1 size-4" />
-              Ver
-            </Link>
-          </Button>
-        </td>
-      </tr>
-    )
-  }
+  const canLinkToDetail = showDetailLink && Boolean(basePath)
 
   if (items.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed bg-card px-6 py-12 text-center">
-        <p className="font-medium text-foreground">{emptyTitle}</p>
+      <div
+        role="status"
+        className="rounded-lg border border-dashed bg-card px-6 py-16 text-center"
+      >
+        <SearchX
+          className="mx-auto mb-4 size-10 text-muted-foreground/40"
+          aria-hidden
+        />
+        <p className="font-semibold text-foreground">{emptyTitle}</p>
         <p className="mt-1 text-sm text-muted-foreground">{emptyDescription}</p>
+        {onClearFilters && (
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-4"
+            onClick={onClearFilters}
+          >
+            Limpar filtros
+          </Button>
+        )}
       </div>
     )
   }
@@ -76,65 +81,98 @@ export function PaginatedResourceTable<T extends { id: string }>({
   return (
     <div className="space-y-4">
       <div className="hidden overflow-hidden rounded-lg border md:block">
-        <table className="w-full text-sm">
+        <table className="w-full text-sm" aria-label={listLabel}>
           <thead className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
             <tr>
               {columns.map((col) => (
-                <th key={col.header} className="px-4 py-3 font-medium">
+                <th key={col.header} scope="col" className="px-4 py-3 font-medium">
                   {col.header}
                 </th>
               ))}
-              <th className="px-4 py-3 font-medium" />
+              {canLinkToDetail && (
+                <th
+                  scope="col"
+                  className="px-4 py-3 text-right text-xs font-medium text-muted-foreground"
+                >
+                  Ações
+                </th>
+              )}
             </tr>
           </thead>
-          <tbody>{items.map((item) => renderDataRow(item))}</tbody>
+          <tbody>
+            {items.map((item, idx) => (
+              <tr
+                key={item.id}
+                className={cn(
+                  "border-b transition-colors last:border-0",
+                  "hover:bg-primary/5",
+                  idx % 2 === 1 && "bg-muted/20"
+                )}
+              >
+                {columns.map((col) => (
+                  <td key={col.header} className="px-4 py-3">
+                    {col.cell(item)}
+                  </td>
+                ))}
+                {canLinkToDetail && (
+                  <td className="px-4 py-3 text-right">
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link href={`${basePath}/${item.id}`}>
+                        <Eye className="mr-1 size-4" aria-hidden />
+                        Ver
+                      </Link>
+                    </Button>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
 
       <div className="space-y-3 md:hidden">
-        {items.map((item) => (
-          <Link
-            key={item.id}
-            href={`${basePath}/${item.id}`}
-            className="block rounded-lg border bg-card p-4 shadow-sm transition-colors hover:bg-muted/30"
-          >
-            <p className="font-medium">{mobileTitle(item)}</p>
-            {mobileSubtitle && (
-              <p className="mt-1 text-sm text-muted-foreground">
-                {mobileSubtitle(item)}
-              </p>
-            )}
-          </Link>
-        ))}
+        {items.map((item) => {
+          const content = (
+            <>
+              <p className="font-medium">{mobileTitle(item)}</p>
+              {mobileSubtitle && (
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {mobileSubtitle(item)}
+                </p>
+              )}
+            </>
+          )
+
+          if (canLinkToDetail) {
+            return (
+              <Link
+                key={item.id}
+                href={`${basePath}/${item.id}`}
+                className="block rounded-lg border bg-card p-4 shadow-sm transition-colors hover:bg-primary/5"
+              >
+                {content}
+              </Link>
+            )
+          }
+
+          return (
+            <div
+              key={item.id}
+              className="rounded-lg border bg-card p-4 shadow-sm"
+            >
+              {content}
+            </div>
+          )
+        })}
       </div>
 
-      <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
-        <p>
-          Página {page} de {totalPages} · {total} registo(s)
-        </p>
-        <div className="flex gap-1">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            disabled={!canPrev}
-            onClick={() => onPageChange(Math.max(0, offset - limit))}
-            aria-label="Página anterior"
-          >
-            <ChevronLeft className="size-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            disabled={!canNext}
-            onClick={() => onPageChange(offset + limit)}
-            aria-label="Página seguinte"
-          >
-            <ChevronRight className="size-4" />
-          </Button>
-        </div>
-      </div>
+      <PaginatedListControls
+        total={total}
+        limit={limit}
+        offset={offset}
+        onPageChange={onPageChange}
+        onLimitChange={onLimitChange}
+      />
     </div>
   )
 }

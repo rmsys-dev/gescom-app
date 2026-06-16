@@ -91,15 +91,7 @@ export const GRANULARITY_OPTIONS = Object.entries(GRANULARITY_LABELS).map(
   ([value, label]) => ({ value: value as Granularity, label })
 )
 
-export function formatCurrency(value: number | string | null | undefined): string {
-  const num =
-    typeof value === "string" ? Number.parseFloat(value) : (value ?? Number.NaN)
-  if (Number.isNaN(num)) return "—"
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(num)
-}
+export { formatCurrency } from "@/lib/formatters"
 
 export function formatNumber(value: number | null | undefined): string {
   if (value === null || value === undefined || Number.isNaN(value)) return "—"

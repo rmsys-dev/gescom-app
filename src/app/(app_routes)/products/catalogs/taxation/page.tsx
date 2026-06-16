@@ -16,7 +16,6 @@ export default function ProductTaxationPage() {
       description={config.description}
       permissionLabel={config.permissionLabel}
       canConsult={perms[config.permissionKey]}
-      basePath={config.basePath}
       columns={[
         {
           header: "PIS entrada",

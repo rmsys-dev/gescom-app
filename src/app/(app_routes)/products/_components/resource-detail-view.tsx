@@ -6,8 +6,11 @@ import { z } from "zod"
 
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import {
+  ListErrorCard,
+  PaginatedListLayout,
   PermissionDeniedCard,
   PermissionsErrorCard,
+  StaleDataBanner,
   useListErrorState,
 } from "@/app/(app_routes)/products/_components/paginated-list-shell"
 import { ProductDetailContentLoading } from "@/app/(app_routes)/products/_components/products-route-loading"
@@ -30,6 +33,7 @@ type ResourceDetailViewProps<T> = {
   permissionLabel: string
   canConsult: boolean
   requiresEnterprise?: boolean
+  currentLabel?: string
   useDetailData: (opts: { id: string | undefined; enabled: boolean }) => {
     data: T | undefined
     error: unknown
@@ -46,6 +50,7 @@ export function ResourceDetailView<T>({
   permissionLabel,
   canConsult,
   requiresEnterprise = false,
+  currentLabel,
   useDetailData,
   renderContent,
 }: ResourceDetailViewProps<T>) {
@@ -82,17 +87,17 @@ export function ResourceDetailView<T>({
 
   if ((!enterpriseReady || !perms.isReady) && requiresEnterprise) {
     return (
-      <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
-        <ProductDetailContentLoading />
-      </main>
+      <PaginatedListLayout loading={<ProductDetailContentLoading />}>
+        {null}
+      </PaginatedListLayout>
     )
   }
 
   if (!requiresEnterprise && !perms.isReady) {
     return (
-      <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
-        <ProductDetailContentLoading />
-      </main>
+      <PaginatedListLayout loading={<ProductDetailContentLoading />}>
+        {null}
+      </PaginatedListLayout>
     )
   }
 
@@ -103,47 +108,41 @@ export function ResourceDetailView<T>({
 
   if (!id) {
     return (
-      <main className="mx-auto flex w-full max-w-lg flex-col gap-6 p-4 md:p-8">
-        <Card>
+      <PaginatedListLayout loading={null}>
+        <Card className="max-w-lg">
           <CardHeader>
             <CardTitle>Identificador inválido</CardTitle>
             <CardDescription>O ID na URL não é válido.</CardDescription>
           </CardHeader>
         </Card>
-      </main>
+      </PaginatedListLayout>
     )
   }
 
   return (
-    <main className="mx-auto flex w-full flex-col gap-6 p-4 md:p-8">
-      {isPending && <ProductDetailContentLoading />}
-
+    <PaginatedListLayout
+      loading={isPending ? <ProductDetailContentLoading /> : null}
+    >
+      {Boolean(error) && data && <StaleDataBanner message={errMessage} />}
       {Boolean(error) && !data && !isPending && (
-        <Card className="border-destructive/40">
-          <CardHeader>
-            <CardTitle className="text-destructive">Erro</CardTitle>
-            <CardDescription>{errMessage}</CardDescription>
-          </CardHeader>
-          {errMeta && (
-            <CardContent>
-              <p className="font-mono text-xs text-muted-foreground">
-                {errMeta.code} · HTTP {errMeta.status}
-              </p>
-            </CardContent>
-          )}
-        </Card>
+        <ListErrorCard
+          title={`Erro ao carregar ${title.toLowerCase()}`}
+          message={errMessage}
+          meta={errMeta}
+        />
       )}
-
       {data && !isPending && (
         <div className="space-y-6">
           <div className="flex flex-col gap-2">
-            <RouteBreadcrumb currentLabel={title} />
-            <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+            <RouteBreadcrumb currentLabel={currentLabel ?? title} />
+            <h1 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
+              {title}
+            </h1>
           </div>
           {renderContent(data)}
         </div>
       )}
-    </main>
+    </PaginatedListLayout>
   )
 }
 

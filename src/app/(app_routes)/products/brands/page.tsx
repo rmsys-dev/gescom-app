@@ -16,9 +16,8 @@ export default function BrandsCatalogPage() {
       description={config.description}
       permissionLabel={config.permissionLabel}
       canConsult={perms[config.permissionKey]}
-      basePath={config.basePath}
-      columns={[{ header: "Descrição", cell: (item) => item.description }]}
-      mobileTitle={(item) => item.description}
+      layout="grid"
+      cardTitle={(item) => item.description}
       useListData={useProductBrandsQuery}
     />
   )

@@ -1,5 +1,6 @@
 "use client"
 
+import type { ReactNode } from "react"
 import { SearchX } from "lucide-react"
 
 import { PaginatedListControls } from "@/app/(app_routes)/products/_components/paginated-list-controls"
@@ -7,6 +8,11 @@ import { Button } from "@/components/ui/button"
 import {
   Card,
 } from "@/components/ui/card"
+
+export type ResourceCardField<T> = {
+  label: string
+  value: (item: T) => ReactNode
+}
 
 type PaginatedResourceGridProps<T extends { id: string }> = {
   items: T[]
@@ -18,6 +24,7 @@ type PaginatedResourceGridProps<T extends { id: string }> = {
   emptyTitle: string
   emptyDescription: string
   cardTitle: (item: T) => string
+  cardFields?: ResourceCardField<T>[]
   onClearFilters?: () => void
   listLabel?: string
 }
@@ -32,6 +39,7 @@ export function PaginatedResourceGrid<T extends { id: string }>({
   emptyTitle,
   emptyDescription,
   cardTitle,
+  cardFields,
   onClearFilters,
   listLabel = "Lista de registros",
 }: PaginatedResourceGridProps<T>) {
@@ -69,10 +77,16 @@ export function PaginatedResourceGrid<T extends { id: string }>({
       >
         {items.map((item) => (
           <li key={item.id}>
-            <Card className="h-full flex items-center justify-center">
-              <p className="text-center text-sm text-foreground">
+            <Card className="flex h-full flex-col items-center justify-center gap-2 p-4">
+              <p className="text-center text-sm font-medium text-foreground">
                 {cardTitle(item)}
               </p>
+              {cardFields?.map((field) => (
+                <p key={field.label} className="text-center text-sm">
+                  <span className="text-muted-foreground">{field.label}: </span>
+                  <span className="text-foreground">{field.value(item)}</span>
+                </p>
+              ))}
             </Card>
           </li>
         ))}

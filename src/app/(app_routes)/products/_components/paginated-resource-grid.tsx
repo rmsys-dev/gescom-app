@@ -47,7 +47,7 @@ export function PaginatedResourceGrid<T extends { id: string }>({
     return (
       <div
         role="status"
-        className="rounded-lg border border-dashed bg-card px-6 py-16 text-center"
+        className="border border-dashed bg-card px-6 py-16 text-center"
       >
         <SearchX
           className="mx-auto mb-4 size-10 text-muted-foreground/40"

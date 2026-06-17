@@ -40,7 +40,7 @@ export function SectionToggle<T extends string>({
       role="tablist"
       aria-label={ariaLabel}
       className={cn(
-        "w-full flex-wrap rounded-lg border border-border/60 bg-muted/30 p-1",
+        "w-full flex-wrap border border-border/60 bg-muted/30 p-1",
         className
       )}
     >
@@ -52,7 +52,7 @@ export function SectionToggle<T extends string>({
           aria-selected={value === id}
           aria-controls={`${idPrefix}-panel-${id}`}
           id={`${idPrefix}-tab-${id}`}
-          className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-background/60 hover:text-foreground data-[state=on]:text-foreground"
+          className="px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-background/60 hover:text-foreground data-[state=on]:text-foreground"
         >
           {label}
         </ToggleGroupItem>

@@ -76,14 +76,14 @@ export function MemberDepartmentPanel({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border/60 bg-muted/20 shadow-xs">
+    <div className="overflow-hidden -lg border border-border/60 bg-muted/20 shadow-xs">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 bg-background/50 px-4 py-3">
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-2">
             <Layers className="size-4 shrink-0 text-primary" aria-hidden />
             <p className="font-medium">{departmentName}</p>
             {department.mainDepartment && (
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+              <span className="bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                 Departamento principal
               </span>
             )}

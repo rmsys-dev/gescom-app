@@ -119,7 +119,7 @@ export function LinkClientUsersTable({
     return (
       <div
         role="status"
-        className="rounded-lg border border-dashed bg-card px-6 py-16 text-center"
+        className="border border-dashed bg-card px-6 py-16 text-center"
       >
         <SearchX
           className="mx-auto mb-4 size-10 text-muted-foreground/40"
@@ -154,7 +154,7 @@ export function LinkClientUsersTable({
           : `Mostrando ${rangeStart}–${rangeEnd} de ${total} registros`}
       </p>
 
-      <div className="hidden overflow-hidden rounded-lg border md:block">
+      <div className="hidden overflow-hidden border md:block">
         <table
           className="w-full text-sm"
           aria-label="Lista de usuários para vincular como cliente"
@@ -186,7 +186,7 @@ export function LinkClientUsersTable({
             <li
               key={item.id}
               className={cn(
-                "rounded-lg border bg-card p-4 shadow-sm transition-colors",
+                "border bg-card p-4 shadow-sm transition-colors",
                 selected && "border-primary bg-primary/5"
               )}
             >

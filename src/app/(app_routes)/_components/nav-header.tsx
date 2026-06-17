@@ -45,9 +45,9 @@ export function NavHeader() {
         />
 
         <div className="hidden items-center gap-2 md:flex">
-          <Avatar className="h-8 w-8 rounded-lg">
+          <Avatar className="h-8 w-8">
             <AvatarImage src="" alt={displayName} />
-            <AvatarFallback className="rounded-lg bg-transparent">
+            <AvatarFallback className="bg-transparent">
               <User className="size-4 text-foreground/30" />
             </AvatarFallback>
           </Avatar>

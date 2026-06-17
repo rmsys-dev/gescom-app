@@ -71,7 +71,7 @@ function SaleItemsTable({
         {items.length === 0 ? (
           <p className="text-sm text-muted-foreground">Sem itens.</p>
         ) : (
-          <div className="overflow-x-auto rounded-lg border">
+          <div className="overflow-x-auto border">
             <table className="w-full text-sm">
               <thead className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
                 <tr>
@@ -123,7 +123,7 @@ function SalePaymentsSection({
           <p className="text-sm text-muted-foreground">Sem pagamentos.</p>
         ) : (
           payments.map((payment) => (
-            <div key={payment.id} className="rounded-lg border">
+            <div key={payment.id} className="border">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3">
                 <p className="text-foreground">
                   <span className="text-muted-foreground">Formato de recebimento:</span>{" "}
@@ -166,7 +166,7 @@ function SaleGeneratedSalesTable({
         <CardTitle className="text-base">Vendas geradas</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto rounded-lg border">
+        <div className="overflow-x-auto border">
           <table className="w-full text-sm">
             <thead className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
               <tr>

@@ -228,8 +228,8 @@ export function UserContactsSection({
                 setEditingTarget(null)
               }
             } catch {
-      /* erros de mutação tratados globalmente pelo QueryClient */
-    }
+              /* erros de mutação tratados globalmente pelo QueryClient */
+            }
           }}
         />
       )}
@@ -319,7 +319,7 @@ function ContactListItem({
   }
 
   return (
-    <li className="space-y-4 rounded-lg border border-border/60 bg-muted/15 p-4">
+    <li className="space-y-4 border border-border/60 bg-muted/15 p-4">
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm font-semibold text-foreground">
           {getUserContactTypeLabel(contact.type)}
@@ -414,7 +414,7 @@ function ContactCreateForm({
   }
 
   return (
-    <div className="space-y-4 rounded-lg border border-dashed border-border/80 bg-muted/10 p-4">
+    <div className="space-y-4 border border-dashed border-border/80 bg-muted/10 p-4">
       <p className="text-sm font-semibold text-foreground">Novo contato</p>
       <ContactFormFields
         editing

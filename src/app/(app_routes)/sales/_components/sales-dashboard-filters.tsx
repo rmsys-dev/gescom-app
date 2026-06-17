@@ -35,7 +35,7 @@ export function SalesDashboardFilters({
   onToggleCustomRange,
 }: SalesDashboardFiltersProps) {
   return (
-    <div className="rounded-lg border bg-card p-4 shadow-sm">
+    <div className="border bg-card p-4 shadow-sm">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Field>
           <FieldLabel htmlFor="period-type">Tipo de período</FieldLabel>

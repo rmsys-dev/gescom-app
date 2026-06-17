@@ -172,11 +172,11 @@ export function LinkClientForm({
       >
         <MembersFilters
           filters={emptyFilters}
-          onFiltersChange={() => {}}
+          onFiltersChange={() => { }}
           searchTerm={searchTerm}
           onSearchTermChange={setSearchTerm}
           onSearch={applySearch}
-          onApplyFilters={() => {}}
+          onApplyFilters={() => { }}
           onClear={clearSearch}
           isSearching={isFetching}
           showClassFilter={false}
@@ -187,7 +187,7 @@ export function LinkClientForm({
       {!searchEnabled && (
         <p
           role="status"
-          className="rounded-lg border border-dashed bg-card px-6 py-8 text-center text-sm text-muted-foreground"
+          className="border border-dashed bg-card px-6 py-8 text-center text-sm text-muted-foreground"
         >
           {config.link.searchHint}
         </p>

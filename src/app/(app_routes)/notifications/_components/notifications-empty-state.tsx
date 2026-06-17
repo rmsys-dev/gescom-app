@@ -4,7 +4,7 @@ export function NotificationsEmptyState() {
   return (
     <div
       role="status"
-      className="rounded-lg border border-dashed bg-card px-6 py-16 text-center"
+      className="border border-dashed bg-card px-6 py-16 text-center"
     >
       <Bell
         className="mx-auto mb-4 size-10 text-muted-foreground/40"

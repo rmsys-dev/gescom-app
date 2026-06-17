@@ -49,9 +49,9 @@ export function SalesBySellerChart({ data, loading }: SalesBySellerChartProps) {
       </CardHeader>
       <CardContent>
         {loading ? (
-          <Skeleton className="h-[280px] w-full rounded-lg" />
+          <Skeleton className="h-[280px] w-full" />
         ) : chartData.length === 0 ? (
-          <div className="flex h-[280px] items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
+          <div className="flex h-[280px] items-center justify-center border border-dashed text-sm text-muted-foreground">
             Sem dados para o período seleccionado.
           </div>
         ) : (

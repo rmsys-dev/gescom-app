@@ -19,25 +19,25 @@ function ListContentLoading({ label }: { label: string }) {
         </div>
       </div>
 
-      <div className="space-y-4 rounded-lg border bg-card p-4 shadow-sm">
+      <div className="space-y-4 border bg-card p-4 shadow-sm">
         <Skeleton className="h-3 w-16" />
-        <Skeleton className="h-9 w-full rounded-lg" />
+        <Skeleton className="h-9 w-full" />
         <Skeleton className="h-3 w-16" />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Skeleton className="h-[62px] rounded-lg" />
-          <Skeleton className="h-[62px] rounded-lg" />
-          <Skeleton className="h-[62px] rounded-lg" />
+          <Skeleton className="h-[62px]" />
+          <Skeleton className="h-[62px]" />
+          <Skeleton className="h-[62px]" />
         </div>
         <div className="flex gap-2">
-          <Skeleton className="h-8 w-24 rounded-lg" />
-          <Skeleton className="h-8 w-20 rounded-lg" />
-          <Skeleton className="h-8 w-20 rounded-lg" />
+          <Skeleton className="h-8 w-24" />
+          <Skeleton className="h-8 w-20" />
+          <Skeleton className="h-8 w-20" />
         </div>
       </div>
 
       <div className="space-y-3">
         <Skeleton className="h-4 w-48" />
-        <div className="overflow-hidden rounded-lg border">
+        <div className="overflow-hidden border">
           <div className="border-b bg-muted/40 px-4 py-3">
             <div className="grid grid-cols-6 gap-4">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -55,7 +55,7 @@ function ListContentLoading({ label }: { label: string }) {
             >
               <div className="grid grid-cols-6 items-center gap-4">
                 <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-5 w-14 rounded-full" />
+                <Skeleton className="h-5 w-14" />
                 <Skeleton className="h-4 w-2/3" />
                 <Skeleton className="h-4 w-4/5" />
                 <Skeleton className="h-4 w-2/5" />
@@ -65,10 +65,10 @@ function ListContentLoading({ label }: { label: string }) {
           ))}
         </div>
         <div className="flex items-center justify-between">
-          <Skeleton className="h-7 w-40 rounded-lg" />
+          <Skeleton className="h-7 w-40" />
           <div className="flex gap-1">
             {Array.from({ length: 7 }).map((_, i) => (
-              <Skeleton key={i} className="size-7 rounded-lg" />
+              <Skeleton key={i} className="size-7" />
             ))}
           </div>
           <Skeleton className="h-4 w-24" />
@@ -101,25 +101,25 @@ export function SalesDashboardLoading() {
     >
       <Skeleton className="h-8 w-64" />
       <Skeleton className="h-4 w-80" />
-      <div className="space-y-4 rounded-lg border bg-card p-4 shadow-sm">
+      <div className="space-y-4 border bg-card p-4 shadow-sm">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-[62px] rounded-lg" />
+            <Skeleton key={i} className="h-[62px]" />
           ))}
         </div>
         <div className="flex gap-2">
-          <Skeleton className="h-8 w-20 rounded-lg" />
-          <Skeleton className="h-8 w-20 rounded-lg" />
+          <Skeleton className="h-8 w-20" />
+          <Skeleton className="h-8 w-20" />
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-28 rounded-lg" />
+          <Skeleton key={i} className="h-28" />
         ))}
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
-        <Skeleton className="h-80 rounded-lg" />
-        <Skeleton className="h-80 rounded-lg" />
+        <Skeleton className="h-80" />
+        <Skeleton className="h-80" />
       </div>
     </div>
   )
@@ -135,7 +135,7 @@ export function SaleDetailLoading({ compact = false }: { compact?: boolean }) {
         aria-label="A carregar detalhe da venda"
         className="space-y-4"
       >
-        <Skeleton className="h-32 w-full rounded-lg" />
+        <Skeleton className="h-32 w-full" />
         <Skeleton className="h-4 w-40" />
       </div>
     )
@@ -150,9 +150,9 @@ export function SaleDetailLoading({ compact = false }: { compact?: boolean }) {
       className="space-y-6"
     >
       <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-40 w-full rounded-lg" />
-      <Skeleton className="h-56 w-full rounded-lg" />
-      <Skeleton className="h-40 w-full rounded-lg" />
+      <Skeleton className="h-40 w-full" />
+      <Skeleton className="h-56 w-full" />
+      <Skeleton className="h-40 w-full" />
     </div>
   )
 }

@@ -32,8 +32,8 @@ import type { ListProductNbsQuery } from "@/modules/products/products-catalogs.s
 
 type ListHookResult<T> = {
   data:
-    | { items: T[]; total: number; limit: number; offset: number }
-    | undefined
+  | { items: T[]; total: number; limit: number; offset: number }
+  | undefined
   error: unknown
   isPending: boolean
   isFetching: boolean
@@ -167,7 +167,7 @@ export function CatalogListView<T extends { id: string }>({
                 applySearch()
               }}
             >
-              <div className="space-y-4 rounded-lg border bg-card p-4 shadow-sm">
+              <div className="space-y-4 border bg-card p-4 shadow-sm">
                 <div>
                   <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     Busca

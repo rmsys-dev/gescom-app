@@ -17,20 +17,20 @@ export function EnterpriseContentLoading() {
       <Card>
         <CardHeader>
           <div className="flex justify-end">
-            <Skeleton className="size-9 shrink-0 rounded-md" />
+            <Skeleton className="size-9 shrink-0" />
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex justify-center">
-            <Skeleton className="size-24 shrink-0 rounded-full" />
+            <Skeleton className="size-24 shrink-0" />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Skeleton className="h-18 rounded-lg sm:col-span-2" />
-            <Skeleton className="h-18 rounded-lg sm:col-span-2" />
-            <Skeleton className="h-18 rounded-lg" />
-            <Skeleton className="h-18 rounded-lg" />
-            <Skeleton className="h-18 rounded-lg" />
-            <Skeleton className="h-18 rounded-lg" />
+            <Skeleton className="h-18 sm:col-span-2" />
+            <Skeleton className="h-18 sm:col-span-2" />
+            <Skeleton className="h-18" />
+            <Skeleton className="h-18" />
+            <Skeleton className="h-18" />
+            <Skeleton className="h-18" />
           </div>
         </CardContent>
       </Card>
@@ -42,13 +42,13 @@ export function EnterpriseContentLoading() {
         </CardHeader>
         <CardContent className="space-y-4">
           {[1, 2].map((i) => (
-            <div key={i} className="rounded-xl border border-border/60 p-4 space-y-3">
+            <div key={i} className="border border-border/60 p-4 space-y-3">
               <Skeleton className="h-5 w-40" />
               <Skeleton className="h-3 w-56" />
               <div className="flex flex-wrap gap-2">
-                <Skeleton className="h-7 w-28 rounded-md" />
-                <Skeleton className="h-7 w-36 rounded-md" />
-                <Skeleton className="h-7 w-32 rounded-md" />
+                <Skeleton className="h-7 w-28" />
+                <Skeleton className="h-7 w-36" />
+                <Skeleton className="h-7 w-32" />
               </div>
             </div>
           ))}

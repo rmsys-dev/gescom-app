@@ -52,7 +52,7 @@ export function IconSidebar({ activePanel, onPanelChange }: IconSidebarProps) {
           const isHighlighted = isActive || isPanelOpen
 
           const buttonClassName = cn(
-            "size-10 rounded-lg transition-colors",
+            "size-10 transition-colors",
             isHighlighted
               ? "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground aria-expanded:bg-sidebar-primary aria-expanded:text-sidebar-primary-foreground"
               : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"

@@ -29,7 +29,7 @@ export function EnterprisePermissionBadge({
   return (
     <div
       className={cn(
-        "flex min-h-11 items-center justify-between gap-3 rounded-md border px-3 py-2 transition-[background-color,border-color,opacity,box-shadow]",
+        "flex min-h-11 items-center justify-between gap-3 border px-3 py-2 transition-[background-color,border-color,opacity,box-shadow]",
         active
           ? "border-emerald-500/45 bg-emerald-500/10 shadow-xs dark:border-emerald-400/40 dark:bg-emerald-500/15"
           : "border-red-500/35 bg-red-500/8 dark:border-red-400/35 dark:bg-red-500/12",

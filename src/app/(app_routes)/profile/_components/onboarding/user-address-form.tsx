@@ -208,7 +208,7 @@ export function UserAddressCreateForm({
   }
 
   return (
-    <div className="space-y-4 rounded-lg border border-dashed border-border/80 bg-muted/10 p-4">
+    <div className="space-y-4 border border-dashed border-border/80 bg-muted/10 p-4">
       <p className="text-sm font-semibold text-foreground">Novo endereço</p>
       <UserAddressFormFields
         editing

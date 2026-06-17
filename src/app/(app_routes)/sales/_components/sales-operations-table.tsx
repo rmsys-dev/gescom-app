@@ -43,11 +43,11 @@ export function SalesOperationsTable({
             ))}
           </div>
         ) : rows.length === 0 ? (
-          <div className="rounded-lg border border-dashed px-6 py-10 text-center text-sm text-muted-foreground">
+          <div className="border border-dashed px-6 py-10 text-center text-sm text-muted-foreground">
             Sem dados operacionais no período seleccionado.
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-lg border">
+          <div className="overflow-x-auto border">
             <table className="w-full text-sm">
               <thead className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
                 <tr>

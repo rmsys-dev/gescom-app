@@ -24,30 +24,28 @@ function ListContentLoading({ label }: { label: string }) {
           <Skeleton className="h-4 w-64" />
         </div>
         <div className="flex gap-2">
-          <Skeleton className="h-8 w-32 rounded-lg" />
-          <Skeleton className="h-8 w-24 rounded-lg" />
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-8 w-24" />
         </div>
       </div>
 
       {/* Filters skeleton */}
-      <div className="rounded-lg border bg-card p-4 shadow-sm space-y-4">
-        <Skeleton className="h-9 w-full rounded-lg" />
+      <div className="border bg-card p-4 shadow-sm space-y-4">
+        <Skeleton className="h-9 w-full" />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Skeleton className="h-[62px] rounded-lg" />
-          <Skeleton className="h-[62px] rounded-lg" />
-          <Skeleton className="h-[62px] rounded-lg" />
-          <Skeleton className="h-[62px] rounded-lg" />
+          <Skeleton className="h-[62px]" />
+          <Skeleton className="h-[62px]" />
         </div>
         <div className="flex gap-2">
-          <Skeleton className="h-8 w-20 rounded-lg" />
-          <Skeleton className="h-8 w-20 rounded-lg" />
+          <Skeleton className="h-8 w-20" />
+          <Skeleton className="h-8 w-20" />
         </div>
       </div>
 
       {/* Table skeleton */}
       <div className="space-y-3">
         <Skeleton className="h-4 w-48" />
-        <div className="overflow-hidden rounded-lg border">
+        <div className="overflow-hidden border">
           {/* Header row */}
           <div className="border-b bg-muted/40 px-4 py-3">
             <div className="grid grid-cols-5 gap-4">
@@ -70,17 +68,17 @@ function ListContentLoading({ label }: { label: string }) {
                 <Skeleton className="h-4 w-2/3" />
                 <Skeleton className="h-4 w-4/5" />
                 <Skeleton className="h-4 w-2/5" />
-                <Skeleton className="h-5 w-14 rounded-full" />
+                <Skeleton className="h-5 w-14" />
               </div>
             </div>
           ))}
         </div>
         {/* Pagination skeleton */}
         <div className="flex items-center justify-between">
-          <Skeleton className="h-7 w-40 rounded-lg" />
+          <Skeleton className="h-7 w-40" />
           <div className="flex gap-1">
             {Array.from({ length: 7 }).map((_, i) => (
-              <Skeleton key={i} className="size-7 rounded-lg" />
+              <Skeleton key={i} className="size-7" />
             ))}
           </div>
           <Skeleton className="h-4 w-24" />
@@ -102,15 +100,15 @@ function DetailContentLoading({ label }: { label: string }) {
       <Card>
         <CardHeader>
           <div className="flex justify-end">
-            <Skeleton className="size-9 shrink-0 rounded-md" />
+            <Skeleton className="size-9 shrink-0" />
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-center">
-            <Skeleton className="size-24 shrink-0 rounded-full" />
+            <Skeleton className="size-24 shrink-0" />
           </div>
           <Skeleton className="mx-auto h-7 w-48" />
-          <Skeleton className="mx-auto h-6 w-32 rounded-full" />
+          <Skeleton className="mx-auto h-6 w-32" />
         </CardContent>
       </Card>
       <div className="grid gap-6 lg:grid-cols-2">
@@ -120,10 +118,9 @@ function DetailContentLoading({ label }: { label: string }) {
             <Skeleton className="h-4 w-48" />
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
-            <Skeleton className="h-18 rounded-lg sm:col-span-2" />
-            <Skeleton className="h-18 rounded-lg" />
-            <Skeleton className="h-18 rounded-lg" />
-            <Skeleton className="h-18 rounded-lg" />
+            <Skeleton className="h-18 sm:col-span-2" />
+            <Skeleton className="h-18" />
+            <Skeleton className="h-18" />
           </CardContent>
         </Card>
         <Card>
@@ -132,9 +129,9 @@ function DetailContentLoading({ label }: { label: string }) {
             <Skeleton className="h-4 w-40" />
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
-            <Skeleton className="h-18 rounded-lg" />
-            <Skeleton className="h-18 rounded-lg" />
-            <Skeleton className="h-18 rounded-lg sm:col-span-2" />
+            <Skeleton className="h-18" />
+            <Skeleton className="h-18" />
+            <Skeleton className="h-18 sm:col-span-2" />
           </CardContent>
         </Card>
       </div>
@@ -143,7 +140,7 @@ function DetailContentLoading({ label }: { label: string }) {
           <Skeleton className="h-5 w-36" />
         </CardHeader>
         <CardContent>
-          <Skeleton className="h-24 w-full rounded-lg" />
+          <Skeleton className="h-24 w-full" />
         </CardContent>
       </Card>
     </div>
@@ -172,12 +169,9 @@ function FormContentLoading({ label }: { label: string }) {
       <PageHeaderSkeleton />
       <Card>
         <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
-          <Skeleton className="h-18 rounded-lg sm:col-span-2" />
-          <Skeleton className="h-18 rounded-lg" />
-          <Skeleton className="h-18 rounded-lg" />
-          <Skeleton className="h-18 rounded-lg" />
-          <Skeleton className="h-18 rounded-lg sm:col-span-2" />
-          <Skeleton className="h-10 w-36 rounded-md sm:col-span-2" />
+          <Skeleton className="h-18 sm:col-span-2" />
+          <Skeleton className="h-18" />
+          <Skeleton className="h-18" />
         </CardContent>
       </Card>
     </div>
@@ -228,7 +222,7 @@ export function MemberDetailLoading({ compact = false }: { compact?: boolean }) 
         aria-label="A carregar detalhe do membro"
         className="space-y-4"
       >
-        <Skeleton className="h-32 w-full rounded-lg" />
+        <Skeleton className="h-32 w-full" />
         <Skeleton className="h-4 w-40" />
       </div>
     )
@@ -243,9 +237,9 @@ export function MemberDetailLoading({ compact = false }: { compact?: boolean }) 
       className="space-y-6"
     >
       <Skeleton className="h-8 w-48" />
-      <Skeleton className="h-40 w-full rounded-lg" />
-      <Skeleton className="h-56 w-full rounded-lg" />
-      <Skeleton className="h-40 w-full rounded-lg" />
+      <Skeleton className="h-40 w-full" />
+      <Skeleton className="h-56 w-full" />
+      <Skeleton className="h-40 w-full" />
     </div>
   )
 }
@@ -262,7 +256,7 @@ function LinkTableSkeleton() {
   return (
     <div className="space-y-4">
       <Skeleton className="h-4 w-48" />
-      <div className="overflow-hidden rounded-lg border">
+      <div className="overflow-hidden border">
         <div className="border-b bg-muted/40 px-4 py-3">
           <div className="grid grid-cols-4 gap-4">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -279,7 +273,7 @@ function LinkTableSkeleton() {
             }
           >
             <div className="grid grid-cols-4 items-center gap-4">
-              <Skeleton className="h-4 w-4 rounded-full" />
+              <Skeleton className="h-4 w-4" />
               <Skeleton className="h-4 w-3/4" />
               <Skeleton className="h-4 w-2/3" />
               <Skeleton className="h-4 w-2/5" />
@@ -288,10 +282,10 @@ function LinkTableSkeleton() {
         ))}
       </div>
       <div className="flex items-center justify-between">
-        <Skeleton className="h-7 w-40 rounded-lg" />
+        <Skeleton className="h-7 w-40" />
         <div className="flex gap-1">
           {Array.from({ length: 7 }).map((_, i) => (
-            <Skeleton key={i} className="size-7 rounded-lg" />
+            <Skeleton key={i} className="size-7" />
           ))}
         </div>
         <Skeleton className="h-4 w-24" />
@@ -310,17 +304,16 @@ function LinkContentLoading({ label }: { label: string }) {
       className="space-y-6"
     >
       <PageHeaderSkeleton />
-      <div className="rounded-lg border bg-card p-4 shadow-sm space-y-4">
-        <Skeleton className="h-9 w-full rounded-lg" />
+      <div className="border bg-card p-4 shadow-sm space-y-4">
+        <Skeleton className="h-9 w-full" />
         <div className="flex gap-2">
-          <Skeleton className="h-8 w-20 rounded-lg" />
-          <Skeleton className="h-8 w-20 rounded-lg" />
-          <Skeleton className="h-8 w-20 rounded-lg" />
+          <Skeleton className="h-8 w-20" />
+          <Skeleton className="h-8 w-20" />
         </div>
       </div>
       <LinkTableSkeleton />
       <div className="flex justify-end border-t pt-4">
-        <Skeleton className="h-10 w-36 rounded-md" />
+        <Skeleton className="h-10 w-36" />
       </div>
     </div>
   )

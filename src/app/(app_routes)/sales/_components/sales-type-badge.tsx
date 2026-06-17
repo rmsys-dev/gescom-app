@@ -18,9 +18,9 @@ export function SalesTypeBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center border px-2.5 py-0.5 text-xs font-medium",
         TYPE_STYLES[key] ??
-          "border-border bg-muted/30 text-muted-foreground",
+        "border-border bg-muted/30 text-muted-foreground",
         className
       )}
     >

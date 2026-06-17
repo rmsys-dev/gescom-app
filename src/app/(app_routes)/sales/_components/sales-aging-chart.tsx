@@ -63,15 +63,15 @@ export function SalesAgingChart({
           <>
             <div className="grid gap-3 sm:grid-cols-3">
               {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="h-16 rounded-lg" />
+                <Skeleton key={i} className="h-16" />
               ))}
             </div>
-            <Skeleton className="h-[220px] w-full rounded-lg" />
+            <Skeleton className="h-[220px] w-full" />
           </>
         ) : (
           <>
             <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-lg border bg-muted/30 p-3">
+              <div className="border bg-muted/30 p-3">
                 <p className="text-xs text-muted-foreground">Total a receber</p>
                 <p className="text-lg font-semibold">
                   {formatCurrency(summary?.totalOutstanding)}
@@ -80,7 +80,7 @@ export function SalesAgingChart({
                   {formatNumber(summary?.dueCount)} parcelas
                 </p>
               </div>
-              <div className="rounded-lg border bg-red-500/5 p-3">
+              <div className="border bg-red-500/5 p-3">
                 <p className="text-xs text-muted-foreground">Vencido</p>
                 <p className="text-lg font-semibold text-red-700 dark:text-red-300">
                   {formatCurrency(summary?.overdueTotal)}
@@ -89,7 +89,7 @@ export function SalesAgingChart({
                   {formatNumber(summary?.overdueCount)} parcelas
                 </p>
               </div>
-              <div className="rounded-lg border bg-emerald-500/5 p-3">
+              <div className="border bg-emerald-500/5 p-3">
                 <p className="text-xs text-muted-foreground">A vencer</p>
                 <p className="text-lg font-semibold text-emerald-700 dark:text-emerald-300">
                   {formatCurrency(summary?.upcomingTotal)}
@@ -101,7 +101,7 @@ export function SalesAgingChart({
             </div>
 
             {chartData.length === 0 ? (
-              <div className="flex h-[220px] items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
+              <div className="flex h-[220px] items-center justify-center border border-dashed text-sm text-muted-foreground">
                 Sem parcelas em aberto.
               </div>
             ) : (

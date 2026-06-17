@@ -1,97 +1,125 @@
 "use client"
 
-import { Loader2, Search, X } from "lucide-react"
+import {
+  Loader2,
+  Search,
+} from "lucide-react"
 
+import {
+  type ProductsDateFilters,
+  type ProductsDraftFilters,
+} from "@/app/(app_routes)/products/_components/products-constants"
 import { Button } from "@/components/ui/button"
+import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
 type ProductsFiltersProps = {
-  searchTerm: string
-  onSearchTermChange: (term: string) => void
+  draftFilters: ProductsDraftFilters
+  dateFilters: ProductsDateFilters
+  activeFilterCount: number
+  onDraftFiltersChange: (filters: ProductsDraftFilters) => void
+  onDateFiltersChange: (dateFilters: ProductsDateFilters) => void
   onSearch: () => void
-  onClear: () => void
   isSearching?: boolean
 }
 
 export function ProductsFilters({
-  searchTerm,
-  onSearchTermChange,
+  draftFilters,
+  onDraftFiltersChange,
   onSearch,
-  onClear,
   isSearching = false,
 }: ProductsFiltersProps) {
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter") {
-      e.preventDefault()
-      onSearch()
-    }
+
+  function updateDraft(patch: Partial<ProductsDraftFilters>) {
+    onDraftFiltersChange({ ...draftFilters, ...patch })
   }
 
   return (
-    <div className="space-y-4 rounded-lg border bg-card p-4 shadow-sm">
-      <div>
-        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Busca
-        </p>
-        <div className="relative">
-          <Search
-            className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden
-          />
-          <Input
-            id="products-search-term"
-            type="search"
-            value={searchTerm}
-            onChange={(e) => onSearchTermChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Descrição, código de barras ou código"
-            className="pl-9 pr-9"
-            disabled={isSearching}
-            aria-label="Buscar por descrição, código de barras ou código"
-          />
-          {searchTerm && (
-            <button
-              type="button"
-              onClick={() => onSearchTermChange("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-              aria-label="Limpar busca"
-              disabled={isSearching}
-            >
-              <X className="size-4" aria-hidden />
-            </button>
-          )}
+    <div className="border bg-card shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-sm font-semibold text-foreground">
+            Buscar produto
+          </p>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Button
-          type="button"
-          onClick={onSearch}
-          disabled={isSearching}
-          tooltip="Buscar produtos"
-        >
-          {isSearching ? (
-            <>
-              <Loader2 className="size-4 animate-spin" aria-hidden />
-              Buscando...
-            </>
-          ) : (
-            <>
-              <Search className="size-4" aria-hidden />
-              Buscar
-            </>
-          )}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onClear}
-          disabled={isSearching}
-          tooltip="Limpar filtros"
-        >
-          <X className="size-4" aria-hidden />
-          Limpar
-        </Button>
+      <div className="space-y-5 p-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Field>
+            <FieldLabel htmlFor="products-filter-code">Código interno</FieldLabel>
+            <Input
+              id="products-filter-code"
+              value={draftFilters.code}
+              onChange={(e) => updateDraft({ code: e.target.value })}
+              placeholder="Ex: 1234"
+              disabled={isSearching}
+              aria-label="Código interno"
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="products-filter-description">
+              Descrição
+            </FieldLabel>
+            <Input
+              id="products-filter-description"
+              value={draftFilters.description}
+              onChange={(e) => updateDraft({ description: e.target.value })}
+              placeholder="Ex: Produto de exemplo"
+              disabled={isSearching}
+              aria-label="Descrição do produto"
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="products-filter-barcode">
+              Código de barras
+            </FieldLabel>
+            <Input
+              id="products-filter-barcode"
+              value={draftFilters.barCode}
+              onChange={(e) => updateDraft({ barCode: e.target.value })}
+              placeholder="Ex: 1234567890123"
+              disabled={isSearching}
+              aria-label="Código de barras"
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="products-filter-manufacturer">
+              Fabricante
+            </FieldLabel>
+            <Input
+              id="products-filter-manufacturer"
+              value={draftFilters.manufacturer}
+              onChange={(e) => updateDraft({ manufacturer: e.target.value })}
+              placeholder="Ex: Fabricante"
+              disabled={isSearching}
+              aria-label="Fabricante"
+            />
+          </Field>
+        </div>
+        <div className="flex flex-wrap gap-2 border-t pt-4">
+          <Button
+            type="button"
+            onClick={onSearch}
+            disabled={isSearching}
+            tooltip="Buscar produtos"
+          >
+            {isSearching ? (
+              <>
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+                Buscando...
+              </>
+            ) : (
+              <>
+                <Search className="size-4" aria-hidden />
+                Buscar produto
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   )

@@ -191,7 +191,7 @@ export function MembersTable({
     return (
       <div
         role="status"
-        className="rounded-lg border border-dashed bg-card px-6 py-16 text-center"
+        className="border border-dashed bg-card px-6 py-16 text-center"
       >
         <SearchX
           className="mx-auto mb-4 size-10 text-muted-foreground/40"
@@ -215,7 +215,7 @@ export function MembersTable({
 
   return (
     <div className="space-y-3">
-      <div className="hidden overflow-hidden rounded-lg border md:block">
+      <div className="hidden overflow-hidden border md:block">
         <table className="w-full text-sm" aria-label={listLabel}>
           <thead className="border-b bg-muted/40 text-xs">
             <tr>
@@ -319,7 +319,7 @@ export function MembersTable({
         {sortedItems.map((item) => (
           <li
             key={item.id}
-            className="rounded-lg border bg-card p-4 shadow-sm"
+            className="border bg-card p-4 shadow-sm"
           >
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">

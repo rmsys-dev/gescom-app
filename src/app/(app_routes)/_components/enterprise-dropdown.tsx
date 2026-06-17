@@ -62,7 +62,7 @@ export function EnterpriseDropdown() {
   }
 
   const enterpriseIcon = (
-    <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+    <div className="flex aspect-square size-8 items-center justify-center bg-sidebar-primary text-sidebar-primary-foreground">
       <Building2 className="size-4" />
     </div>
   )
@@ -111,7 +111,7 @@ export function EnterpriseDropdown() {
           <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-56 rounded-lg">
+      <DropdownMenuContent align="end" className="min-w-56">
         <DropdownMenuLabel className="text-xs text-muted-foreground">
           Empresas
         </DropdownMenuLabel>
@@ -122,7 +122,7 @@ export function EnterpriseDropdown() {
             onClick={() => void onSelect(enterprise)}
             className="gap-2 p-2"
           >
-            <div className="flex size-6 items-center justify-center rounded-md border">
+            <div className="flex size-6 items-center justify-center border">
               <Building2 className="size-3.5 shrink-0" />
             </div>
             <div className="grid min-w-0 flex-1 text-left">

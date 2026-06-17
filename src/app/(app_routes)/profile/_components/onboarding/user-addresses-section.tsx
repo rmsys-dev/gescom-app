@@ -277,7 +277,7 @@ function AddressListItem({
   }
 
   return (
-    <li className="space-y-4 rounded-lg border border-border/60 bg-muted/15 p-4">
+    <li className="space-y-4 border border-border/60 bg-muted/15 p-4">
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm font-semibold text-foreground">
           {getUserAddressTypeLabel(address.adressType)}

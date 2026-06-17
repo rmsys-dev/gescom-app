@@ -72,7 +72,7 @@ function ProductSectionEmpty({
   return (
     <div
       role="status"
-      className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border/80 bg-muted/20 px-6 py-10 text-center"
+      className="flex flex-col items-center justify-center border border-dashed border-border/80 bg-muted/20 px-6 py-10 text-center"
     >
       <Icon className="mb-3 size-9 text-muted-foreground/50" aria-hidden />
       <p className="text-sm font-medium text-foreground">{title}</p>
@@ -87,7 +87,7 @@ export function ProductDetailHeader({ product }: { product: ProductEnterprise })
       <CardContent className="space-y-4 pt-6">
         <div className="flex justify-center">
           <div
-            className="flex size-24 items-center justify-center rounded-full bg-primary/15 ring-2 ring-background shadow-md"
+            className="flex size-24 items-center justify-center border bg-primary/15 ring-2 ring-background shadow-md"
             aria-hidden
           >
             <p className="font-mono text-lg font-black tabular-nums text-primary">
@@ -232,7 +232,7 @@ export function ProductPromotionalPricesSection({
               <li
                 key={promo.id}
                 className={cn(
-                  "rounded-lg border bg-card p-4 shadow-sm",
+                  "border bg-card p-4 shadow-sm",
                   index % 2 === 1 && "bg-muted/20"
                 )}
               >
@@ -285,7 +285,7 @@ export function ProductTaxationSection({
               <li
                 key={taxation.id}
                 className={cn(
-                  "rounded-lg border p-4 text-sm",
+                  "border p-4 text-sm",
                   index % 2 === 1 && "bg-muted/20"
                 )}
               >
@@ -352,7 +352,7 @@ export function ProductApplicationsSection({
               <li
                 key={application.id}
                 className={cn(
-                  "rounded-lg border bg-card px-4 py-3 text-sm shadow-sm",
+                  "border bg-card px-4 py-3 text-sm shadow-sm",
                   index % 2 === 1 && "bg-muted/20"
                 )}
               >

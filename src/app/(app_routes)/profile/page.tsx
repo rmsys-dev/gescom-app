@@ -42,11 +42,11 @@ export default function ProfilePage() {
     detailsData ??
     (data?.user
       ? buildEmptyUserDetails({
-          id: data.user.id,
-          userName: data.user.name,
-          userEmail: data.user.email ?? "",
-          userPhone: data.user.phone ?? "",
-        })
+        id: data.user.id,
+        userName: data.user.name,
+        userEmail: data.user.email ?? "",
+        userPhone: data.user.phone ?? "",
+      })
       : undefined)
 
   const errMessage =
@@ -99,7 +99,7 @@ export default function ProfilePage() {
       {error && data && (
         <div
           role="status"
-          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-950 dark:text-amber-100"
+          className="border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-950 dark:text-amber-100"
         >
           <p className="font-medium">Não foi possível atualizar os dados.</p>
           <p className="mt-1 text-amber-900/90 dark:text-amber-50/90">
@@ -111,7 +111,7 @@ export default function ProfilePage() {
       {detailsError && detailsData && (
         <div
           role="status"
-          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-950 dark:text-amber-100"
+          className="border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-950 dark:text-amber-100"
         >
           <p className="font-medium">Não foi possível atualizar o onboarding.</p>
           <p className="mt-1 text-amber-900/90 dark:text-amber-50/90">

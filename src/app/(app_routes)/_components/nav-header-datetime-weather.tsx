@@ -64,11 +64,11 @@ function useLiveClock(): LiveClock {
 // function WeatherSkeleton() {
 //   return (
 //     <div className="flex items-center gap-2" aria-hidden>
-//       <Skeleton className="size-5 shrink-0 rounded-full bg-border/70" />
+//       <Skeleton className="size-5 shrink-0 bg-border/70" />
 //       <div className="grid gap-1 leading-tight">
 //         <Skeleton className="h-5 w-9 bg-border/70" />
 //         <div className="flex items-center gap-1">
-//           <Skeleton className="size-3 shrink-0 rounded-full bg-border/70" />
+//           <Skeleton className="size-3 shrink-0 bg-border/70" />
 //           <Skeleton className="h-3 w-20 bg-border/70 sm:w-24" />
 //         </div>
 //       </div>

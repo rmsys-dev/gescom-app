@@ -35,7 +35,7 @@ export function SaleBudgetConversionsTable({
         {conversions.length === 0 ? (
           <p className="text-sm text-muted-foreground">Sem conversões.</p>
         ) : (
-          <div className="overflow-x-auto rounded-lg border">
+          <div className="overflow-x-auto border">
             <table className="w-full text-sm">
               <thead className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
                 <tr>

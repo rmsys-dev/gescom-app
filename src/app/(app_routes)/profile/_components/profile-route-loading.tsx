@@ -14,13 +14,13 @@ export function ProfileContentLoading() {
       aria-label="A carregar dados do perfil"
       className="space-y-6"
     >
-      <div className="overflow-hidden rounded-2xl border bg-card">
+      <div className="overflow-hidden  border bg-card">
         <div className="flex flex-col items-center gap-5 px-6 py-8 sm:flex-row sm:items-center">
-          <Skeleton className="size-24 shrink-0 rounded-full" />
+          <Skeleton className="size-24 shrink-0" />
           <div className="flex w-full flex-col items-center gap-2 sm:items-start">
             <Skeleton className="h-7 w-48 max-w-full" />
             <Skeleton className="h-4 w-56 max-w-full" />
-            <Skeleton className="h-6 w-40 rounded-full" />
+            <Skeleton className="h-6 w-40" />
           </div>
         </div>
       </div>
@@ -31,11 +31,9 @@ export function ProfileContentLoading() {
           <Skeleton className="h-4 w-full max-w-sm" />
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
-          <Skeleton className="h-18 rounded-lg sm:col-span-2" />
-          <Skeleton className="h-18 rounded-lg" />
-          <Skeleton className="h-18 rounded-lg" />
-          <Skeleton className="h-18 rounded-lg" />
-          <Skeleton className="h-18 rounded-lg" />
+          <Skeleton className="h-18 sm:col-span-2" />
+          <Skeleton className="h-18" />
+          <Skeleton className="h-18" />
         </CardContent>
       </Card>
     </div>

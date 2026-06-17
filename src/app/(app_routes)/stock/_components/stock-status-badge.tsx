@@ -23,9 +23,9 @@ export function StockLocationStatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex h-5 items-center rounded-full border px-2.5 text-xs font-medium",
+        "inline-flex h-5 items-center border px-2.5 text-xs font-medium",
         LOCATION_STATUS_STYLES[key] ??
-          "border-border bg-muted/30 text-muted-foreground",
+        "border-border bg-muted/30 text-muted-foreground",
         className
       )}
     >
@@ -57,9 +57,9 @@ export function StockBatchStatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex h-5 items-center rounded-full border px-2.5 text-xs font-medium",
+        "inline-flex h-5 items-center border px-2.5 text-xs font-medium",
         BATCH_STATUS_STYLES[key] ??
-          "border-border bg-muted/30 text-muted-foreground",
+        "border-border bg-muted/30 text-muted-foreground",
         className
       )}
     >
@@ -105,9 +105,9 @@ export function StockMovementTypeBadge({
   return (
     <span
       className={cn(
-        "inline-flex h-5 items-center rounded-full border px-2.5 text-xs font-medium",
+        "inline-flex h-5 items-center border px-2.5 text-xs font-medium",
         MOVEMENT_TYPE_STYLES[key] ??
-          "border-border bg-muted/30 text-muted-foreground",
+        "border-border bg-muted/30 text-muted-foreground",
         className
       )}
     >

@@ -60,9 +60,9 @@ export function SalesByPaymentTypeChart({
       </CardHeader>
       <CardContent>
         {loading ? (
-          <Skeleton className="mx-auto h-[280px] max-w-[280px] rounded-full" />
+          <Skeleton className="mx-auto h-[280px] max-w-[280px]" />
         ) : chartData.length === 0 ? (
-          <div className="flex h-[280px] items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
+          <div className="flex h-[280px] items-center justify-center border border-dashed text-sm text-muted-foreground">
             Sem dados para o período seleccionado.
           </div>
         ) : (
@@ -106,7 +106,7 @@ export function SalesByPaymentTypeChart({
                 >
                   <span className="flex items-center gap-2 truncate">
                     <span
-                      className="size-2.5 shrink-0 rounded-full"
+                      className="size-2.5 shrink-0 border"
                       style={{ backgroundColor: item.fill }}
                     />
                     <span className="truncate">{item.label}</span>

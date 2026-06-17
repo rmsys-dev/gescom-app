@@ -20,7 +20,7 @@ function EnterpriseSectionEmpty({
   return (
     <div
       role="status"
-      className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border/80 bg-muted/20 px-6 py-12 text-center"
+      className="flex flex-col items-center justify-center border border-dashed border-border/80 bg-muted/20 px-6 py-12 text-center"
     >
       <MapPin
         className="mb-3 size-10 text-muted-foreground/50"
@@ -162,7 +162,7 @@ export function EnterpriseAddressList({
           return (
             <li
               key={address.id}
-              className="rounded-lg border border-border/60 bg-muted/15 p-4"
+              className="border border-border/60 bg-muted/15 p-4"
             >
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm font-medium text-foreground">

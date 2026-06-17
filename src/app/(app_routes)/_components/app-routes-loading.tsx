@@ -25,8 +25,8 @@ export function AppRoutesLoading() {
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-4 w-full max-w-lg" />
         <div className="grid flex-1 gap-4 md:grid-cols-2">
-          <Skeleton className="min-h-40 w-full rounded-lg" />
-          <Skeleton className="min-h-40 w-full rounded-lg" />
+          <Skeleton className="min-h-40 w-full" />
+          <Skeleton className="min-h-40 w-full" />
         </div>
       </div>
     </div>

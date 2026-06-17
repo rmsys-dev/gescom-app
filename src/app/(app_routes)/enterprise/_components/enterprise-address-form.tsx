@@ -381,7 +381,7 @@ function EnterpriseAddressFormContent({
           </Field>
 
           {selectedCep && (
-            <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2 text-sm text-muted-foreground">
+            <div className="border border-border/60 bg-muted/20 px-3 py-2 text-sm text-muted-foreground">
               <p>
                 <span className="font-medium text-foreground">Logradouro:</span>{" "}
                 {selectedCep.address}

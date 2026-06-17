@@ -85,7 +85,7 @@ function MetricCard({ config, total, isLoading, canConsult }: MetricCardProps) {
             )}
           </p>
         </div>
-        <div className="rounded-lg border bg-muted/40 p-2.5">
+        <div className="border bg-muted/40 p-2.5">
           <Icon className="size-5 text-muted-foreground" aria-hidden />
         </div>
       </div>
@@ -95,7 +95,7 @@ function MetricCard({ config, total, isLoading, canConsult }: MetricCardProps) {
 
   if (!canConsult) {
     return (
-      <div className="rounded-lg border bg-card p-4 shadow-sm opacity-60">
+      <div className="border bg-card p-4 shadow-sm opacity-60">
         {content}
       </div>
     )
@@ -104,7 +104,7 @@ function MetricCard({ config, total, isLoading, canConsult }: MetricCardProps) {
   return (
     <Link
       href={config.basePath}
-      className="rounded-lg border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
+      className="border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
     >
       {content}
     </Link>
@@ -172,7 +172,7 @@ export function StockMiniDashboard() {
         {dashboardConfigs.map((config) => (
           <div
             key={config.slug}
-            className="rounded-lg border bg-card p-4 shadow-sm"
+            className="border bg-card p-4 shadow-sm"
           >
             <Skeleton className="h-4 w-24" />
             <Skeleton className="mt-3 h-9 w-16" />
@@ -203,9 +203,9 @@ export function StockMiniDashboard() {
       {perms.canConsultStockMovements && (
         <Link
           href="/stock/movements"
-          className="flex items-center gap-3 rounded-lg border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
+          className="flex items-center gap-3 border bg-card p-4 shadow-sm transition-colors hover:bg-accent/40"
         >
-          <div className="rounded-lg border bg-muted/40 p-2.5">
+          <div className="border bg-muted/40 p-2.5">
             <ArrowLeftRight
               className="size-5 text-muted-foreground"
               aria-hidden

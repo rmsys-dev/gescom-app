@@ -54,9 +54,9 @@ export function SalesCancellationsChart({
       </CardHeader>
       <CardContent>
         {loading ? (
-          <Skeleton className="h-[220px] w-full rounded-lg" />
+          <Skeleton className="h-[220px] w-full" />
         ) : chartData.length === 0 ? (
-          <div className="flex h-[220px] items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
+          <div className="flex h-[220px] items-center justify-center border border-dashed text-sm text-muted-foreground">
             Sem cancelamentos no período seleccionado.
           </div>
         ) : (

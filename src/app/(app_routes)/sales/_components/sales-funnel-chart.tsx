@@ -52,9 +52,9 @@ export function SalesFunnelChart({ data, loading }: SalesFunnelChartProps) {
       </CardHeader>
       <CardContent>
         {loading ? (
-          <Skeleton className="h-[260px] w-full rounded-lg" />
+          <Skeleton className="h-[260px] w-full" />
         ) : chartData.length === 0 ? (
-          <div className="flex h-[260px] items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
+          <div className="flex h-[260px] items-center justify-center border border-dashed text-sm text-muted-foreground">
             Sem orçamentos no período seleccionado.
           </div>
         ) : (

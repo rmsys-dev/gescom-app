@@ -108,14 +108,14 @@ export function MemberDepartmentsPicker({
             return (
               <li
                 key={d.departmentId}
-                className="flex flex-wrap items-center gap-2 rounded-lg border border-border/60 bg-muted/20 px-3 py-2"
+                className="flex flex-wrap items-center gap-2 border border-border/60 bg-muted/20 px-3 py-2"
               >
                 <span className="min-w-0 flex-1 text-sm font-medium">
                   {label}
                 </span>
                 <label
                   className={cn(
-                    "flex cursor-pointer items-center gap-1.5 rounded-lg bg-foreground/10 px-2 py-1 text-xs transition-colors",
+                    "flex cursor-pointer items-center gap-1.5 bg-foreground/10 px-2 py-1 text-xs transition-colors",
                     d.mainDepartment && "bg-primary/15 text-primary"
                   )}
                 >
@@ -130,8 +130,8 @@ export function MemberDepartmentsPicker({
                   <span
                     aria-hidden
                     className={cn(
-                      "relative inline-flex size-3.5 shrink-0 rounded-full border-2 border-muted-foreground/50 bg-background transition-[border-color,box-shadow]",
-                      "after:absolute after:top-1/2 after:left-1/2 after:size-1.5 after:-translate-x-1/2 after:-translate-y-1/2 after:rounded-full after:bg-primary after:opacity-0 after:transition-opacity after:content-['']",
+                      "relative inline-flex size-3.5 shrink-0 border-2 border-muted-foreground/50 bg-background transition-[border-color,box-shadow]",
+                      "after:absolute after:top-1/2 after:left-1/2 after:size-1.5 after:-translate-x-1/2 after:-translate-y-1/2 after:bg-primary after:opacity-0 after:transition-opacity after:content-['']",
                       "peer-focus-visible:ring-2 peer-focus-visible:ring-ring/50 peer-focus-visible:ring-offset-1",
                       "peer-checked:border-primary peer-checked:after:opacity-100"
                     )}

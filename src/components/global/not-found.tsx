@@ -41,8 +41,8 @@ export function NotFoundView() {
   return (
     <main className="relative flex min-h-svh w-full items-center justify-center overflow-hidden p-6 md:p-10">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,var(--color-gescom-accent-soft-bg),transparent_32%),radial-gradient(circle_at_bottom_right,var(--color-gescom-background-sutil),transparent_34%)]" />
-      <div className="absolute left-6 top-10 -z-10 size-40 rounded-full bg-primary/10 blur-3xl" />
-      <div className="absolute bottom-8 right-8 -z-10 size-52 rounded-full bg-gescom-accent/15 blur-3xl" />
+      <div className="absolute left-6 top-10 -z-10 size-40 bg-primary/10 blur-3xl" />
+      <div className="absolute bottom-8 right-8 -z-10 size-52 bg-gescom-accent/15 blur-3xl" />
 
       <Card className="group w-full max-w-4xl border-border/70 bg-card/90 shadow-card backdrop-blur transition-all duration-500 hover:-translate-y-1 hover:shadow-card-hover">
         <CardHeader className="items-center gap-3 px-6 pt-8 text-center">
@@ -56,12 +56,12 @@ export function NotFoundView() {
         </CardHeader>
 
         <CardContent className="grid gap-8 px-6 pb-8 md:grid-cols-[1fr_1.15fr] md:items-center">
-          <div className="relative mx-auto flex aspect-square w-full max-w-72 items-center justify-center rounded-full border bg-linear-to-br from-background to-muted/70 shadow-main-xsmall">
-            <div className="absolute inset-6 rounded-full border border-dashed border-primary/30 transition-transform duration-700 group-hover:rotate-12" />
-            <div className="absolute left-8 top-10 rounded-2xl border bg-card p-3 shadow-card transition-transform duration-500 group-hover:-translate-y-2">
+          <div className="relative mx-auto flex aspect-square w-full max-w-72 items-center justify-center border bg-linear-to-br from-background to-muted/70 shadow-main-xsmall">
+            <div className="absolute inset-6 border border-dashed border-primary/30 transition-transform duration-700 group-hover:rotate-12" />
+            <div className="absolute left-8 top-10 border bg-card p-3 shadow-card transition-transform duration-500 group-hover:-translate-y-2">
               <MapPinned className="size-5 text-primary" />
             </div>
-            <div className="absolute bottom-10 right-7 rounded-2xl border bg-card p-3 shadow-card transition-transform duration-500 group-hover:translate-x-2">
+            <div className="absolute bottom-10 right-7 border bg-card p-3 shadow-card transition-transform duration-500 group-hover:translate-x-2">
               <SearchX className="size-5 text-primary" />
             </div>
             <div className="text-center">
@@ -75,7 +75,7 @@ export function NotFoundView() {
           </div>
 
           <div className="flex flex-col gap-5">
-            <div className="rounded-xl border bg-background/70 p-4">
+            <div className="border bg-background/70 p-4">
               <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
                 Você tentou acessar
               </p>

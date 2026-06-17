@@ -153,7 +153,7 @@
   --chart-3: #849ba9;
   --chart-4: #1e4d63;
   --chart-5: #5eb0c4;
-  --radius: 0.625rem;
+  --radius: 0.125rem; /* xs */
   --sidebar: var(--gescom-background-cards);
   --sidebar-foreground: var(--gescom-text);
   --sidebar-primary: #28617d;

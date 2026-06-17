@@ -14,7 +14,7 @@ export function NotificationsRouteLoading() {
         <Skeleton className="h-4 w-72" />
       </div>
 
-      <Skeleton className="h-48 rounded-lg" />
+      <Skeleton className="h-48" />
     </main>
   )
 }

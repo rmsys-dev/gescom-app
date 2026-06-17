@@ -63,7 +63,7 @@ export function SalesFilters({
   }
 
   return (
-    <div className="space-y-4 rounded-lg border bg-card p-4 shadow-sm">
+    <div className="space-y-4 border bg-card p-4 shadow-sm">
       <div>
         <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Busca

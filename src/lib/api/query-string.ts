@@ -3,10 +3,16 @@ import type { PaginationQuery } from "@/lib/schemas/pagination"
 type QueryParamsInput = PaginationQuery & {
   search?: string
   status?: string
+  code?: number
+  barCode?: string
+  manufacturer?: string
+  controlsBatch?: boolean
+  dateFrom?: string
+  dateTo?: string
 }
 
 export function buildQueryString(
-  entries: Record<string, string | number | undefined>
+  entries: Record<string, string | number | boolean | undefined>
 ): string {
   const params = new URLSearchParams()
   for (const [key, value] of Object.entries(entries)) {
@@ -27,5 +33,11 @@ export function buildPaginationQuery(query: QueryParamsInput): string {
         ? query.search
         : undefined,
     status: query.status,
+    code: query.code,
+    barCode: query.barCode,
+    manufacturer: query.manufacturer,
+    controlsBatch: query.controlsBatch,
+    dateFrom: query.dateFrom,
+    dateTo: query.dateTo,
   })
 }

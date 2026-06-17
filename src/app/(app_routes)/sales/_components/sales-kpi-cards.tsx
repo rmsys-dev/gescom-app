@@ -54,11 +54,11 @@ function KpiCard({ label, value, delta, loading }: KpiCardProps) {
         {delta && delta.changePercent !== undefined && (
           <div
             className={cn(
-              "mt-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+              "mt-2 inline-flex items-center gap-1 border px-2 py-0.5 text-xs font-medium",
               tone === "positive" &&
-                "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+              "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
               tone === "negative" &&
-                "bg-red-500/10 text-red-700 dark:text-red-300",
+              "bg-red-500/10 text-red-700 dark:text-red-300",
               tone === "neutral" && "bg-muted text-muted-foreground"
             )}
           >

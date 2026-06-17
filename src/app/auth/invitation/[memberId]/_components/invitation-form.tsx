@@ -168,7 +168,7 @@ export function InvitationForm({
               </div>
 
               {!isAuthenticated ? (
-                <FieldDescription className="rounded-md border border-border bg-muted/50 p-3 text-center">
+                <FieldDescription className="border border-border bg-muted/50 p-3 text-center">
                   Esta etapa não exige sessão ativa. <br />Use o mesmo E-mail/CPF e
                   senha do seu acesso Gescom.
                 </FieldDescription>

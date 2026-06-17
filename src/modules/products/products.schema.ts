@@ -44,7 +44,19 @@ export const productEnterpriseSchema = z.object({
 
 export type ProductEnterprise = z.infer<typeof productEnterpriseSchema>
 
-export const listProductsEnterprisesQuerySchema = searchPaginationQuerySchema
+export const listProductsEnterprisesQuerySchema =
+  searchPaginationQuerySchema.extend({
+    status: productStatusSchema.optional(),
+    code: z.coerce.number().int().positive().optional(),
+    barCode: z.string().trim().min(1).optional(),
+    manufacturer: z.string().trim().min(1).optional(),
+    controlsBatch: z
+      .union([z.boolean(), z.enum(["true", "false"])])
+      .transform((value) => (typeof value === "string" ? value === "true" : value))
+      .optional(),
+    dateFrom: z.string().optional(),
+    dateTo: z.string().optional(),
+  })
 
 export type ListProductsEnterprisesQuery = z.infer<
   typeof listProductsEnterprisesQuerySchema

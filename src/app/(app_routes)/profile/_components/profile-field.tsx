@@ -96,12 +96,12 @@ export function ProfileField({
       </legend>
       <div
         className={cn(
-          "flex min-h-10 gap-3 rounded-lg border border-border/60 bg-muted/25 px-3 py-2.5 transition-colors",
+          "flex min-h-10 gap-3 border border-border/60 bg-muted/25 px-3 py-2.5 transition-colors",
           multiline && !empty && !editing ? "items-start" : "items-center",
           !editing && empty && "text-muted-foreground"
         )}
       >
-        <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-background/80 text-muted-foreground shadow-sm ring-1 ring-border/50">
+        <span className="flex size-8 shrink-0 items-center justify-center border bg-background/80 text-muted-foreground shadow-sm ring-1 ring-border/50">
           <Icon className="size-4" aria-hidden />
         </span>
         {isSelectEdit ? (

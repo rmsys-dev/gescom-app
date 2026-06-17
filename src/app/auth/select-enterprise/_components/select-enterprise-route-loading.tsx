@@ -21,7 +21,7 @@ export function SelectEnterpriseRouteLoading() {
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-17 w-full rounded-md" />
+            <Skeleton key={i} className="h-17 w-full" />
           ))}
         </CardContent>
       </Card>

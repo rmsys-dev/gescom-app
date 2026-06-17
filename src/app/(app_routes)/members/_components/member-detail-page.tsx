@@ -145,143 +145,143 @@ export function MemberDetailPageContent({
         </main>
       }
     >
-    <main className="mx-auto w-full space-y-6 p-4 md:p-8">
-      <RouteBreadcrumb currentLabel={displayName} />
-      {isPending && <MembershipDetailContentLoading config={config} />}
+      <main className="mx-auto w-full space-y-6 p-4 md:p-8">
+        <RouteBreadcrumb currentLabel={displayName} />
+        {isPending && <MembershipDetailContentLoading config={config} />}
 
-      {error && data && (
-        <div
-          role="status"
-          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-950 dark:text-amber-100"
-        >
-          <p className="font-medium">Não foi possível atualizar os dados.</p>
-          <p className="mt-1 text-amber-900/90 dark:text-amber-50/90">
-            {errMessage}. Os valores abaixo podem estar desatualizados.
-          </p>
-        </div>
-      )}
-
-      {detailsError && detailsData && (
-        <div
-          role="status"
-          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-950 dark:text-amber-100"
-        >
-          <p className="font-medium">Não foi possível atualizar o onboarding.</p>
-          <p className="mt-1 text-amber-900/90 dark:text-amber-50/90">
-            {detailsErrMessage}. Os valores abaixo podem estar desatualizados.
-          </p>
-        </div>
-      )}
-
-      {error && !data && !isPending && (
-        <Card className="border-destructive/40 ring-destructive/20">
-          <CardHeader>
-            <CardTitle className="text-destructive">
-              {config.labels.loadDetailErrorTitle}
-            </CardTitle>
-            <CardDescription>{errMessage}</CardDescription>
-          </CardHeader>
-          {errMeta && (
-            <CardContent>
-              <dl className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
-                <div>
-                  <dt className="font-medium text-foreground">Código</dt>
-                  <dd className="font-mono">{errMeta.code}</dd>
-                </div>
-                <div>
-                  <dt className="font-medium text-foreground">HTTP</dt>
-                  <dd>{errMeta.status}</dd>
-                </div>
-                <div className="min-w-0 sm:col-span-1">
-                  <dt className="font-medium text-foreground">Request ID</dt>
-                  <dd className="truncate font-mono">
-                    {errMeta.requestId ?? "—"}
-                  </dd>
-                </div>
-              </dl>
-            </CardContent>
-          )}
-        </Card>
-      )}
-
-      {data && !isPending && !matchesRequiredClass && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{config.labels.notFoundByClass}</CardTitle>
-            <CardDescription>
-              {config.labels.notFoundByClassDescription}
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      )}
-
-      {data && !isPending && matchesRequiredClass && enterpriseId && (
-        <div className="space-y-6">
-          <MemberDetailHeader member={data} config={config} />
-
-          <div className="grid gap-6 lg:grid-cols-2">
-            <MemberUserInfoCard
-              user={data.user}
-              enterpriseId={enterpriseId}
-              memberId={data.id}
-              canEdit={perms.canAlterUsers}
-              onUpdateSuccess={() => void refetch()}
-            />
-            <MemberLinkCard
-              member={data}
-              enterpriseId={enterpriseId}
-              config={config}
-              canEdit={perms.canAlterMembers}
-              onUpdateSuccess={() => void refetch()}
-            />
+        {error && data && (
+          <div
+            role="status"
+            className="border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-950 dark:text-amber-100"
+          >
+            <p className="font-medium">Não foi possível atualizar os dados.</p>
+            <p className="mt-1 text-amber-900/90 dark:text-amber-50/90">
+              {errMessage}. Os valores abaixo podem estar desatualizados.
+            </p>
           </div>
+        )}
 
-          {perms.canConsultUsers ? (
-            <>
-              {detailsError && !detailsData && !detailsPending && (
-                <Card className="border-destructive/40 ring-destructive/20">
-                  <CardHeader>
-                    <CardTitle className="text-destructive">
-                      Erro ao carregar onboarding
-                    </CardTitle>
-                    <CardDescription>{detailsErrMessage}</CardDescription>
-                  </CardHeader>
-                </Card>
-              )}
-              <UserOnboardingPanel
-                details={onboardingDetails}
+        {detailsError && detailsData && (
+          <div
+            role="status"
+            className="border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-950 dark:text-amber-100"
+          >
+            <p className="font-medium">Não foi possível atualizar o onboarding.</p>
+            <p className="mt-1 text-amber-900/90 dark:text-amber-50/90">
+              {detailsErrMessage}. Os valores abaixo podem estar desatualizados.
+            </p>
+          </div>
+        )}
+
+        {error && !data && !isPending && (
+          <Card className="border-destructive/40 ring-destructive/20">
+            <CardHeader>
+              <CardTitle className="text-destructive">
+                {config.labels.loadDetailErrorTitle}
+              </CardTitle>
+              <CardDescription>{errMessage}</CardDescription>
+            </CardHeader>
+            {errMeta && (
+              <CardContent>
+                <dl className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
+                  <div>
+                    <dt className="font-medium text-foreground">Código</dt>
+                    <dd className="font-mono">{errMeta.code}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-medium text-foreground">HTTP</dt>
+                    <dd>{errMeta.status}</dd>
+                  </div>
+                  <div className="min-w-0 sm:col-span-1">
+                    <dt className="font-medium text-foreground">Request ID</dt>
+                    <dd className="truncate font-mono">
+                      {errMeta.requestId ?? "—"}
+                    </dd>
+                  </div>
+                </dl>
+              </CardContent>
+            )}
+          </Card>
+        )}
+
+        {data && !isPending && !matchesRequiredClass && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{config.labels.notFoundByClass}</CardTitle>
+              <CardDescription>
+                {config.labels.notFoundByClassDescription}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        )}
+
+        {data && !isPending && matchesRequiredClass && enterpriseId && (
+          <div className="space-y-6">
+            <MemberDetailHeader member={data} config={config} />
+
+            <div className="grid gap-6 lg:grid-cols-2">
+              <MemberUserInfoCard
+                user={data.user}
                 enterpriseId={enterpriseId}
-                userId={data.user.id}
                 memberId={data.id}
-                canAlter={perms.canAlterUsers}
-                isLoading={detailsPending}
-                title={config.labels.onboardingPanelTitle}
-                description={config.labels.onboardingPanelDescription}
+                canEdit={perms.canAlterUsers}
+                onUpdateSuccess={() => void refetch()}
               />
-            </>
-          ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle>{config.labels.onboardingDeniedTitle}</CardTitle>
-                <CardDescription>
-                  Necessita da permissão consultar_usuarios para ver e editar os
-                  dados de onboarding.
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          )}
+              <MemberLinkCard
+                member={data}
+                enterpriseId={enterpriseId}
+                config={config}
+                canEdit={perms.canAlterMembers}
+                onUpdateSuccess={() => void refetch()}
+              />
+            </div>
 
-          {config.detail.showDepartments && (
-            <MemberDepartmentsSection
-              enterpriseId={enterpriseId}
-              member={data}
-              canAlter={perms.canAlterMembers}
-              canAlterPermissions={perms.canAlterPermissions}
-            />
-          )}
-        </div>
-      )}
-    </main>
+            {perms.canConsultUsers ? (
+              <>
+                {detailsError && !detailsData && !detailsPending && (
+                  <Card className="border-destructive/40 ring-destructive/20">
+                    <CardHeader>
+                      <CardTitle className="text-destructive">
+                        Erro ao carregar onboarding
+                      </CardTitle>
+                      <CardDescription>{detailsErrMessage}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                )}
+                <UserOnboardingPanel
+                  details={onboardingDetails}
+                  enterpriseId={enterpriseId}
+                  userId={data.user.id}
+                  memberId={data.id}
+                  canAlter={perms.canAlterUsers}
+                  isLoading={detailsPending}
+                  title={config.labels.onboardingPanelTitle}
+                  description={config.labels.onboardingPanelDescription}
+                />
+              </>
+            ) : (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{config.labels.onboardingDeniedTitle}</CardTitle>
+                  <CardDescription>
+                    Necessita da permissão consultar_usuarios para ver e editar os
+                    dados de onboarding.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            )}
+
+            {config.detail.showDepartments && (
+              <MemberDepartmentsSection
+                enterpriseId={enterpriseId}
+                member={data}
+                canAlter={perms.canAlterMembers}
+                canAlterPermissions={perms.canAlterPermissions}
+              />
+            )}
+          </div>
+        )}
+      </main>
     </PermissionRouteGuard>
   )
 }

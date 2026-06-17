@@ -68,7 +68,7 @@ export function ProductsFiltersInline({
                                 key={action.field}
                                 type="button"
                                 size="sm"
-                                className="bg-transparent border-border text-foreground hover:bg-primary hover:text-foreground hover:border-primary hover:font-semibold hover:scale-105 transition-all duration-500 "
+                                variant="default"
                                 onClick={() => handleSearch(action.field)}
                                 disabled={isSearching}
                             >

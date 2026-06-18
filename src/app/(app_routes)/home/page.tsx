@@ -13,7 +13,7 @@ import {
   PermissionsErrorCard,
   StaleDataBanner,
   useListErrorState,
-} from "@/app/(app_routes)/products/_components/paginated-list-shell"
+} from "@/components/global/listing/paginated-list-shell"
 import { SalesKpiCards } from "@/app/(app_routes)/sales/_components/sales-kpi-cards"
 import { SalesPipelineCards } from "@/app/(app_routes)/sales/_components/sales-pipeline-cards"
 import { SalesDashboardLoading } from "@/app/(app_routes)/sales/_components/sales-route-loading"

@@ -1,5 +1,5 @@
-import { AppRoutesLoading } from "@/app/(app_routes)/_components/app-routes-loading"
+import { AnimatedLoading } from "@/components/global/loading/animated-loading"
 
 export default function Loading() {
-  return <AppRoutesLoading />
+  return <AnimatedLoading />
 }

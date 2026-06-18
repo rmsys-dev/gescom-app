@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
-import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
+import { RouteBreadcrumb } from "@/components/global/navigation/route-breadcrumb"
 import { SalesAgingChart } from "@/app/(app_routes)/sales/_components/sales-aging-chart"
 import { SalesByPaymentTypeChart } from "@/app/(app_routes)/sales/_components/sales-by-payment-type-chart"
 import { SalesBySellerChart } from "@/app/(app_routes)/sales/_components/sales-by-seller-chart"
@@ -24,7 +24,7 @@ import {
   PermissionsErrorCard,
   StaleDataBanner,
   useListErrorState,
-} from "@/app/(app_routes)/products/_components/paginated-list-shell"
+} from "@/components/global/listing/paginated-list-shell"
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
 import { useOperatorPermissions } from "@/lib/permissions"
 import type { TopProductsSortBy } from "@/modules/sales/sales-analytics.schema"

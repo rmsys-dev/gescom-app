@@ -4,7 +4,7 @@ import { useState } from "react"
 import { MapPin, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
-import { ConfirmSoftDeleteDialog } from "@/components/global/confirm-soft-delete-dialog"
+import { ConfirmSoftDeleteDialog } from "@/components/global/dialogs/confirm-soft-delete-dialog"
 import { ProfileEditActions } from "@/app/(app_routes)/profile/_components/profile-field"
 import { UserOnboardingEmpty } from "@/app/(app_routes)/profile/_components/onboarding/user-onboarding-empty"
 import {

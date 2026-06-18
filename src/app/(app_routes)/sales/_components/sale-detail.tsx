@@ -4,7 +4,7 @@ import Link from "next/link"
 
 import { SaleSummaryCard } from "@/app/(app_routes)/sales/_components/sale-summary-card"
 import { SalesStatusBadge } from "@/app/(app_routes)/sales/_components/sales-status-badge"
-import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
+import { RouteBreadcrumb } from "@/components/global/navigation/route-breadcrumb"
 import { Button } from "@/components/ui/button"
 import {
   Card,

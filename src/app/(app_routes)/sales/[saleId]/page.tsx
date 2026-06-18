@@ -14,7 +14,7 @@ import {
   PermissionsErrorCard,
   StaleDataBanner,
   useListErrorState,
-} from "@/app/(app_routes)/products/_components/paginated-list-shell"
+} from "@/components/global/listing/paginated-list-shell"
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
 import { useOperatorPermissions } from "@/lib/permissions"
 import {

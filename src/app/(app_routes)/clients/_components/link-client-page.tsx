@@ -2,8 +2,8 @@
 
 import { LinkClientForm } from "@/app/(app_routes)/clients/_components/link-client-form"
 import { MembershipLinkContentLoading } from "@/app/(app_routes)/members/_components/members-route-loading"
-import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
-import { PermissionRouteGuard } from "@/components/guards/permission-route-guard"
+import { RouteBreadcrumb } from "@/components/global/navigation/route-breadcrumb"
+import { PermissionRouteGuard } from "@/components/global/guards/permission-route-guard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
 import { PERMISSION_CODES } from "@/lib/permissions"

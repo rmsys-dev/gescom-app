@@ -14,13 +14,13 @@ import {
   PermissionsErrorCard,
   StaleDataBanner,
   useListErrorState,
-} from "@/app/(app_routes)/products/_components/paginated-list-shell"
+} from "@/components/global/listing/paginated-list-shell"
 import {
   PaginatedResourceTable,
   type ResourceColumn,
 } from "@/app/(app_routes)/products/_components/paginated-resource-table"
 import { StockContentLoading } from "@/app/(app_routes)/stock/_components/stock-route-loading"
-import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
+import { RouteBreadcrumb } from "@/components/global/navigation/route-breadcrumb"
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
 import { useOperatorPermissions } from "@/lib/permissions"
 import type { PaginationQuery } from "@/modules/stock/stock.schema"

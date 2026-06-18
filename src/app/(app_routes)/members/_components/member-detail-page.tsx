@@ -13,8 +13,8 @@ import {
 import { MembershipDetailContentLoading } from "@/app/(app_routes)/members/_components/members-route-loading"
 import { UserOnboardingPanel } from "@/app/(app_routes)/profile/_components/onboarding/user-onboarding-panel"
 import { MemberDepartmentsSection } from "@/app/(app_routes)/members/_components/member-departments-section"
-import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
-import { PermissionRouteGuard } from "@/components/guards/permission-route-guard"
+import { RouteBreadcrumb } from "@/components/global/navigation/route-breadcrumb"
+import { PermissionRouteGuard } from "@/components/global/guards/permission-route-guard"
 import {
   Card,
   CardContent,

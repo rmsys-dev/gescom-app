@@ -5,12 +5,12 @@ import { Building2, Plus } from "lucide-react"
 
 import { MemberDepartmentForm } from "@/app/(app_routes)/members/_components/member-department-form"
 import { MemberDepartmentPanel } from "@/app/(app_routes)/members/_components/member-department-panel"
-import { ConfirmSoftDeleteDialog } from "@/components/global/confirm-soft-delete-dialog"
+import { ConfirmSoftDeleteDialog } from "@/components/global/dialogs/confirm-soft-delete-dialog"
 import {
   SectionToggle,
   SectionTogglePanel,
   type SectionToggleOption,
-} from "@/components/global/section-toggle"
+} from "@/components/global/navigation/section-toggle"
 import { Button } from "@/components/ui/button"
 import {
   Card,

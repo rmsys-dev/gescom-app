@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { MapPin, Pencil, Plus, Trash2 } from "lucide-react"
-import { ConfirmSoftDeleteDialog } from "@/components/global/confirm-soft-delete-dialog"
+import { ConfirmSoftDeleteDialog } from "@/components/global/dialogs/confirm-soft-delete-dialog"
 import { EnterpriseAddressForm } from "@/app/(app_routes)/enterprise/_components/enterprise-address-form"
 import { Button } from "@/components/ui/button"
 import { useResolveEnterpriseAddressDisplay } from "@/modules/addresses/use-resolve-enterprise-address-display"

@@ -1,5 +1,5 @@
-import { HomeRouteLoading } from "@/app/_components/home-route-loading"
+import { AnimatedLoading } from "@/components/global/loading/animated-loading"
 
 export default function Loading() {
-  return <HomeRouteLoading />
+  return <AnimatedLoading />
 }

@@ -30,7 +30,7 @@ import {
 } from "@/modules/users/users-rules"
 import { useUsersQuery } from "@/modules/users/use-users"
 import { MembershipLinkTableLoading } from "@/app/(app_routes)/members/_components/members-route-loading"
-import { StaleDataBanner } from "@/app/(app_routes)/products/_components/paginated-list-shell"
+import { StaleDataBanner } from "@/components/global/listing/paginated-list-shell"
 import type { ListMembersQuery } from "@/modules/memberships/memberships.schema"
 
 const PAGE_SIZE_OPTIONS = [20, 50, 100]

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Mail, Phone, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
-import { ConfirmSoftDeleteDialog } from "@/components/global/confirm-soft-delete-dialog"
+import { ConfirmSoftDeleteDialog } from "@/components/global/dialogs/confirm-soft-delete-dialog"
 import {
   ProfileEditActions,
   ProfileField,

@@ -13,7 +13,7 @@ import {
   SectionToggle,
   SectionTogglePanel,
   type SectionToggleOption,
-} from "@/components/global/section-toggle"
+} from "@/components/global/navigation/section-toggle"
 import {
   Card,
   CardDescription,

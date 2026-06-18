@@ -3,9 +3,9 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 
-import { HomeRouteLoading } from "@/app/_components/home-route-loading"
 import { useAuth } from "@/components/providers/authentication/auth-store"
 import { useMinLoadingDisplay } from "@/hooks/use-min-loading-display"
+import { AnimatedLoading } from "@/components/global/loading/animated-loading"
 
 export default function Page() {
   const router = useRouter()
@@ -22,7 +22,7 @@ export default function Page() {
   }, [hydrated, isAuthenticated, router])
 
   if (showLoading) {
-    return <HomeRouteLoading />
+    return <AnimatedLoading />
   }
 
   return null

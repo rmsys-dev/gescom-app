@@ -21,7 +21,7 @@ import {
   SectionToggle,
   SectionTogglePanel,
   type SectionToggleOption,
-} from "@/components/global/section-toggle"
+} from "@/components/global/navigation/section-toggle"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {

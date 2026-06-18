@@ -8,7 +8,7 @@ import {
   EnterpriseDetailFields,
   EnterpriseHero,
 } from "@/app/(app_routes)/enterprise/_components/enterprise-field"
-import { PermissionRouteGuard } from "@/components/guards/permission-route-guard"
+import { PermissionRouteGuard } from "@/components/global/guards/permission-route-guard"
 import {
   Card,
   CardContent,

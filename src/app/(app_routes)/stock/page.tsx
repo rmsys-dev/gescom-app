@@ -1,4 +1,4 @@
-import { RouteBreadcrumb } from "@/components/global/route-breadcrumb"
+import { RouteBreadcrumb } from "@/components/global/navigation/route-breadcrumb"
 import { StockMiniDashboard } from "@/app/(app_routes)/stock/_components/stock-mini-dashboard"
 
 export default function StockIndexPage() {

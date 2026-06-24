@@ -42,14 +42,14 @@ export function ListingSearchResult({
     return (
       <div
         role="status"
-        className="border bg-card px-6 py-20 text-center"
+        className="border border-dashed px-6 py-20 text-center"
       >
         <Search
-          className="mx-auto mb-4 size-12 text-muted-foreground/30"
+          className="mx-auto mb-4 size-12 text-muted-foreground"
           aria-hidden
         />
-        <p className="font-semibold text-foreground">{idleTitle}</p>
-        <p className="mt-1 text-sm text-muted-foreground">{idleHint}</p>
+        <p className="font-semibold text-muted-foreground">{idleTitle}</p>
+        <p className="mt-1 font-light text-sm text-muted-foreground">{idleHint}</p>
       </div>
     )
   }

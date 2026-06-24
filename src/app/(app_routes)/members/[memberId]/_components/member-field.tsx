@@ -19,7 +19,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { ConfirmSoftDeleteDialog } from "@/components/global/dialogs/confirm-soft-delete-dialog"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { MemberProfileSummary } from "@/app/(app_routes)/members/_components/member-profile-summary"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -36,9 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { StatusBadge } from "@/components/global/returns/status-badge"
-import { formatCpfCnpj, formatDateOnly, formatPhone } from "@/lib/formatters"
-import { getUserInitials } from "@/lib/user-initials"
+import { EMPTY_DISPLAY, formatCpfCnpj, formatDateOnly, formatEmpty, formatPhone } from "@/lib/formatters"
 import { cn } from "@/lib/utils"
 import { cpfCnpjSchema } from "@/lib/validation/cpf-cnpj"
 import { phoneE164Schema } from "@/lib/validation/phone"
@@ -63,22 +61,15 @@ import {
 } from "@/modules/memberships/memberships-rules"
 import { memberQueryKey } from "@/modules/memberships/memberships-query-keys"
 import {
-  useMembersQuery,
   useUpdateMemberMutation,
 } from "@/modules/memberships/use-members"
-import { useUpdateUserMutation, useUserQuery } from "@/modules/users/use-users"
+import { useIncludedByDisplay } from "@/modules/memberships/use-included-by-display"
+import { useUpdateUserMutation } from "@/modules/users/use-users"
 import { userDetailsQueryKey } from "@/modules/users-onboarding/use-users-onboarding"
-import { MemberClassBadge } from "../../_components/member-class-badge"
 
 export type MemberSelectOption = {
   value: string
   label: string
-}
-
-function formatValue(value: string | null | undefined | boolean): string {
-  if (value === null || value === undefined || value === "") return "—"
-  if (typeof value === "boolean") return value ? "Sim" : "Não"
-  return String(value)
 }
 
 function memberFormCardClassName(editing: boolean) {
@@ -143,8 +134,8 @@ export function MemberField({
   editSelectOptions?: MemberSelectOption[]
   editPlaceholder?: string
 }) {
-  const display = formatValue(value)
-  const empty = display === "—"
+  const display = formatEmpty(value)
+  const empty = display === EMPTY_DISPLAY
   const isSelectEdit =
     editing && Boolean(editSelectOptions?.length && onEditChange)
 
@@ -307,34 +298,7 @@ export function MemberDetailHeader({
 }: {
   member: MemberDetail
 }) {
-  const displayName = member.user.userName.trim()
-  const initials = getUserInitials(displayName)
-
-  return (
-    <Card className="border-none ring-0 shadow-md">
-      <CardContent className="space-y-4 pt-6">
-        <div className="flex justify-center">
-          <Avatar
-            size="default"
-            className="size-20 shrink-0 ring-2 ring-primary shadow-md after:border-0 sm:size-24"
-          >
-            <AvatarFallback className="bg-transparent text-3xl font-semibold tracking-tight sm:text-4xl">
-              <span className="text-primary">{initials}</span>
-            </AvatarFallback>
-          </Avatar>
-        </div>
-        <div className="space-y-2 text-center">
-          <h1 className="font-heading text-xl font-semibold sm:text-2xl">
-            {displayName}
-          </h1>
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <StatusBadge status={member.status} />
-            <MemberClassBadge memberClass={member.class} />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
+  return <MemberProfileSummary member={member} variant="card" />
 }
 
 export function MemberUserInfoCard({
@@ -519,35 +483,8 @@ export function MemberLinkCard({
   const [status, setStatus] = useState<MemberStatus>(member.status)
   const [confirmDelete, setConfirmDelete] = useState(false)
 
-  const {
-    data: includedByMembers,
-    isPending: includedByListPending,
-    isFetched: includedByListFetched,
-  } = useMembersQuery({
-    enterpriseId,
-    filters: { userId: member.includedBy, limit: 1 },
-    enabled: Boolean(enterpriseId) && Boolean(member.includedBy),
-  })
-
-  const includedByNameFromList = includedByMembers?.items[0]?.user.userName
-
-  const { data: includedByUser, isPending: includedByUserPending } =
-    useUserQuery({
-      enterpriseId,
-      userId: member.includedBy,
-      enabled:
-        Boolean(enterpriseId) &&
-        Boolean(member.includedBy) &&
-        includedByListFetched &&
-        !includedByNameFromList,
-      retry: false,
-    })
-
-  const includedByDisplay =
-    includedByNameFromList ?? includedByUser?.userName
-  const includedByPending =
-    includedByListPending ||
-    (includedByListFetched && !includedByNameFromList && includedByUserPending)
+  const { display: includedByDisplay, isPending: includedByPending } =
+    useIncludedByDisplay(enterpriseId, member.includedBy)
 
   const resetDraft = () => {
     setMemberClass(member.class)
@@ -640,7 +577,7 @@ export function MemberLinkCard({
                 />
                 <MemberField
                   label="Incluído por"
-                  value={includedByPending ? "…" : (includedByDisplay ?? "—")}
+                  value={includedByPending ? "…" : formatEmpty(includedByDisplay)}
                   icon={User}
                 />
               </div>

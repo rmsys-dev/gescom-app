@@ -1,24 +1,16 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { Field } from "@/components/ui/field"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { MemberDepartmentsPicker } from "@/app/(app_routes)/members/[memberId]/_components/member-departments-picker"
+
+import { MemberClassDepartmentsFields } from "@/app/(app_routes)/members/_components/member-class-departments-fields"
+import { useMemberClassDepartments } from "@/app/(app_routes)/members/_components/use-member-class-departments"
 import {
   PageFormCard,
   type PageFormField,
 } from "@/components/global/forms/page-form-card"
-import { MEMBER_CLASS_OPTIONS } from "@/modules/memberships/member-class-label"
+import { phoneE164Schema } from "@/lib/validation/phone"
 import type { EnterpriseMemberClass } from "@/modules/memberships/memberships.schema"
-import type { MemberDepartmentPayload } from "@/modules/memberships/memberships.schema"
 import {
   isClienteClass,
   normalizeEmail,
@@ -26,7 +18,6 @@ import {
   validateDepartmentsPayload,
 } from "@/modules/memberships/memberships-rules"
 import { useInviteMemberMutation } from "@/modules/memberships/use-members"
-import { phoneE164Schema } from "@/lib/validation/phone"
 
 const INVITE_FIELDS: PageFormField[] = [
   {
@@ -46,27 +37,26 @@ const INVITE_FIELDS: PageFormField[] = [
 export function InviteMemberForm({
   enterpriseId,
   class: fixedClass,
-  title = "Convite de membro",
-  subtitle = "Envie um convite para um novo membro",
   submitLabel = "Enviar convite",
   pendingLabel = "Enviando convite...",
   onSuccess,
 }: {
   enterpriseId: string
   class?: EnterpriseMemberClass
-  title?: string
-  subtitle?: string
   submitLabel?: string
   pendingLabel?: string
   onSuccess?: (memberId: string) => void
 }) {
   const router = useRouter()
   const mutation = useInviteMemberMutation(enterpriseId)
-  const [memberClass, setMemberClass] = useState<EnterpriseMemberClass>(
-    fixedClass ?? "COLABORADOR"
-  )
-  const [departments, setDepartments] = useState<MemberDepartmentPayload[]>([])
-  const effectiveClass = fixedClass ?? memberClass
+  const {
+    memberClass,
+    setMemberClass,
+    departments,
+    setDepartments,
+    effectiveClass,
+    showFields,
+  } = useMemberClassDepartments({ fixedClass })
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -126,8 +116,8 @@ export function InviteMemberForm({
   return (
     <PageFormCard
       variant="sheet"
-      title={title}
-      subtitle={subtitle}
+      title=""
+      subtitle=""
       fields={INVITE_FIELDS}
       onSubmit={handleSubmit}
       submitLabel={submitLabel}
@@ -135,37 +125,13 @@ export function InviteMemberForm({
       isPending={mutation.isPending}
       cardClassName="h-full"
     >
-      {!fixedClass ? (
-        <>
-          <Field>
-            <Select
-              value={memberClass}
-              onValueChange={(v) => {
-                const next = v as EnterpriseMemberClass
-                setMemberClass(next)
-                if (isClienteClass(next)) setDepartments([])
-              }}
-            >
-              <SelectTrigger id="memberClass" className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {MEMBER_CLASS_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value}>
-                    {o.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field>
-            <MemberDepartmentsPicker
-              memberClass={memberClass}
-              departments={departments}
-              onChange={setDepartments}
-            />
-          </Field>
-        </>
+      {showFields ? (
+        <MemberClassDepartmentsFields
+          memberClass={memberClass}
+          departments={departments}
+          onMemberClassChange={setMemberClass}
+          onDepartmentsChange={setDepartments}
+        />
       ) : null}
     </PageFormCard>
   )

@@ -1,16 +1,15 @@
 "use client"
 
-import Link from "next/link"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Send, UserPlus } from "lucide-react"
 
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { MemberDetailDialog } from "@/app/(app_routes)/members/_components/member-detail-dialog"
 import { CreateMemberDialog } from "@/app/(app_routes)/members/_components/create-member-dialog"
 import { InviteMemberDialog } from "@/app/(app_routes)/members/_components/invite-member-dialog"
+import { MembersListActions } from "@/app/(app_routes)/members/_components/members-list-actions"
 import { MembersTableRows } from "@/app/(app_routes)/members/_components/members-table-rows"
-import type { MembersDraftFilters } from "@/app/(app_routes)/members/_components/members-constants"
 import {
+  MEMBER_FILTER_FIELDS,
   membersIdleHint,
   membersIdleTitle,
   membersListSubtitle,
@@ -31,60 +30,10 @@ import {
 } from "@/components/global/listing/paginated-list-shell"
 import { TableListing } from "@/components/global/listing/table-listing"
 import { PageHeader } from "@/components/global/structural/page-header"
-import { Button } from "@/components/ui/button"
 import { PERMISSION_CODES } from "@/lib/permissions"
 import { filterMembersByName } from "@/modules/memberships/memberships-rules"
 import { useMembersListFilters } from "@/modules/memberships/use-members-list-filters"
 import { useMembersQuery } from "@/modules/memberships/use-members"
-
-type MemberFilterKey = keyof Pick<
-  MembersDraftFilters,
-  "code" | "name" | "registration" | "email" | "phone"
->
-
-const MEMBER_FILTER_FIELDS: Array<{
-  id: string
-  key: MemberFilterKey
-  label: string
-  placeholder: string
-  inputMode?: "text" | "numeric"
-  numericOnly?: boolean
-}> = [
-    {
-      id: "code",
-      key: "code",
-      label: "Código",
-      placeholder: "Informe o código",
-      inputMode: "numeric",
-      numericOnly: true,
-    },
-    {
-      id: "name",
-      key: "name",
-      label: "Nome",
-      placeholder: "Informe o nome",
-    },
-    {
-      id: "registration",
-      key: "registration",
-      label: "CPF/CNPJ",
-      placeholder: "Informe o CPF ou CNPJ",
-      inputMode: "numeric",
-      numericOnly: true,
-    },
-    {
-      id: "email",
-      key: "email",
-      label: "E-mail",
-      placeholder: "Informe o e-mail",
-    },
-    {
-      id: "phone",
-      key: "phone",
-      label: "Telefone",
-      placeholder: "Informe o telefone",
-    },
-  ]
 
 type MembersListProps = {
   classValue?: string
@@ -228,7 +177,6 @@ export function MembersList({ classValue }: MembersListProps) {
 
   const plural = classValue === "clients" ? "clientes" : "membros"
   const isClientsList = classValue === "clients"
-  const secondary = perms.canCreateMemberWithUser
 
   function handleMemberFormSuccess(memberId: string) {
     setCreateOpen(false)
@@ -236,39 +184,6 @@ export function MembersList({ classValue }: MembersListProps) {
     if (hasSearched) void refetch()
     setViewMemberId(memberId)
   }
-
-  const listActions = (
-    <>
-      {perms.canCreateMemberWithUser &&
-        (isClientsList ? (
-          <Button asChild>
-            <Link href="/clients/new">
-              <UserPlus className="size-4" aria-hidden />
-              Adicionar cliente
-            </Link>
-          </Button>
-        ) : (
-          <Button type="button" onClick={() => setCreateOpen(true)}>
-            <UserPlus className="size-4" aria-hidden />
-            Adicionar membro
-          </Button>
-        ))}
-      {secondary &&
-        (isClientsList ? (
-          <Button asChild variant="outline">
-            <Link href="/clients/link">
-              <Send className="size-4" aria-hidden />
-              Convidar cliente
-            </Link>
-          </Button>
-        ) : (
-          <Button type="button" variant="outline" onClick={() => setInviteOpen(true)}>
-            <Send className="size-4" aria-hidden />
-            Convidar membro
-          </Button>
-        ))}
-    </>
-  )
 
   return (
     <EnterprisePermissionGuard
@@ -279,7 +194,15 @@ export function MembersList({ classValue }: MembersListProps) {
         <PageHeader
           title={membersListTitle(plural)}
           subtitle={membersListSubtitle(plural)}
-          actions={listActions}
+          actions={
+            <MembersListActions
+              isClientsList={isClientsList}
+              canCreate={perms.canCreateMemberWithUser}
+              canInvite={perms.canCreateMemberWithUser}
+              onCreate={() => setCreateOpen(true)}
+              onInvite={() => setInviteOpen(true)}
+            />
+          }
         />
 
         <SearchForm

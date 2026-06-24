@@ -1,197 +1,22 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
-import { Field } from "@/components/ui/field"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { MemberDepartmentsPicker } from "@/app/(app_routes)/members/[memberId]/_components/member-departments-picker"
-import {
-  PageFormCard,
-  type PageFormField,
-} from "@/components/global/forms/page-form-card"
-import { MEMBER_CLASS_OPTIONS } from "@/modules/memberships/member-class-label"
-import type { EnterpriseMemberClass } from "@/modules/memberships/memberships.schema"
-import type { MemberDepartmentPayload } from "@/modules/memberships/memberships.schema"
-import {
-  isClienteClass,
-  normalizeEmail,
-  normalizePhone,
-  normalizeRegistration,
-  validateDepartmentsPayload,
-} from "@/modules/memberships/memberships-rules"
-import { useCreateMemberWithUserMutation } from "@/modules/memberships/use-members"
-import {
-  cpfCnpjSchema,
-  cpfCnpjValidationMessage,
-} from "@/lib/validation/cpf-cnpj"
-import { phoneE164Schema } from "@/lib/validation/phone"
+  CreateMemberWithUserForm,
+  type CreateMemberWithUserFormProps,
+} from "./create-member-with-user-form"
 
-const USER_FIELDS: PageFormField[] = [
-  {
-    id: "userName",
-    name: "userName",
-    placeholder: "Informe o nome",
-    required: true,
-  },
-  {
-    id: "userRegistration",
-    name: "userRegistration",
-    placeholder: "Informe o CPF/CNPJ",
-    required: true,
-  },
-  {
-    id: "userEmail",
-    name: "userEmail",
-    type: "email",
-    autoComplete: "email",
-    placeholder: "Informe o e-mail",
-    required: true,
-  },
-  {
-    id: "userPhone",
-    name: "userPhone",
-    placeholder: "Informe o telefone",
-    required: true,
-  },
-]
+type CreateMemberFormProps = Omit<
+  CreateMemberWithUserFormProps,
+  "defaultClass" | "variant" | "emptyFieldsMessage"
+>
 
-export function CreateMemberForm({
-  enterpriseId,
-  class: fixedClass,
-  title = "Novo membro",
-  subtitle = "Crie um novo membro com um novo usuário",
-  submitLabel = "Criar membro",
-  pendingLabel = "Criando membro...",
-  onSuccess,
-}: {
-  enterpriseId: string
-  class?: EnterpriseMemberClass
-  title?: string
-  subtitle?: string
-  submitLabel?: string
-  pendingLabel?: string
-  onSuccess?: (memberId: string) => void
-}) {
-  const router = useRouter()
-  const mutation = useCreateMemberWithUserMutation(enterpriseId)
-  const [memberClass, setMemberClass] = useState<EnterpriseMemberClass>(
-    fixedClass ?? "COLABORADOR"
-  )
-  const [departments, setDepartments] = useState<MemberDepartmentPayload[]>([])
-  const effectiveClass = fixedClass ?? memberClass
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const form = e.currentTarget
-    const userName = (
-      form.elements.namedItem("userName") as HTMLInputElement
-    ).value.trim()
-    const userRegistration = normalizeRegistration(
-      (form.elements.namedItem("userRegistration") as HTMLInputElement).value
-    )
-    const userEmail = normalizeEmail(
-      (form.elements.namedItem("userEmail") as HTMLInputElement).value
-    )
-    const userPhone = normalizePhone(
-      (form.elements.namedItem("userPhone") as HTMLInputElement).value
-    )
-    if (!userName || !userRegistration || !userEmail || !userPhone) {
-      toast.error("Preencha todos os campos do utilizador.")
-      return
-    }
-
-    const regParsed = cpfCnpjSchema.safeParse(userRegistration)
-    if (!regParsed.success) {
-      toast.error(cpfCnpjValidationMessage(userRegistration))
-      return
-    }
-
-    const phoneParsed = phoneE164Schema.safeParse(userPhone)
-    if (!phoneParsed.success) {
-      toast.error("Telefone inválido. Use formato +5511999999999.")
-      return
-    }
-
-    const deptValidation = validateDepartmentsPayload(effectiveClass, departments)
-    if (!deptValidation.ok) {
-      toast.error(deptValidation.message)
-      return
-    }
-
-    try {
-      const result = await mutation.mutateAsync({
-        user: {
-          userName,
-          userRegistration: regParsed.data,
-          userEmail,
-          userPhone: phoneParsed.data,
-        },
-        member: {
-          class: effectiveClass,
-          departments: isClienteClass(effectiveClass) ? [] : departments,
-        },
-      })
-      if (onSuccess) {
-        onSuccess(result.member.id)
-      } else {
-        router.push(`/members/${result.member.id}`)
-      }
-    } catch {
-      /* erros de mutação tratados globalmente pelo QueryClient */
-    }
-  }
-
+export function CreateMemberForm(props: CreateMemberFormProps) {
   return (
-    <PageFormCard
+    <CreateMemberWithUserForm
       variant="sheet"
-      title={title}
-      subtitle={subtitle}
-      fields={USER_FIELDS}
-      onSubmit={handleSubmit}
-      submitLabel={submitLabel}
-      pendingLabel={pendingLabel}
-      isPending={mutation.isPending}
-      cardClassName="h-full"
-    >
-      {!fixedClass ? (
-        <>
-          <Field>
-            <Select
-              value={memberClass}
-              onValueChange={(v) => {
-                const next = v as EnterpriseMemberClass
-                setMemberClass(next)
-                if (isClienteClass(next)) setDepartments([])
-              }}
-            >
-              <SelectTrigger id="memberClass" className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {MEMBER_CLASS_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value}>
-                    {o.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field>
-            <MemberDepartmentsPicker
-              memberClass={memberClass}
-              departments={departments}
-              onChange={setDepartments}
-            />
-          </Field>
-        </>
-      ) : null}
-    </PageFormCard>
+      defaultClass="COLABORADOR"
+      emptyFieldsMessage="utilizador"
+      {...props}
+    />
   )
 }

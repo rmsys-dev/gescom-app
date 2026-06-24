@@ -1,5 +1,13 @@
-const EMPTY_DISPLAY = "—"
+export const EMPTY_DISPLAY = "—"
 const SAO_PAULO_TZ = "America/Sao_Paulo"
+
+export function formatEmpty(
+  value: string | null | undefined | boolean | number
+): string {
+  if (value === null || value === undefined || value === "") return EMPTY_DISPLAY
+  if (typeof value === "boolean") return value ? "Sim" : "Não"
+  return String(value)
+}
 
 const brazilianDateFormat = new Intl.DateTimeFormat("pt-BR", {
   timeZone: SAO_PAULO_TZ,

@@ -1,35 +1,22 @@
 "use client"
 
+import Link from "next/link"
+import { Pencil } from "lucide-react"
+
 import {
   ProductDetailView,
   useProductPriceForEnterprise,
 } from "@/app/(app_routes)/products/_components/product-detail-view"
+import { AnimatedLoading } from "@/components/global/loading/animated-loading"
+import { EntityDetailSheet } from "@/components/global/sheets/entity-detail-sheet"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
 import { useRequireEnterprise } from "@/hooks/use-require-enterprise"
-import { HttpError } from "@/lib/api/http-error"
 import { useOperatorPermissions } from "@/lib/permissions"
 import type { ProductsListRouteConfig } from "@/modules/products/products-route-config"
 import {
   usePricesQuery,
   useProductEnterpriseQuery,
 } from "@/modules/products/use-products"
-import { Pencil } from "lucide-react"
-import Link from "next/link"
-import { AnimatedLoading } from "@/components/global/loading/animated-loading"
 
 type ProductDetailDialogProps = {
   productEnterpriseId: string
@@ -57,67 +44,41 @@ export function ProductDetailDialog({
   })
 
   const price = useProductPriceForEnterprise(pricesData, product?.id)
-
-  const errMessage =
-    error instanceof HttpError
-      ? error.message
-      : error instanceof Error
-        ? error.message
-        : "Não foi possível carregar o registro."
-
   const displayLabel = product?.description ?? config.labels.singular
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="right"
-        className="flex w-screen flex-col gap-0 p-0 sm:w-[70vw]! sm:max-w-[70vw]!"
-      >
-        <SheetHeader className="shrink-0 border-b px-6 py-4 text-left">
-          <div className="flex flex-col items-start justify-between gap-4 pr-8">
-            <div className="min-w-0">
-              <SheetTitle className="text-lg">{displayLabel}</SheetTitle>
-              <SheetDescription>
-                Visualização detalhada do {config.labels.singular}
-              </SheetDescription>
-            </div>
-          </div>
-        </SheetHeader>
-
-        <div className="flex-1 overflow-y-auto px-6 py-6">
-          {isPending && <AnimatedLoading />}
-
-          {error && !isPending && (
-            <Card className="border-destructive/40">
-              <CardHeader>
-                <CardTitle className="text-base text-destructive">
-                  Erro ao carregar
-                </CardTitle>
-                <CardDescription>{errMessage}</CardDescription>
-              </CardHeader>
-            </Card>
-          )}
-
-          {product && !isPending && (
-            <ProductDetailView
-              product={product}
-              price={price}
-              canConsultPrices={perms.canConsultPrices}
-            />
-          )}
-        </div>
-
-        {product && !isPending && (
-          <SheetFooter className="shrink-0 border-t px-6 py-4">
+    <EntityDetailSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={displayLabel}
+      description={`Visualização detalhada do ${config.labels.singular}`}
+      isPending={isPending}
+      error={error}
+      errorTitle="Erro ao carregar"
+      fallbackErrorMessage="Não foi possível carregar o registro."
+      loading={<AnimatedLoading />}
+      contentClassName="px-6 py-6"
+      sheetClassName="w-screen sm:w-[70vw]! sm:max-w-[70vw]!"
+      footer={
+        product && !isPending ? (
+          <div className="px-6 py-4">
             <Button variant="default" size="sm" asChild>
               <Link href={`${config.basePath}/${product.id}`}>
                 <Pencil className="size-4" aria-hidden />
                 Editar
               </Link>
             </Button>
-          </SheetFooter>
-        )}
-      </SheetContent>
-    </Sheet>
+          </div>
+        ) : undefined
+      }
+    >
+      {product ? (
+        <ProductDetailView
+          product={product}
+          price={price}
+          canConsultPrices={perms.canConsultPrices}
+        />
+      ) : null}
+    </EntityDetailSheet>
   )
 }

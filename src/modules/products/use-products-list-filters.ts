@@ -84,12 +84,10 @@ function buildApiFilters(
   defaults: ListProductsEnterprisesQuery
 ) {
   const code = parseCode(draft.code)
-  const dateFrom = dateFilters.dateFrom?.trim() || undefined
-  const dateTo = dateFilters.dateTo?.trim() || undefined
   const needsClientFetch =
     draft.controlsBatch !== undefined ||
-    Boolean(dateFrom) ||
-    Boolean(dateTo) ||
+    Boolean(dateFilters.dateFrom?.trim()) ||
+    Boolean(dateFilters.dateTo?.trim()) ||
     Boolean(draft.locacao.trim())
 
   return {
@@ -109,9 +107,6 @@ function buildApiFilters(
       subgroup: draft.subgroup.trim() || undefined,
       brand: draft.brand.trim() || undefined,
       application: draft.application.trim() || undefined,
-      controlsBatch: draft.controlsBatch,
-      dateFrom,
-      dateTo,
     },
     usesClientPagination: needsClientFetch,
   }

@@ -12,9 +12,6 @@ type QueryParamsInput = PaginationQuery & {
   subgroup?: string
   brand?: string
   application?: string
-  controlsBatch?: boolean
-  dateFrom?: string
-  dateTo?: string
 }
 
 export function buildQueryString(
@@ -48,8 +45,5 @@ export function buildPaginationQuery(query: QueryParamsInput): string {
     subgroup: query.subgroup,
     brand: query.brand,
     application: query.application,
-    controlsBatch: query.controlsBatch,
-    dateFrom: query.dateFrom,
-    dateTo: query.dateTo,
   })
 }

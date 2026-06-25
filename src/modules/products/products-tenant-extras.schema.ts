@@ -11,6 +11,8 @@ export const priceSchema = z.object({
   id: z.uuid(),
   price: decimalSchema,
   averageCost: decimalSchema.nullable().optional(),
+  actualRealCost: decimalSchema.nullable().optional(),
+  previousCost: decimalSchema.nullable().optional(),
   priceCost: decimalSchema.nullable().optional(),
   productsEnterprisesId: z.uuid(),
   createdAt: z.string(),

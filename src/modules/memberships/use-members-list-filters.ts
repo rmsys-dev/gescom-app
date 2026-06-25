@@ -43,8 +43,8 @@ function buildApiFilters(
   defaults: ListMembersQuery
 ): {
   filters: ListMembersQuery
-  clientNameFilter?: string
-  usesClientPagination: boolean
+  nameFilter?: string
+  usesLocalPagination: boolean
 } | null {
   const codeRaw = draft.code.trim()
   const name = draft.name.trim()
@@ -52,7 +52,7 @@ function buildApiFilters(
   const emailRaw = draft.email.trim()
   const phoneRaw = draft.phone.trim()
 
-  const usesClientPagination = name.length >= 2
+  const usesLocalPagination = name.length >= 2
 
   const filters: ListMembersQuery = {
     ...defaults,
@@ -61,7 +61,7 @@ function buildApiFilters(
     registration: undefined,
     email: undefined,
     phone: undefined,
-    limit: usesClientPagination
+    limit: usesLocalPagination
       ? MEMBERS_NAME_SEARCH_LIMIT
       : (defaults.limit ?? 50),
   }
@@ -111,8 +111,8 @@ function buildApiFilters(
 
   return {
     filters,
-    clientNameFilter: usesClientPagination ? name : undefined,
-    usesClientPagination,
+    nameFilter: usesLocalPagination ? name : undefined,
+    usesLocalPagination,
   }
 }
 
@@ -131,9 +131,9 @@ export function useMembersListFilters({
   const [draftFilters, setDraftFilters] = useState(defaultMembersDraftFilters)
   const [appliedFilters, setAppliedFilters] =
     useState<ListMembersQuery>(defaults)
-  const [clientNameFilter, setClientNameFilter] = useState<string | undefined>()
+  const [nameFilter, setNameFilter] = useState<string | undefined>()
   const [hasSearched, setHasSearched] = useState(false)
-  const [isClientPagination, setIsClientPagination] = useState(false)
+  const [isLocalPagination, setIsLocalPagination] = useState(false)
 
   const applyFiltersState = useCallback(
     (draft: MembersDraftFilters) => {
@@ -142,8 +142,8 @@ export function useMembersListFilters({
 
       setDraftFilters(draft)
       setAppliedFilters(built.filters)
-      setClientNameFilter(built.clientNameFilter)
-      setIsClientPagination(built.usesClientPagination)
+      setNameFilter(built.nameFilter)
+      setIsLocalPagination(built.usesLocalPagination)
       setHasSearched(true)
       return true
     },
@@ -172,8 +172,8 @@ export function useMembersListFilters({
     const reset = defaultListFilters
     setDraftFilters(defaultMembersDraftFilters())
     setAppliedFilters(reset)
-    setClientNameFilter(undefined)
-    setIsClientPagination(false)
+    setNameFilter(undefined)
+    setIsLocalPagination(false)
     setHasSearched(false)
   }, [defaultListFilters])
 
@@ -189,9 +189,9 @@ export function useMembersListFilters({
     draftFilters,
     setDraftFilters,
     appliedFilters,
-    clientNameFilter,
+    nameFilter,
     hasSearched,
-    isClientPagination,
+    isLocalPagination,
     applySearch,
     handleSearchResult,
     clearFilters,

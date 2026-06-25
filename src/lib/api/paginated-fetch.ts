@@ -21,9 +21,6 @@ type FetchPaginatedQuery = PaginationQuery & {
   subgroup?: string
   brand?: string
   application?: string
-  controlsBatch?: boolean
-  dateFrom?: string
-  dateTo?: string
 }
 
 export async function fetchPaginated<T>(
@@ -46,9 +43,6 @@ export async function fetchPaginated<T>(
     subgroup: "subgroup" in query ? query.subgroup : undefined,
     brand: "brand" in query ? query.brand : undefined,
     application: "application" in query ? query.application : undefined,
-    controlsBatch: "controlsBatch" in query ? query.controlsBatch : undefined,
-    dateFrom: "dateFrom" in query ? query.dateFrom : undefined,
-    dateTo: "dateTo" in query ? query.dateTo : undefined,
   })
   const raw = await apiFetch<unknown>(`${path}${qs}`, { method: "GET" })
   return parsePaginatedEnvelope(raw, itemSchema, label ?? `GET ${path}`)

@@ -216,7 +216,7 @@ const groupsCatalogHooks = createCatalogListDetailHooks<
   detailKey: productsQueryKeys.group,
   listFn: listProductGroupsService,
   getFn: getProductGroupService,
-  staleTime: CACHE.globalCatalog,
+  staleTime: CACHE.tenantStableCatalog,
 })
 
 const subgroupsCatalogHooks = createCatalogListDetailHooks<
@@ -227,7 +227,7 @@ const subgroupsCatalogHooks = createCatalogListDetailHooks<
   detailKey: productsQueryKeys.subgroup,
   listFn: listProductSubgroupsService,
   getFn: getProductSubgroupService,
-  staleTime: CACHE.globalCatalog,
+  staleTime: CACHE.tenantStableCatalog,
 })
 
 const brandsCatalogHooks = createCatalogListDetailHooks<
@@ -238,7 +238,7 @@ const brandsCatalogHooks = createCatalogListDetailHooks<
   detailKey: productsQueryKeys.brand,
   listFn: listProductBrandsService,
   getFn: getProductBrandService,
-  staleTime: CACHE.globalCatalog,
+  staleTime: CACHE.tenantStableCatalog,
 })
 
 const pisCofinsCatalogHooks = createCatalogListDetailHooks<

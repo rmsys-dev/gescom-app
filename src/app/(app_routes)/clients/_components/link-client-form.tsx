@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { CLIENT_MEMBER_CLASS } from "@/modules/memberships/memberships-rules"
+import { buildSearchFieldsFromDraft } from "@/modules/memberships/use-membership-listing"
 import { useCreateMemberMutation } from "@/modules/memberships/use-members"
 import type { ListUsersQuery } from "@/modules/users/users.schema"
 import {
@@ -120,19 +121,10 @@ export function LinkClientForm({
 
   const searchFields = useMemo(
     () =>
-      USER_FILTER_FIELDS.map(
-        ({ id, key, label, placeholder, inputMode, numericOnly }) => ({
-          id,
-          label,
-          value: draftFilters[key],
-          onChange: (value: string) => {
-            const nextValue = numericOnly ? value.replace(/\D/g, "") : value
-            setDraftFilters((prev) => ({ ...prev, [key]: nextValue }))
-          },
-          placeholder,
-          ariaLabel: label,
-          inputMode,
-        })
+      buildSearchFieldsFromDraft(
+        draftFilters,
+        USER_FILTER_FIELDS,
+        setDraftFilters
       ),
     [draftFilters]
   )
@@ -155,11 +147,10 @@ export function LinkClientForm({
   const matchedUser = items.length === 1 ? items[0] : null
 
   return (
-    <div className="flex h-full flex-col gap-4 overflow-y-auto">
+    <div className="flex h-full flex-col gap-4 overflow-y-auto p-4">
       <SearchForm
-        title="Buscar clientes"
+        title="Buscar usuário"
         idPrefix="users-filters-form"
-        formClassName="px-6 pt-4"
         fields={searchFields}
         onSearch={applySearch}
         isSearching={isSearching}
@@ -169,9 +160,9 @@ export function LinkClientForm({
           email: appliedQuery.email,
           phone: appliedQuery.phone,
         }}
-        searchLabel="Buscar clientes"
-        searchTooltip="Buscar clientes"
-        loadingLabel="Buscando clientes..."
+        searchLabel="Buscar usuário"
+        searchTooltip="Buscar usuário"
+        loadingLabel="Buscando usuário..."
         footer={
           hasSearched ? (
             <Button

@@ -130,6 +130,7 @@ export type ProductEnterpriseListItem = ProductEnterprise & {
   stockLocation: string | null
 }
 
+/** Query params aceites por `GET /products-enterprises` (strict — sem filtros só de cliente). */
 export const listProductsEnterprisesQuerySchema =
   searchPaginationQuerySchema.extend({
     status: productStatusSchema.optional(),
@@ -142,12 +143,6 @@ export const listProductsEnterprisesQuerySchema =
     subgroup: z.string().trim().min(1).optional(),
     brand: z.string().trim().min(1).optional(),
     application: z.string().trim().min(1).optional(),
-    controlsBatch: z
-      .union([z.boolean(), z.enum(["true", "false"])])
-      .transform((value) => (typeof value === "string" ? value === "true" : value))
-      .optional(),
-    dateFrom: z.string().optional(),
-    dateTo: z.string().optional(),
   })
 
 export type ListProductsEnterprisesQuery = z.infer<

@@ -8,7 +8,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
+  --font-mono: var(--font-mono);  
   --font-heading: var(--font-sans);
   --font-body: var(--font-sans);
 
@@ -42,7 +42,7 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
-  /* Gescom Brand Palette */
+  /* Gescom Cores */
   --color-gescom-main: #28617d;
   --color-gescom-main-hover: #4c99ab;
   --color-gescom-main-active: #1e4d63;
@@ -75,7 +75,7 @@
   --color-gescom-info: #4c99ab;
   --color-gescom-info-bg: rgba(76, 153, 171, 0.12);
 
-  /* Gescom Design Tokens */
+  /* Gescom Cores */
   --color-primary-hover: var(--color-gescom-main-hover);
   --color-primary-active: var(--color-gescom-main-active);
   --color-primary-focus: var(--color-gescom-main-focus);
@@ -101,6 +101,7 @@
   --color-text-warning-bg: var(--color-gescom-warning-bg);
   --color-text-info-bg: var(--color-gescom-info-bg);
 
+  /* Raios */
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -109,6 +110,7 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
+  /* Sombras */
   --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.08);
   --shadow-card-hover: 0 12px 40px rgba(0, 0, 0, 0.12);
   --shadow-main-large: 0 10px 28px rgba(40, 97, 125, 0.35);
@@ -116,6 +118,7 @@
   --shadow-main-small: 0 10px 28px rgba(40, 97, 125, 0.1);
   --shadow-main-xsmall: 0 10px 28px rgba(40, 97, 125, 0.05);
 
+  /* Animações */
   --animate-loading-bar: loading-bar 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
@@ -129,6 +132,7 @@
   }
 }
 
+/* Gescom Design Tokens */
 :root {
   --gescom-background: #f7f7f7;
   --gescom-background-secondary: #d6d6d6;
@@ -165,7 +169,7 @@
   --chart-3: #849ba9;
   --chart-4: #1e4d63;
   --chart-5: #5eb0c4;
-  --radius: 0.125rem; /* xs */
+  --radius: 0.25rem;
   --sidebar: var(--gescom-background-cards);
   --sidebar-foreground: var(--gescom-text);
   --sidebar-primary: #28617d;
@@ -176,6 +180,7 @@
   --sidebar-ring: #4c99ab;
 }
 
+/* Gescom Dark Mode */
 .dark {
   --gescom-background: #2e2e2e;
   --gescom-background-secondary: #383838;
@@ -225,6 +230,7 @@
   --shadow-card-hover: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
+/* Gescom Base */
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -269,7 +275,9 @@
   }
 }
 
+/* Gescom Utilities */
 @layer utilities {
+  /* Fontes */
   .font-heading {
     font-family: var(--font-heading);
   }
@@ -278,6 +286,7 @@
     font-family: var(--font-body);
   }
 
+  /* Gradientes */
   .text-gradient {
     background: linear-gradient(
       90deg,
@@ -297,6 +306,7 @@
     );
   }
 
+  /* Sombras */
   .shadow-gradient {
     box-shadow: 0 10px 28px var(--color-gescom-main-hover);
   }

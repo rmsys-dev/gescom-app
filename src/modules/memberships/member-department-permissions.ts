@@ -1,3 +1,4 @@
+import { formatPermissionLabel } from "@/lib/permission-label"
 import type {
   MemberDepartment,
   PermissionStatus,
@@ -36,4 +37,19 @@ export function mapMemberDepartmentPermissionEntries(
   return Array.from(map.values()).sort((a, b) =>
     a.permission.localeCompare(b.permission, "pt-BR")
   )
+}
+
+export function filterMemberDepartmentPermissions(
+  permissions: MemberDepartmentPermissionEntry[],
+  query: string
+): MemberDepartmentPermissionEntry[] {
+  const term = query.trim().toLowerCase()
+  if (!term) return []
+
+  return permissions.filter((entry) => {
+    const label = formatPermissionLabel(entry.permission).toLowerCase()
+    return (
+      entry.permission.toLowerCase().includes(term) || label.includes(term)
+    )
+  })
 }

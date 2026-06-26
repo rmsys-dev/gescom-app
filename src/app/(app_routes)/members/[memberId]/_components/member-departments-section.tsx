@@ -1,16 +1,11 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { Building2, Plus } from "lucide-react"
 
 import { MemberDepartmentForm } from "@/app/(app_routes)/members/[memberId]/_components/member-department-form"
 import { MemberDepartmentPanel } from "@/app/(app_routes)/members/[memberId]/_components/member-department-panel"
 import { ConfirmSoftDeleteDialog } from "@/components/global/dialogs/confirm-soft-delete-dialog"
-import {
-  SectionToggle,
-  SectionTogglePanel,
-  type SectionToggleOption,
-} from "@/components/global/navigation/section-toggle"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -58,7 +53,6 @@ export function MemberDepartmentsSection({
     return map
   }, [catalogQuery.data])
 
-  const [selectedDepartmentId, setSelectedDepartmentId] = useState("")
   const [formOpen, setFormOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<MemberDepartment | null>(
     null
@@ -73,48 +67,6 @@ export function MemberDepartmentsSection({
     (d) => d.status === "ATIVO"
   )
   const existingIds = member.departments.map((d) => d.departmentId)
-
-  useEffect(() => {
-    if (activeDepartments.length === 0) {
-      setTimeout(() => {
-        setSelectedDepartmentId("")
-      }, 0)
-      return
-    }
-
-    if (
-      !activeDepartments.some(
-        (department) => department.id === selectedDepartmentId
-      )
-    ) {
-      setTimeout(() => {
-        setSelectedDepartmentId(activeDepartments[0]!.id)
-      }, 0)
-    }
-  }, [activeDepartments, selectedDepartmentId])
-
-  const effectiveSelectedId =
-    selectedDepartmentId || activeDepartments[0]?.id || ""
-
-  const toggleOptions: SectionToggleOption<string>[] = activeDepartments.map(
-    (department) => ({
-      id: department.id,
-      label: resolveDepartmentName(department, departmentNameById),
-    })
-  )
-
-  const selectedDepartment =
-    activeDepartments.find(
-      (department) => department.id === effectiveSelectedId
-    ) ?? activeDepartments[0]
-
-  const departmentPermissions = useMemo(
-    () =>
-      selectedDepartment
-        ? mapMemberDepartmentPermissionEntries(selectedDepartment)
-        : [],
-    [selectedDepartment]
-  )
 
   async function confirmDelete() {
     if (!deleteTarget) return
@@ -138,8 +90,8 @@ export function MemberDepartmentsSection({
             Departamentos e permissões
           </CardTitle>
           <CardDescription>
-            Vínculos departamentais e permissões por departamento. Use o switch
-            para ativar ou desativar cada permissão.
+            Vínculos departamentais e permissões por departamento. Expanda cada
+            bloco para ver e alternar as permissões.
           </CardDescription>
         </div>
         {canAlter && (
@@ -161,38 +113,24 @@ export function MemberDepartmentsSection({
             Nenhum departamento ativo.
           </p>
         ) : (
-          <>
-            {activeDepartments.length > 1 && (
-              <SectionToggle
-                value={effectiveSelectedId}
-                onValueChange={setSelectedDepartmentId}
-                options={toggleOptions}
-                ariaLabel="Departamentos do membro"
-                idPrefix="member-department"
+          <div className="space-y-3">
+            {activeDepartments.map((department) => (
+              <MemberDepartmentPanel
+                key={department.id}
+                department={department}
+                departmentName={resolveDepartmentName(
+                  department,
+                  departmentNameById
+                )}
+                permissions={mapMemberDepartmentPermissionEntries(department)}
+                enterpriseId={enterpriseId}
+                memberId={member.id}
+                canAlter={canAlter}
+                canAlterPermissions={canAlterPermissions}
+                onDelete={() => setDeleteTarget(department)}
               />
-            )}
-
-            {selectedDepartment && (
-              <SectionTogglePanel
-                sectionId={selectedDepartment.id}
-                idPrefix="member-department"
-              >
-                <MemberDepartmentPanel
-                  department={selectedDepartment}
-                  departmentName={resolveDepartmentName(
-                    selectedDepartment,
-                    departmentNameById
-                  )}
-                  permissions={departmentPermissions}
-                  enterpriseId={enterpriseId}
-                  memberId={member.id}
-                  canAlter={canAlter}
-                  canAlterPermissions={canAlterPermissions}
-                  onDelete={() => setDeleteTarget(selectedDepartment)}
-                />
-              </SectionTogglePanel>
-            )}
-          </>
+            ))}
+          </div>
         )}
       </CardContent>
 

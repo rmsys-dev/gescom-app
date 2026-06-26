@@ -12,6 +12,9 @@ type QueryParamsInput = PaginationQuery & {
   subgroup?: string
   brand?: string
   application?: string
+  ncm?: string
+  cest?: string
+  nbs?: string
 }
 
 export function buildQueryString(
@@ -45,5 +48,8 @@ export function buildPaginationQuery(query: QueryParamsInput): string {
     subgroup: query.subgroup,
     brand: query.brand,
     application: query.application,
+    ncm: query.ncm,
+    cest: query.cest,
+    nbs: query.nbs,
   })
 }

@@ -6,7 +6,6 @@ import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refr
 import { getProductResourceConfig } from "@/app/(app_routes)/products/catalogs/_components/product-resource-config"
 import { BrandsTableRows } from "@/app/(app_routes)/products/brands/_components/brands-table-rows"
 import { BRANDS_LABELS } from "@/app/(app_routes)/products/brands/_components/brands-constants"
-import { filterProductBrands } from "@/app/(app_routes)/products/brands/_components/brands-client-filters"
 import { useBrandsListFilters } from "@/app/(app_routes)/products/brands/_components/use-brands-list-filters"
 import {
   ListErrorCard,
@@ -34,44 +33,23 @@ export function BrandsList() {
     draftFilters,
     setDraftFilters,
     appliedFilters,
-    appliedClientCriteria,
     hasSearched,
-    isClientPagination,
     applySearch,
     clearFilters,
     setPageOffset,
     setLimit,
   } = useBrandsListFilters()
 
-  const queryFilters = useMemo(
-    () =>
-      isClientPagination
-        ? { ...appliedFilters, offset: 0 }
-        : appliedFilters,
-    [appliedFilters, isClientPagination]
-  )
-
   const { data, error, isPending, isFetching, refetch } = useProductBrandsQuery({
-    filters: queryFilters,
+    filters: appliedFilters,
     enabled: ready && perms.canConsultProductBrands && hasSearched,
   })
 
-  const filteredItems = useMemo(() => {
-    if (!data) return []
-    return filterProductBrands(data.items, appliedClientCriteria)
-  }, [data, appliedClientCriteria])
-
   const listing = useMemo(() => {
     const limit = appliedFilters.limit ?? data?.limit ?? 50
-    const offset = isClientPagination
-      ? (appliedFilters.offset ?? 0)
-      : (data?.offset ?? 0)
-    const total = isClientPagination
-      ? filteredItems.length
-      : (data?.total ?? 0)
-    const items = isClientPagination
-      ? filteredItems.slice(offset, offset + limit)
-      : filteredItems
+    const offset = data?.offset ?? appliedFilters.offset ?? 0
+    const total = data?.total ?? 0
+    const items = data?.items ?? []
 
     return {
       items,
@@ -81,15 +59,7 @@ export function BrandsList() {
       rangeStart: total === 0 ? 0 : offset + 1,
       rangeEnd: Math.min(offset + limit, total),
     }
-  }, [
-    appliedFilters.limit,
-    appliedFilters.offset,
-    data?.limit,
-    data?.offset,
-    data?.total,
-    filteredItems,
-    isClientPagination,
-  ])
+  }, [appliedFilters.limit, appliedFilters.offset, data])
 
   const searchFields = useMemo(
     () => [
@@ -140,10 +110,7 @@ export function BrandsList() {
       permissionLabel={PERMISSION_CODES.consultarMarcasProduto}
     >
       <PaginatedListLayout>
-        <PageHeader
-          title={config.title}
-          subtitle={config.description}
-        />
+        <PageHeader title={config.title} subtitle={config.description} />
 
         <SearchForm
           title="Buscar marca"
@@ -153,7 +120,7 @@ export function BrandsList() {
           isSearching={isSearching}
           hasSearched={hasSearched}
           appliedValues={{
-            description: appliedClientCriteria.description,
+            description: appliedFilters.description,
           }}
           searchLabel="Buscar marcas"
           searchTooltip="Buscar marcas de produto"

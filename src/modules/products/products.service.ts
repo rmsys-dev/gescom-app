@@ -1,7 +1,12 @@
 import { fetchById, fetchPaginated } from "@/lib/api/paginated-fetch"
 import {
   icmsTaxationSchema,
+  listProductBrandsQuerySchema,
+  listProductGroupsQuerySchema,
   listProductNbsQuerySchema,
+  listProductsCestQuerySchema,
+  listProductsNcmQuerySchema,
+  listProductSubgroupsQuerySchema,
   pisCofinsSituationSchema,
   productAnpSchema,
   productBrandSchema,
@@ -12,6 +17,13 @@ import {
   productSubgroupSchema,
   typeProductSchema,
   unitSchema,
+} from "@/modules/products/products-catalogs.schema"
+import type {
+  ListProductBrandsQuery,
+  ListProductGroupsQuery,
+  ListProductNbsQuery,
+  ListProductsCestQuery,
+  ListProductsNcmQuery,
 } from "@/modules/products/products-catalogs.schema"
 import type { PaginationQuery } from "@/modules/products/products-query"
 import {
@@ -127,16 +139,20 @@ export async function getTypeProductService(typeProductId: string) {
   return getById(`types-products/${typeProductId}`, typeProductSchema)
 }
 
-export async function listProductsNcmService(query: PaginationQuery = {}) {
-  return listPaginated("products-ncm", productNcmSchema, query)
+export async function listProductsNcmService(query: ListProductsNcmQuery = {}) {
+  const parsed = listProductsNcmQuerySchema.parse(query)
+  return fetchPaginated("products-ncm", productNcmSchema, parsed)
 }
 
 export async function getProductNcmService(productsNcmId: string) {
   return getById(`products-ncm/${productsNcmId}`, productNcmSchema)
 }
 
-export async function listProductsCestService(query: PaginationQuery = {}) {
-  return listPaginated("products-cest", productCestSchema, query)
+export async function listProductsCestService(
+  query: ListProductsCestQuery = {}
+) {
+  const parsed = listProductsCestQuerySchema.parse(query)
+  return fetchPaginated("products-cest", productCestSchema, parsed)
 }
 
 export async function getProductCestService(productsCestId: string) {
@@ -151,9 +167,7 @@ export async function getProductAnpService(productsAnpId: string) {
   return getById(`products-anp/${productsAnpId}`, productAnpSchema)
 }
 
-export async function listProductsNbsService(
-  query: import("@/modules/products/products-catalogs.schema").ListProductNbsQuery = {}
-) {
+export async function listProductsNbsService(query: ListProductNbsQuery = {}) {
   const parsed = listProductNbsQuerySchema.parse(query)
   return fetchPaginated("products-nbs", productNbsSchema, parsed)
 }
@@ -170,24 +184,33 @@ export async function getIcmsTaxationService(icmsTaxationId: string) {
   return getById(`icms-taxation/${icmsTaxationId}`, icmsTaxationSchema)
 }
 
-export async function listProductGroupsService(query: PaginationQuery = {}) {
-  return listPaginated("product-groups", productGroupSchema, query)
+export async function listProductGroupsService(
+  query: ListProductGroupsQuery = {}
+) {
+  const parsed = listProductGroupsQuerySchema.parse(query)
+  return fetchPaginated("product-groups", productGroupSchema, parsed)
 }
 
 export async function getProductGroupService(productGroupId: string) {
   return getById(`product-groups/${productGroupId}`, productGroupSchema)
 }
 
-export async function listProductSubgroupsService(query: PaginationQuery = {}) {
-  return listPaginated("product-subgroups", productSubgroupSchema, query)
+export async function listProductSubgroupsService(
+  query: import("@/modules/products/products-catalogs.schema").ListProductSubgroupsQuery = {}
+) {
+  const parsed = listProductSubgroupsQuerySchema.parse(query)
+  return fetchPaginated("product-subgroups", productSubgroupSchema, parsed)
 }
 
 export async function getProductSubgroupService(productSubgroupId: string) {
   return getById(`product-subgroups/${productSubgroupId}`, productSubgroupSchema)
 }
 
-export async function listProductBrandsService(query: PaginationQuery = {}) {
-  return listPaginated("product-brands", productBrandSchema, query)
+export async function listProductBrandsService(
+  query: ListProductBrandsQuery = {}
+) {
+  const parsed = listProductBrandsQuerySchema.parse(query)
+  return fetchPaginated("product-brands", productBrandSchema, parsed)
 }
 
 export async function getProductBrandService(productBrandId: string) {

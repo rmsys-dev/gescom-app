@@ -1,5 +1,4 @@
 import type { PaginationQuery } from "@/modules/products/products-query"
-import type { ListProductNbsQuery } from "@/modules/products/products-catalogs.schema"
 
 export type CatalogSlug =
   | "units"
@@ -26,9 +25,6 @@ export type CatalogConfig = {
     | "canConsultIcmsTaxation"
     | "canConsultPisCofins"
   basePath: string
-  supportsSearch?: boolean
-  searchPlaceholder?: string
-  searchAriaLabel?: string
 }
 
 export const CATALOG_CONFIGS: CatalogConfig[] = [
@@ -80,9 +76,6 @@ export const CATALOG_CONFIGS: CatalogConfig[] = [
     permissionLabel: "consultar_nbs_produtos",
     permissionKey: "canConsultNbs",
     basePath: "/products/catalogs/nbs",
-    supportsSearch: true,
-    searchPlaceholder: "Informe o código ou descrição NBS",
-    searchAriaLabel: "Pesquisar NBS",
   },
   {
     slug: "icms",
@@ -107,11 +100,6 @@ export function getCatalogConfig(slug: string): CatalogConfig | undefined {
 }
 
 export const DEFAULT_CATALOG_FILTERS: PaginationQuery = {
-  limit: 50,
-  offset: 0,
-}
-
-export const DEFAULT_NBS_FILTERS: ListProductNbsQuery = {
   limit: 50,
   offset: 0,
 }

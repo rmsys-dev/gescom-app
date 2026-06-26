@@ -2,7 +2,6 @@ import { z } from "zod"
 import {
   decimalSchema,
   paginationQuerySchema,
-  searchPaginationQuerySchema,
 } from "@/modules/products/products-query"
 
 export const unitSchema = z.object({
@@ -36,16 +35,30 @@ export const productNcmSchema = z.object({
 
 export type ProductNcm = z.infer<typeof productNcmSchema>
 
+export const listProductsNcmQuerySchema = paginationQuerySchema.extend({
+  ncm: z.string().trim().min(1).optional(),
+  description: z.string().trim().min(1).optional(),
+})
+
+export type ListProductsNcmQuery = z.infer<typeof listProductsNcmQuerySchema>
+
 export const productCestSchema = z.object({
   id: z.uuid(),
   cest: z.string(),
   description: z.string(),
-  productsNcmId: z.uuid(),
+  productsNcmId: z.uuid().nullable().optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().nullable().optional(),
 })
 
 export type ProductCest = z.infer<typeof productCestSchema>
+
+export const listProductsCestQuerySchema = paginationQuerySchema.extend({
+  cest: z.string().trim().min(1).optional(),
+  description: z.string().trim().min(1).optional(),
+})
+
+export type ListProductsCestQuery = z.infer<typeof listProductsCestQuerySchema>
 
 export const productAnpSchema = z.object({
   id: z.uuid(),
@@ -74,7 +87,10 @@ export const productNbsSchema = z.object({
 
 export type ProductNbs = z.infer<typeof productNbsSchema>
 
-export const listProductNbsQuerySchema = searchPaginationQuerySchema
+export const listProductNbsQuerySchema = paginationQuerySchema.extend({
+  nbs: z.string().trim().min(1).optional(),
+  description: z.string().trim().min(1).optional(),
+})
 
 export type ListProductNbsQuery = z.infer<typeof listProductNbsQuerySchema>
 
@@ -100,6 +116,12 @@ export const productGroupSchema = z.object({
 
 export type ProductGroup = z.infer<typeof productGroupSchema>
 
+export const listProductGroupsQuerySchema = paginationQuerySchema.extend({
+  description: z.string().trim().min(1).optional(),
+})
+
+export type ListProductGroupsQuery = z.infer<typeof listProductGroupsQuerySchema>
+
 export const productSubgroupSchema = z.object({
   id: z.uuid(),
   description: z.string(),
@@ -108,6 +130,14 @@ export const productSubgroupSchema = z.object({
 })
 
 export type ProductSubgroup = z.infer<typeof productSubgroupSchema>
+
+export const listProductSubgroupsQuerySchema = paginationQuerySchema.extend({
+  description: z.string().trim().min(1).optional(),
+})
+
+export type ListProductSubgroupsQuery = z.infer<
+  typeof listProductSubgroupsQuerySchema
+>
 
 export const productBrandSchema = z.object({
   id: z.uuid(),
@@ -118,12 +148,25 @@ export const productBrandSchema = z.object({
 
 export type ProductBrand = z.infer<typeof productBrandSchema>
 
+export const listProductBrandsQuerySchema = paginationQuerySchema.extend({
+  description: z.string().trim().min(1).optional(),
+})
+
+export type ListProductBrandsQuery = z.infer<typeof listProductBrandsQuerySchema>
+
+const pisCofinsFramingSchema = z
+  .union([z.number(), z.string()])
+  .transform((value) =>
+    typeof value === "number" ? value : Number.parseInt(String(value), 10)
+  )
+  .pipe(z.number().int())
+
 export const pisCofinsSituationSchema = z.object({
   id: z.uuid(),
   cst: z.string(),
   description: z.string(),
   type: z.enum(["ENTRADA", "SAIDA"]),
-  framing: z.number().int(),
+  framing: pisCofinsFramingSchema,
   pisRate: decimalSchema.nullable().optional(),
   cofinsRate: decimalSchema.nullable().optional(),
   createdAt: z.string().optional(),

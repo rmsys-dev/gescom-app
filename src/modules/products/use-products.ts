@@ -6,7 +6,12 @@ import { CACHE } from "@/lib/react-query/cache-policy"
 import { createCatalogListDetailHooks } from "@/lib/react-query/create-catalog-hooks"
 import type {
   IcmsTaxation,
+  ListProductBrandsQuery,
+  ListProductGroupsQuery,
   ListProductNbsQuery,
+  ListProductsCestQuery,
+  ListProductsNcmQuery,
+  ListProductSubgroupsQuery,
   PisCofinsSituation,
   ProductAnp,
   ProductBrand,
@@ -156,7 +161,7 @@ const typesCatalogHooks = createCatalogListDetailHooks<
 
 const ncmCatalogHooks = createCatalogListDetailHooks<
   ProductNcm,
-  PaginationQuery
+  ListProductsNcmQuery
 >({
   listKey: productsQueryKeys.ncm,
   detailKey: productsQueryKeys.ncmItem,
@@ -167,7 +172,7 @@ const ncmCatalogHooks = createCatalogListDetailHooks<
 
 const cestCatalogHooks = createCatalogListDetailHooks<
   ProductCest,
-  PaginationQuery
+  ListProductsCestQuery
 >({
   listKey: productsQueryKeys.cest,
   detailKey: productsQueryKeys.cestItem,
@@ -210,7 +215,7 @@ const icmsCatalogHooks = createCatalogListDetailHooks<
 
 const groupsCatalogHooks = createCatalogListDetailHooks<
   ProductGroup,
-  PaginationQuery
+  ListProductGroupsQuery
 >({
   listKey: productsQueryKeys.groups,
   detailKey: productsQueryKeys.group,
@@ -221,7 +226,7 @@ const groupsCatalogHooks = createCatalogListDetailHooks<
 
 const subgroupsCatalogHooks = createCatalogListDetailHooks<
   ProductSubgroup,
-  PaginationQuery
+  ListProductSubgroupsQuery
 >({
   listKey: productsQueryKeys.subgroups,
   detailKey: productsQueryKeys.subgroup,
@@ -232,7 +237,7 @@ const subgroupsCatalogHooks = createCatalogListDetailHooks<
 
 const brandsCatalogHooks = createCatalogListDetailHooks<
   ProductBrand,
-  PaginationQuery
+  ListProductBrandsQuery
 >({
   listKey: productsQueryKeys.brands,
   detailKey: productsQueryKeys.brand,

@@ -5,7 +5,6 @@ import {
   stockBatchStatusSchema,
   stockMovementTypeSchema,
 } from "@/modules/sales/sales-enums"
-import { enterpriseStatusSchema } from "@/modules/enterprises/enterprises.schema"
 import {
   buildPaginationQuery,
   paginationQuerySchema,
@@ -23,17 +22,41 @@ export const stockSectorSchema = z.object({
 
 export type StockSector = z.infer<typeof stockSectorSchema>
 
-export const stockLocationSchema = z.object({
-  id: z.uuid(),
-  code: z.coerce.string(),
-  description: z.string().nullable(),
-  stockSectorId: z.uuid(),
-  status: enterpriseStatusSchema,
-  createdAt: z.string(),
-  updatedAt: z.string().nullable(),
-})
+/** Status de locação física — ver `stock_doc.md` §5.3. */
+export const stockLocationStatusSchema = z.enum([
+  "ATIVO",
+  "INATIVO",
+  "BLOQUEADO",
+])
+
+export type StockLocationStatus = z.infer<typeof stockLocationStatusSchema>
+
+export const stockLocationSchema = z
+  .object({
+    id: z.uuid(),
+    /** Campo canónico desde migração 0012. */
+    box: z.string().nullable().optional(),
+    /** Alias legado — espelha `box` em clientes antigos. */
+    code: z.string().nullable().optional(),
+    description: z.string().nullable(),
+    stockSectorId: z.uuid(),
+    status: stockLocationStatusSchema,
+    createdAt: z.string(),
+    updatedAt: z.string().nullable(),
+  })
+  .transform(({ box, code, ...rest }) => ({
+    ...rest,
+    box: box ?? code ?? null,
+    code: String(code ?? box ?? ""),
+  }))
 
 export type StockLocation = z.infer<typeof stockLocationSchema>
+
+export function getStockLocationCode(
+  location: Pick<StockLocation, "box" | "code">
+): string {
+  return String(location.code ?? location.box ?? "").trim()
+}
 
 export const stockBatchSchema = z.object({
   id: z.uuid(),

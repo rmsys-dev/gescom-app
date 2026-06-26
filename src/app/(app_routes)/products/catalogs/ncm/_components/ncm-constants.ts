@@ -1,6 +1,4 @@
-import type { PaginationQuery } from "@/modules/products/products-query"
-
-export const NCM_CLIENT_SEARCH_LIMIT = 100
+import type { ListProductsNcmQuery } from "@/modules/products/products-catalogs.schema"
 
 export type NcmDraftFilters = {
   ncm: string
@@ -11,7 +9,7 @@ export function defaultNcmDraftFilters(): NcmDraftFilters {
   return { ncm: "", description: "" }
 }
 
-export function defaultNcmFilters(): PaginationQuery {
+export function defaultNcmFilters(): ListProductsNcmQuery {
   return { limit: 50, offset: 0 }
 }
 

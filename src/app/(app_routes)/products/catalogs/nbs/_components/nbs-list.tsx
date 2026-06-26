@@ -4,9 +4,8 @@ import { useCallback, useMemo } from "react"
 
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { getCatalogConfig } from "@/app/(app_routes)/products/catalogs/_components/catalog-config"
-import { CatalogTableRows } from "@/app/(app_routes)/products/catalogs/_components/catalog-table-rows"
-import { NCM_LABELS } from "@/app/(app_routes)/products/catalogs/ncm/_components/ncm-constants"
-import { useNcmListFilters } from "@/app/(app_routes)/products/catalogs/ncm/_components/use-ncm-list-filters"
+import { NBS_LABELS } from "@/app/(app_routes)/products/catalogs/nbs/_components/nbs-constants"
+import { useNbsListFilters } from "@/app/(app_routes)/products/catalogs/nbs/_components/use-nbs-list-filters"
 import {
   ListErrorCard,
   PaginatedListLayout,
@@ -19,14 +18,15 @@ import {
 } from "@/components/global/guards/enterprise-permission-guard"
 import { SearchForm } from "@/components/global/forms/search-form"
 import { ListingSearchResult } from "@/components/global/listing/listing-search-result"
-import { TableListing } from "@/components/global/listing/table-listing"
+import { CardListing } from "@/components/global/listing/card-listing"
+import { CatalogCardRows } from "@/app/(app_routes)/products/catalogs/_components/catalog-card-rows"
 import { PageHeader } from "@/components/global/structural/page-header"
 import { PERMISSION_CODES } from "@/lib/permissions"
-import { useProductsNcmQuery } from "@/modules/products/use-products"
+import { useProductsNbsQuery } from "@/modules/products/use-products"
 
-const config = getCatalogConfig("ncm")!
+const config = getCatalogConfig("nbs")!
 
-export function NcmList() {
+export function NbsList() {
   const { ready, perms } = useEnterprisePermissionAccess()
 
   const {
@@ -38,11 +38,11 @@ export function NcmList() {
     clearFilters,
     setPageOffset,
     setLimit,
-  } = useNcmListFilters()
+  } = useNbsListFilters()
 
-  const { data, error, isPending, isFetching, refetch } = useProductsNcmQuery({
+  const { data, error, isPending, isFetching, refetch } = useProductsNbsQuery({
     filters: appliedFilters,
-    enabled: ready && perms.canConsultNcm && hasSearched,
+    enabled: ready && perms.canConsultNbs && hasSearched,
   })
 
   const listing = useMemo(() => {
@@ -64,13 +64,13 @@ export function NcmList() {
   const searchFields = useMemo(
     () => [
       {
-        id: "ncm",
-        label: "NCM",
-        value: draftFilters.ncm,
+        id: "nbs",
+        label: "NBS",
+        value: draftFilters.nbs,
         onChange: (value: string) =>
-          setDraftFilters((prev) => ({ ...prev, ncm: value })),
-        placeholder: "Informe o código NCM",
-        ariaLabel: "Código NCM",
+          setDraftFilters((prev) => ({ ...prev, nbs: value })),
+        placeholder: "Informe o código NBS",
+        ariaLabel: "Código NBS",
       },
       {
         id: "description",
@@ -78,11 +78,11 @@ export function NcmList() {
         value: draftFilters.description,
         onChange: (value: string) =>
           setDraftFilters((prev) => ({ ...prev, description: value })),
-        placeholder: "Informe a descrição do NCM",
-        ariaLabel: "Descrição do NCM",
+        placeholder: "Informe a descrição do NBS",
+        ariaLabel: "Descrição do NBS",
       },
     ],
-    [draftFilters.description, draftFilters.ncm, setDraftFilters]
+    [draftFilters.description, draftFilters.nbs, setDraftFilters]
   )
 
   function handleSearch() {
@@ -101,13 +101,13 @@ export function NcmList() {
       ready &&
       perms.isReady &&
       !perms.isError &&
-      perms.canConsultNcm &&
+      perms.canConsultNbs &&
       hasSearched,
   })
 
   const { errMessage, errMeta } = useListErrorState(
     error,
-    NCM_LABELS.loadListError
+    NBS_LABELS.loadListError
   )
 
   const isSearching = hasSearched && (isFetching || isPending)
@@ -115,26 +115,26 @@ export function NcmList() {
 
   return (
     <EnterprisePermissionGuard
-      check={(p) => p.canConsultNcm}
-      permissionLabel={PERMISSION_CODES.consultarNcmProdutos}
+      check={(p) => p.canConsultNbs}
+      permissionLabel={PERMISSION_CODES.consultarNbsProdutos}
     >
       <PaginatedListLayout>
         <PageHeader title={config.title} subtitle={config.description} />
 
         <SearchForm
-          title="Buscar NCM"
-          idPrefix="ncm-filter"
+          title="Buscar NBS"
+          idPrefix="nbs-filter"
           fields={searchFields}
           onSearch={handleSearch}
           isSearching={isSearching}
           hasSearched={hasSearched}
           appliedValues={{
-            ncm: appliedFilters.ncm,
+            nbs: appliedFilters.nbs,
             description: appliedFilters.description,
           }}
-          searchLabel="Buscar NCM"
-          searchTooltip="Buscar códigos NCM"
-          loadingLabel="Carregando NCM..."
+          searchLabel="Buscar NBS"
+          searchTooltip="Buscar códigos NBS"
+          loadingLabel="Carregando NBS..."
         />
 
         {showStaleBanner && <StaleDataBanner message={errMessage} />}
@@ -144,11 +144,11 @@ export function NcmList() {
           isSearching={isSearching}
           error={hasSearched && error && !data ? error : null}
           idleTitle="Nenhuma busca realizada"
-          idleHint="Clique em Buscar NCM para listar os registros ou refine pelo código e/ou descrição"
-          searchingTitle="Buscando NCM..."
+          idleHint="Clique em Buscar NBS para listar os registros ou refine pelo código e/ou descrição"
+          searchingTitle="Buscando NBS..."
           errorDetails={
             <ListErrorCard
-              title={NCM_LABELS.loadListErrorTitle}
+              title={NBS_LABELS.loadListErrorTitle}
               message={errMessage}
               meta={errMeta}
             />
@@ -157,28 +157,24 @@ export function NcmList() {
           rangeStart={listing.rangeStart}
           rangeEnd={listing.rangeEnd}
         >
-          <TableListing
+          <CardListing
             items={listing.items}
             total={listing.total}
             limit={listing.limit}
             offset={listing.offset}
-            emptyTitle={NCM_LABELS.emptyList}
-            emptyHint={NCM_LABELS.emptyListHint}
+            emptyTitle={NBS_LABELS.emptyList}
+            emptyHint={NBS_LABELS.emptyListHint}
             onPageChange={setPageOffset}
             onLimitChange={setLimit}
             onClearFilters={clearFilters}
           >
-            <CatalogTableRows
+            <CatalogCardRows
               items={listing.items}
-              columns={[
-                { header: "NCM", cell: (item) => item.ncm },
-                { header: "Descrição", cell: (item) => item.description },
-              ]}
-              listLabel="Lista de NCM"
-              mobileTitle={(item) => item.description}
-              mobileSubtitle={(item) => item.ncm}
+              listLabel="Lista de NBS"
+              cardTitle={(item) => item.nbs}
+              cardSubtitle={(item) => item.description}
             />
-          </TableListing>
+          </CardListing>
         </ListingSearchResult>
       </PaginatedListLayout>
     </EnterprisePermissionGuard>

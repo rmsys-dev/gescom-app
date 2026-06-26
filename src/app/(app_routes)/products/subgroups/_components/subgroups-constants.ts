@@ -1,6 +1,4 @@
-import type { PaginationQuery } from "@/modules/products/products-query"
-
-export const SUBGROUPS_CLIENT_SEARCH_LIMIT = 100
+import type { ListProductSubgroupsQuery } from "@/modules/products/products-catalogs.schema"
 
 export type SubgroupsDraftFilters = {
   description: string
@@ -10,7 +8,7 @@ export function defaultSubgroupsDraftFilters(): SubgroupsDraftFilters {
   return { description: "" }
 }
 
-export function defaultSubgroupsFilters(): PaginationQuery {
+export function defaultSubgroupsFilters(): ListProductSubgroupsQuery {
   return { limit: 50, offset: 0 }
 }
 

@@ -1,6 +1,4 @@
-import type { PaginationQuery } from "@/modules/products/products-query"
-
-export const CEST_CLIENT_SEARCH_LIMIT = 100
+import type { ListProductsCestQuery } from "@/modules/products/products-catalogs.schema"
 
 export type CestDraftFilters = {
   cest: string
@@ -11,7 +9,7 @@ export function defaultCestDraftFilters(): CestDraftFilters {
   return { cest: "", description: "" }
 }
 
-export function defaultCestFilters(): PaginationQuery {
+export function defaultCestFilters(): ListProductsCestQuery {
   return { limit: 50, offset: 0 }
 }
 

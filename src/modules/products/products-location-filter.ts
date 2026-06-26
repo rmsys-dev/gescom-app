@@ -5,11 +5,12 @@ import {
   listStockLocationsService,
   listStockSectorRentalsService,
 } from "@/modules/stock/stock.service"
-import type {
-  StockBatch,
-  StockBatchBalance,
-  StockLocation,
-  StockSectorRental,
+import {
+  getStockLocationCode,
+  type StockBatch,
+  type StockBatchBalance,
+  type StockLocation,
+  type StockSectorRental,
 } from "@/modules/stock/stock.schema"
 
 const STOCK_FETCH_PAGE_SIZE = 100
@@ -29,7 +30,7 @@ export function normalizeSearchText(value: string): string {
 }
 
 export function getStockLocationSearchText(location: StockLocation): string {
-  const code = String(location.code ?? "").trim()
+  const code = getStockLocationCode(location)
   const description = String(location.description ?? "").trim()
   return normalizeSearchText(`${code} ${description}`.trim())
 }

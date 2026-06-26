@@ -8,11 +8,12 @@ import type {
   ProductEnterpriseListItem,
 } from "@/modules/products/products.schema"
 import type { ProductApplication } from "@/modules/products/products-tenant-extras.schema"
-import type {
-  StockBatch,
-  StockBatchBalance,
-  StockLocation,
-  StockSectorRental,
+import {
+  getStockLocationCode,
+  type StockBatch,
+  type StockBatchBalance,
+  type StockLocation,
+  type StockSectorRental,
 } from "@/modules/stock/stock.schema"
 
 export type ProductEnterpriseListLookups = {
@@ -37,7 +38,7 @@ function buildDescriptionMap<T>(
 }
 
 function formatLocationLabel(location: StockLocation): string {
-  const code = String(location.code ?? "").trim()
+  const code = getStockLocationCode(location)
   const description = String(location.description ?? "").trim()
 
   if (code && description) return `${code} — ${description}`
@@ -62,7 +63,7 @@ function addLocationLabel(
 }
 
 function resolveCatalogLabel(
-  embedded: { description: string } | null | undefined,
+  embedded: { description?: string | null } | null | undefined,
   id: string | null | undefined,
   map: Map<string, string>
 ): string | null {

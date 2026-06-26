@@ -5,7 +5,6 @@ import { useCallback, useMemo } from "react"
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { getCatalogConfig } from "@/app/(app_routes)/products/catalogs/_components/catalog-config"
 import { CatalogTableRows } from "@/app/(app_routes)/products/catalogs/_components/catalog-table-rows"
-import { filterProductCest } from "@/app/(app_routes)/products/catalogs/cest/_components/cest-client-filters"
 import { CEST_LABELS } from "@/app/(app_routes)/products/catalogs/cest/_components/cest-constants"
 import { useCestListFilters } from "@/app/(app_routes)/products/catalogs/cest/_components/use-cest-list-filters"
 import {
@@ -34,44 +33,23 @@ export function CestList() {
     draftFilters,
     setDraftFilters,
     appliedFilters,
-    appliedClientCriteria,
     hasSearched,
-    isClientPagination,
     applySearch,
     clearFilters,
     setPageOffset,
     setLimit,
   } = useCestListFilters()
 
-  const queryFilters = useMemo(
-    () =>
-      isClientPagination
-        ? { ...appliedFilters, offset: 0 }
-        : appliedFilters,
-    [appliedFilters, isClientPagination]
-  )
-
   const { data, error, isPending, isFetching, refetch } = useProductsCestQuery({
-    filters: queryFilters,
+    filters: appliedFilters,
     enabled: ready && perms.canConsultCest && hasSearched,
   })
 
-  const filteredItems = useMemo(() => {
-    if (!data) return []
-    return filterProductCest(data.items, appliedClientCriteria)
-  }, [data, appliedClientCriteria])
-
   const listing = useMemo(() => {
     const limit = appliedFilters.limit ?? data?.limit ?? 50
-    const offset = isClientPagination
-      ? (appliedFilters.offset ?? 0)
-      : (data?.offset ?? 0)
-    const total = isClientPagination
-      ? filteredItems.length
-      : (data?.total ?? 0)
-    const items = isClientPagination
-      ? filteredItems.slice(offset, offset + limit)
-      : filteredItems
+    const offset = data?.offset ?? appliedFilters.offset ?? 0
+    const total = data?.total ?? 0
+    const items = data?.items ?? []
 
     return {
       items,
@@ -81,15 +59,7 @@ export function CestList() {
       rangeStart: total === 0 ? 0 : offset + 1,
       rangeEnd: Math.min(offset + limit, total),
     }
-  }, [
-    appliedFilters.limit,
-    appliedFilters.offset,
-    data?.limit,
-    data?.offset,
-    data?.total,
-    filteredItems,
-    isClientPagination,
-  ])
+  }, [appliedFilters.limit, appliedFilters.offset, data])
 
   const searchFields = useMemo(
     () => [
@@ -159,8 +129,8 @@ export function CestList() {
           isSearching={isSearching}
           hasSearched={hasSearched}
           appliedValues={{
-            cest: appliedClientCriteria.cest,
-            description: appliedClientCriteria.description,
+            cest: appliedFilters.cest,
+            description: appliedFilters.description,
           }}
           searchLabel="Buscar CEST"
           searchTooltip="Buscar códigos CEST"
@@ -174,7 +144,7 @@ export function CestList() {
           isSearching={isSearching}
           error={hasSearched && error && !data ? error : null}
           idleTitle="Nenhuma busca realizada"
-          idleHint="Informe o CEST e/ou a descrição e clique em Buscar CEST para listar os registros"
+          idleHint="Clique em Buscar CEST para listar os registros ou refine pelo código e/ou descrição"
           searchingTitle="Buscando CEST..."
           errorDetails={
             <ListErrorCard

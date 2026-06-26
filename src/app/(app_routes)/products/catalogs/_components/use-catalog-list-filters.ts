@@ -2,40 +2,16 @@
 
 import { useCallback, useState } from "react"
 
-import {
-  DEFAULT_CATALOG_FILTERS,
-  DEFAULT_NBS_FILTERS,
-  type CatalogConfig,
-} from "@/app/(app_routes)/products/catalogs/_components/catalog-config"
+import { DEFAULT_CATALOG_FILTERS } from "@/app/(app_routes)/products/catalogs/_components/catalog-config"
 import type { PaginationQuery } from "@/modules/products/products-query"
-import type { ListProductNbsQuery } from "@/modules/products/products-catalogs.schema"
 
-export function useCatalogListFilters(config: CatalogConfig) {
-  const initialFilters = config.supportsSearch
-    ? DEFAULT_NBS_FILTERS
-    : DEFAULT_CATALOG_FILTERS
-
-  const [draftSearch, setDraftSearch] = useState("")
-  const [appliedFilters, setAppliedFilters] = useState<
-    PaginationQuery | ListProductNbsQuery
-  >(initialFilters)
-
-  const applySearch = useCallback((): boolean => {
-    if (!config.supportsSearch) return true
-
-    const search = draftSearch.trim()
-    setAppliedFilters({
-      ...initialFilters,
-      offset: 0,
-      search: search.length > 0 ? search : undefined,
-    })
-    return true
-  }, [config.supportsSearch, draftSearch, initialFilters])
+export function useCatalogListFilters() {
+  const [appliedFilters, setAppliedFilters] =
+    useState<PaginationQuery>(DEFAULT_CATALOG_FILTERS)
 
   const clearFilters = useCallback(() => {
-    setDraftSearch("")
-    setAppliedFilters(initialFilters)
-  }, [initialFilters])
+    setAppliedFilters(DEFAULT_CATALOG_FILTERS)
+  }, [])
 
   const setPageOffset = useCallback((offset: number) => {
     setAppliedFilters((filters) => ({ ...filters, offset }))
@@ -46,10 +22,7 @@ export function useCatalogListFilters(config: CatalogConfig) {
   }, [])
 
   return {
-    draftSearch,
-    setDraftSearch,
     appliedFilters,
-    applySearch,
     clearFilters,
     setPageOffset,
     setLimit,

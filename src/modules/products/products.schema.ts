@@ -1,12 +1,21 @@
 import { z } from "zod"
+import { enterpriseStatusSchema } from "@/modules/enterprises/enterprises.schema"
 import {
   paginationQuerySchema,
   searchPaginationQuerySchema,
 } from "@/modules/products/products-query"
 
+/** Status do produto global (`GET /products`). */
 export const productStatusSchema = z.enum(["ATIVO", "INATIVO"])
 
 export type ProductStatus = z.infer<typeof productStatusSchema>
+
+/** Status no vínculo produto-empresa (`GET /products-enterprises`). */
+export const productEnterpriseStatusSchema = enterpriseStatusSchema
+
+export type ProductEnterpriseStatus = z.infer<
+  typeof productEnterpriseStatusSchema
+>
 
 export const productSchema = z.object({
   id: z.uuid(),
@@ -28,7 +37,7 @@ export type ListProductsQuery = z.infer<typeof listProductsQuerySchema>
 const productCatalogRefSchema = z
   .object({
     id: z.uuid(),
-    description: z.string(),
+    description: z.string().optional(),
   })
   .nullable()
   .optional()
@@ -36,8 +45,8 @@ const productCatalogRefSchema = z
 const measurementUnitRefSchema = z
   .object({
     id: z.uuid(),
-    unit: z.string(),
-    description: z.string(),
+    unit: z.string().optional(),
+    description: z.string().optional(),
   })
   .nullable()
   .optional()
@@ -45,8 +54,8 @@ const measurementUnitRefSchema = z
 const productTypeRefSchema = z
   .object({
     id: z.uuid(),
-    type: z.string(),
-    description: z.string(),
+    type: z.string().optional(),
+    description: z.string().optional(),
   })
   .nullable()
   .optional()
@@ -54,8 +63,8 @@ const productTypeRefSchema = z
 const productNcmRefSchema = z
   .object({
     id: z.uuid(),
-    ncm: z.string(),
-    description: z.string(),
+    ncm: z.string().optional(),
+    description: z.string().optional(),
   })
   .nullable()
   .optional()
@@ -63,8 +72,8 @@ const productNcmRefSchema = z
 const productCestRefSchema = z
   .object({
     id: z.uuid(),
-    cest: z.string(),
-    description: z.string(),
+    cest: z.string().optional(),
+    description: z.string().optional(),
   })
   .nullable()
   .optional()
@@ -72,8 +81,8 @@ const productCestRefSchema = z
 const productAnpRefSchema = z
   .object({
     id: z.uuid(),
-    anp: z.string(),
-    description: z.string(),
+    anp: z.string().optional(),
+    description: z.string().optional(),
   })
   .nullable()
   .optional()
@@ -81,17 +90,26 @@ const productAnpRefSchema = z
 const productNbsRefSchema = z
   .object({
     id: z.uuid(),
-    nbs: z.string(),
-    description: z.string(),
+    nbs: z.string().optional(),
+    description: z.string().optional(),
   })
   .nullable()
   .optional()
+
+const productEnterpriseCodeSchema = z
+  .union([z.number(), z.string(), z.null()])
+  .transform((value) => {
+    if (value === null || value === undefined || value === "") return null
+    const parsed =
+      typeof value === "number" ? value : Number.parseInt(String(value), 10)
+    return Number.isFinite(parsed) ? Math.trunc(parsed) : null
+  })
 
 export const productEnterpriseSchema = z.object({
   id: z.uuid(),
   productId: z.uuid(),
   enterprisesId: z.uuid(),
-  code: z.number().int().nullable(),
+  code: productEnterpriseCodeSchema,
   description: z.string(),
   origin: z.string().nullable(),
   manufacturer: z.string().nullable(),
@@ -114,8 +132,11 @@ export const productEnterpriseSchema = z.object({
   productSubgroup: productCatalogRefSchema,
   productBrand: productCatalogRefSchema,
   controlsBatch: z.boolean(),
-  status: productStatusSchema,
-  barCode: z.string(),
+  status: productEnterpriseStatusSchema,
+  barCode: z
+    .string()
+    .nullable()
+    .transform((value) => value ?? ""),
   createdAt: z.string(),
   updatedAt: z.string().nullable(),
 })
@@ -133,7 +154,7 @@ export type ProductEnterpriseListItem = ProductEnterprise & {
 /** Query params aceites por `GET /products-enterprises` (strict — sem filtros só de cliente). */
 export const listProductsEnterprisesQuerySchema =
   searchPaginationQuerySchema.extend({
-    status: productStatusSchema.optional(),
+    status: productEnterpriseStatusSchema.optional(),
     description: z.string().trim().min(1).optional(),
     code: z.coerce.number().int().positive().optional(),
     barCode: z.string().trim().min(1).optional(),

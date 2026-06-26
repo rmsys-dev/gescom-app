@@ -3,30 +3,30 @@
 import { useCallback, useState } from "react"
 
 import {
-  defaultCestDraftFilters,
-  defaultCestFilters,
-  type CestDraftFilters,
-} from "@/app/(app_routes)/products/catalogs/cest/_components/cest-constants"
-import type { ListProductsCestQuery } from "@/modules/products/products-catalogs.schema"
+  defaultNbsDraftFilters,
+  defaultNbsFilters,
+  type NbsDraftFilters,
+} from "@/app/(app_routes)/products/catalogs/nbs/_components/nbs-constants"
+import type { ListProductNbsQuery } from "@/modules/products/products-catalogs.schema"
 
 function buildApiFilters(
-  draft: CestDraftFilters,
-  defaults: ListProductsCestQuery
-): ListProductsCestQuery {
+  draft: NbsDraftFilters,
+  defaults: ListProductNbsQuery
+): ListProductNbsQuery {
   return {
     ...defaults,
     offset: 0,
-    cest: draft.cest.trim() || undefined,
+    nbs: draft.nbs.trim() || undefined,
     description: draft.description.trim() || undefined,
   }
 }
 
-export function useCestListFilters() {
-  const defaults = defaultCestFilters()
+export function useNbsListFilters() {
+  const defaults = defaultNbsFilters()
 
-  const [draftFilters, setDraftFilters] = useState(defaultCestDraftFilters)
+  const [draftFilters, setDraftFilters] = useState(defaultNbsDraftFilters)
   const [appliedFilters, setAppliedFilters] =
-    useState<ListProductsCestQuery>(defaults)
+    useState<ListProductNbsQuery>(defaults)
   const [hasSearched, setHasSearched] = useState(false)
 
   const applySearch = useCallback((): boolean => {
@@ -36,8 +36,8 @@ export function useCestListFilters() {
   }, [draftFilters, defaults])
 
   const clearFilters = useCallback(() => {
-    setDraftFilters(defaultCestDraftFilters())
-    setAppliedFilters(defaultCestFilters())
+    setDraftFilters(defaultNbsDraftFilters())
+    setAppliedFilters(defaultNbsFilters())
     setHasSearched(false)
   }, [])
 

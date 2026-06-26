@@ -1,25 +1,27 @@
 import { cn } from "@/lib/utils"
 import type { StockBatchStatus, StockMovementType } from "@/modules/sales/sales-enums"
-import type { ProductStatus } from "@/modules/products/products.schema"
+import type { StockLocationStatus } from "@/modules/stock/stock.schema"
 
-const LOCATION_STATUS_LABELS: Record<ProductStatus, string> = {
+const LOCATION_STATUS_LABELS: Record<StockLocationStatus, string> = {
   ATIVO: "Ativo",
   INATIVO: "Inativo",
+  BLOQUEADO: "Bloqueado",
 }
 
-const LOCATION_STATUS_STYLES: Record<ProductStatus, string> = {
+const LOCATION_STATUS_STYLES: Record<StockLocationStatus, string> = {
   ATIVO: "border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200",
   INATIVO: "border-border bg-muted/50 text-muted-foreground",
+  BLOQUEADO: "border-destructive/40 bg-destructive/10 text-destructive",
 }
 
 export function StockLocationStatusBadge({
   status,
   className,
 }: {
-  status: ProductStatus | string
+  status: StockLocationStatus | string
   className?: string
 }) {
-  const key = status as ProductStatus
+  const key = status as StockLocationStatus
   return (
     <span
       className={cn(

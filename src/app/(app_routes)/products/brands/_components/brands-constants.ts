@@ -1,6 +1,4 @@
-import type { PaginationQuery } from "@/modules/products/products-query"
-
-export const BRANDS_CLIENT_SEARCH_LIMIT = 100
+import type { ListProductBrandsQuery } from "@/modules/products/products-catalogs.schema"
 
 export type BrandsDraftFilters = {
   description: string
@@ -10,7 +8,7 @@ export function defaultBrandsDraftFilters(): BrandsDraftFilters {
   return { description: "" }
 }
 
-export function defaultBrandsFilters(): PaginationQuery {
+export function defaultBrandsFilters(): ListProductBrandsQuery {
   return { limit: 50, offset: 0 }
 }
 

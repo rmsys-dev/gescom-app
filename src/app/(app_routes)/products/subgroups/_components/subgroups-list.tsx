@@ -5,7 +5,6 @@ import { useCallback, useMemo } from "react"
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { getProductResourceConfig } from "@/app/(app_routes)/products/catalogs/_components/product-resource-config"
 import { SUBGROUPS_LABELS } from "@/app/(app_routes)/products/subgroups/_components/subgroups-constants"
-import { filterProductSubgroups } from "@/app/(app_routes)/products/subgroups/_components/subgroups-client-filters"
 import { SubgroupsTableRows } from "@/app/(app_routes)/products/subgroups/_components/subgroups-table-rows"
 import { useSubgroupsListFilters } from "@/app/(app_routes)/products/subgroups/_components/use-subgroups-list-filters"
 import {
@@ -34,45 +33,24 @@ export function SubgroupsList() {
     draftFilters,
     setDraftFilters,
     appliedFilters,
-    appliedClientCriteria,
     hasSearched,
-    isClientPagination,
     applySearch,
     clearFilters,
     setPageOffset,
     setLimit,
   } = useSubgroupsListFilters()
 
-  const queryFilters = useMemo(
-    () =>
-      isClientPagination
-        ? { ...appliedFilters, offset: 0 }
-        : appliedFilters,
-    [appliedFilters, isClientPagination]
-  )
-
   const { data, error, isPending, isFetching, refetch } =
     useProductSubgroupsQuery({
-      filters: queryFilters,
+      filters: appliedFilters,
       enabled: ready && perms.canConsultProductSubgroups && hasSearched,
     })
 
-  const filteredItems = useMemo(() => {
-    if (!data) return []
-    return filterProductSubgroups(data.items, appliedClientCriteria)
-  }, [data, appliedClientCriteria])
-
   const listing = useMemo(() => {
     const limit = appliedFilters.limit ?? data?.limit ?? 50
-    const offset = isClientPagination
-      ? (appliedFilters.offset ?? 0)
-      : (data?.offset ?? 0)
-    const total = isClientPagination
-      ? filteredItems.length
-      : (data?.total ?? 0)
-    const items = isClientPagination
-      ? filteredItems.slice(offset, offset + limit)
-      : filteredItems
+    const offset = data?.offset ?? appliedFilters.offset ?? 0
+    const total = data?.total ?? 0
+    const items = data?.items ?? []
 
     return {
       items,
@@ -85,11 +63,10 @@ export function SubgroupsList() {
   }, [
     appliedFilters.limit,
     appliedFilters.offset,
+    data?.items,
     data?.limit,
     data?.offset,
     data?.total,
-    filteredItems,
-    isClientPagination,
   ])
 
   const searchFields = useMemo(
@@ -151,7 +128,7 @@ export function SubgroupsList() {
           isSearching={isSearching}
           hasSearched={hasSearched}
           appliedValues={{
-            description: appliedClientCriteria.description,
+            description: appliedFilters.description ?? "",
           }}
           searchLabel="Buscar subgrupos"
           searchTooltip="Buscar subgrupos de produto"

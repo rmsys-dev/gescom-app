@@ -1,4 +1,11 @@
-import type { ListProductNbsQuery } from "@/modules/products/products-catalogs.schema"
+import type {
+  ListProductBrandsQuery,
+  ListProductGroupsQuery,
+  ListProductNbsQuery,
+  ListProductsCestQuery,
+  ListProductsNcmQuery,
+  ListProductSubgroupsQuery,
+} from "@/modules/products/products-catalogs.schema"
 import type { PaginationQuery } from "@/modules/products/products-query"
 import type {
   ListProductsEnterprisesQuery,
@@ -41,11 +48,11 @@ export const productsQueryKeys = {
     ["products", enterpriseId, "catalogs", "types", filters ?? {}] as const,
   type: (enterpriseId: string, id: string) =>
     ["products", enterpriseId, "catalogs", "types", id] as const,
-  ncm: (enterpriseId: string, filters?: PaginationQuery) =>
+  ncm: (enterpriseId: string, filters?: ListProductsNcmQuery) =>
     ["products", enterpriseId, "catalogs", "ncm", filters ?? {}] as const,
   ncmItem: (enterpriseId: string, id: string) =>
     ["products", enterpriseId, "catalogs", "ncm", id] as const,
-  cest: (enterpriseId: string, filters?: PaginationQuery) =>
+  cest: (enterpriseId: string, filters?: ListProductsCestQuery) =>
     ["products", enterpriseId, "catalogs", "cest", filters ?? {}] as const,
   cestItem: (enterpriseId: string, id: string) =>
     ["products", enterpriseId, "catalogs", "cest", id] as const,
@@ -61,15 +68,15 @@ export const productsQueryKeys = {
     ["products", enterpriseId, "catalogs", "icms", filters ?? {}] as const,
   icmsItem: (enterpriseId: string, id: string) =>
     ["products", enterpriseId, "catalogs", "icms", id] as const,
-  groups: (enterpriseId: string, filters?: PaginationQuery) =>
+  groups: (enterpriseId: string, filters?: ListProductGroupsQuery) =>
     ["products", enterpriseId, "catalogs", "groups", filters ?? {}] as const,
   group: (enterpriseId: string, id: string) =>
     ["products", enterpriseId, "catalogs", "groups", id] as const,
-  subgroups: (enterpriseId: string, filters?: PaginationQuery) =>
+  subgroups: (enterpriseId: string, filters?: ListProductSubgroupsQuery) =>
     ["products", enterpriseId, "catalogs", "subgroups", filters ?? {}] as const,
   subgroup: (enterpriseId: string, id: string) =>
     ["products", enterpriseId, "catalogs", "subgroups", id] as const,
-  brands: (enterpriseId: string, filters?: PaginationQuery) =>
+  brands: (enterpriseId: string, filters?: ListProductBrandsQuery) =>
     ["products", enterpriseId, "catalogs", "brands", filters ?? {}] as const,
   brand: (enterpriseId: string, id: string) =>
     ["products", enterpriseId, "catalogs", "brands", id] as const,

@@ -5,7 +5,6 @@ import { useCallback, useMemo } from "react"
 import { useRegisterPageRefresh } from "@/app/(app_routes)/_components/page-refresh"
 import { getProductResourceConfig } from "@/app/(app_routes)/products/catalogs/_components/product-resource-config"
 import { GROUPS_LABELS } from "@/app/(app_routes)/products/groups/_components/groups-constants"
-import { filterProductGroups } from "@/app/(app_routes)/products/groups/_components/groups-client-filters"
 import { GroupsTableRows } from "@/app/(app_routes)/products/groups/_components/groups-table-rows"
 import { useGroupsListFilters } from "@/app/(app_routes)/products/groups/_components/use-groups-list-filters"
 import {
@@ -34,44 +33,23 @@ export function GroupsList() {
     draftFilters,
     setDraftFilters,
     appliedFilters,
-    appliedClientCriteria,
     hasSearched,
-    isClientPagination,
     applySearch,
     clearFilters,
     setPageOffset,
     setLimit,
   } = useGroupsListFilters()
 
-  const queryFilters = useMemo(
-    () =>
-      isClientPagination
-        ? { ...appliedFilters, offset: 0 }
-        : appliedFilters,
-    [appliedFilters, isClientPagination]
-  )
-
   const { data, error, isPending, isFetching, refetch } = useProductGroupsQuery({
-    filters: queryFilters,
+    filters: appliedFilters,
     enabled: ready && perms.canConsultProductGroups && hasSearched,
   })
 
-  const filteredItems = useMemo(() => {
-    if (!data) return []
-    return filterProductGroups(data.items, appliedClientCriteria)
-  }, [data, appliedClientCriteria])
-
   const listing = useMemo(() => {
     const limit = appliedFilters.limit ?? data?.limit ?? 50
-    const offset = isClientPagination
-      ? (appliedFilters.offset ?? 0)
-      : (data?.offset ?? 0)
-    const total = isClientPagination
-      ? filteredItems.length
-      : (data?.total ?? 0)
-    const items = isClientPagination
-      ? filteredItems.slice(offset, offset + limit)
-      : filteredItems
+    const offset = data?.offset ?? appliedFilters.offset ?? 0
+    const total = data?.total ?? 0
+    const items = data?.items ?? []
 
     return {
       items,
@@ -81,15 +59,7 @@ export function GroupsList() {
       rangeStart: total === 0 ? 0 : offset + 1,
       rangeEnd: Math.min(offset + limit, total),
     }
-  }, [
-    appliedFilters.limit,
-    appliedFilters.offset,
-    data?.limit,
-    data?.offset,
-    data?.total,
-    filteredItems,
-    isClientPagination,
-  ])
+  }, [appliedFilters.limit, appliedFilters.offset, data])
 
   const searchFields = useMemo(
     () => [
@@ -150,7 +120,7 @@ export function GroupsList() {
           isSearching={isSearching}
           hasSearched={hasSearched}
           appliedValues={{
-            description: appliedClientCriteria.description,
+            description: appliedFilters.description,
           }}
           searchLabel="Buscar grupos"
           searchTooltip="Buscar grupos de produto"

@@ -23,14 +23,12 @@ import {
   EnterprisePermissionGuard,
   useEnterprisePermissionAccess,
 } from "@/components/global/guards/enterprise-permission-guard"
-import { SearchForm } from "@/components/global/forms/search-form"
 import { ListingSearchResult } from "@/components/global/listing/listing-search-result"
 import { CardListing } from "@/components/global/listing/card-listing"
 import { TableListing } from "@/components/global/listing/table-listing"
 import { PageHeader } from "@/components/global/structural/page-header"
 import type { OperatorPermissions } from "@/components/global/guards/permission-route-guard"
 import type { PaginationQuery } from "@/modules/products/products-query"
-import type { ListProductNbsQuery } from "@/modules/products/products-catalogs.schema"
 
 type ListHookResult<T> = {
   data:
@@ -52,7 +50,7 @@ type CatalogListViewProps<T extends { id: string }> = {
   mobileTitle: (item: T) => string
   mobileSubtitle?: (item: T) => string
   useListData: (opts: {
-    filters: PaginationQuery | ListProductNbsQuery
+    filters: PaginationQuery
     enabled: boolean
   }) => ListHookResult<T>
 }
@@ -79,14 +77,11 @@ export function CatalogListView<T extends { id: string }>({
   const canConsult = canConsultCatalog(perms, config.permissionKey)
 
   const {
-    draftSearch,
-    setDraftSearch,
     appliedFilters,
-    applySearch,
     clearFilters,
     setPageOffset,
     setLimit,
-  } = useCatalogListFilters(config)
+  } = useCatalogListFilters()
 
   const { data, error, isPending, isFetching, refetch } = useListData({
     filters: appliedFilters,
@@ -108,30 +103,6 @@ export function CatalogListView<T extends { id: string }>({
       rangeEnd: Math.min(offset + limit, total),
     }
   }, [appliedFilters.limit, appliedFilters.offset, data])
-
-  const searchFields = useMemo(
-    () =>
-      config.supportsSearch
-        ? [
-            {
-              id: "search",
-              label: "Pesquisa",
-              value: draftSearch,
-              onChange: setDraftSearch,
-              placeholder:
-                config.searchPlaceholder ?? "Informe um termo de pesquisa",
-              ariaLabel: config.searchAriaLabel ?? "Pesquisar catálogo",
-            },
-          ]
-        : [],
-    [
-      config.searchAriaLabel,
-      config.searchPlaceholder,
-      config.supportsSearch,
-      draftSearch,
-      setDraftSearch,
-    ]
-  )
 
   const handleRefresh = useCallback(() => {
     void refetch()
@@ -157,26 +128,6 @@ export function CatalogListView<T extends { id: string }>({
     >
       <PaginatedListLayout>
         <PageHeader title={config.title} subtitle={config.description} />
-
-        {config.supportsSearch && (
-          <SearchForm
-            title={`Buscar ${config.title.toLowerCase()}`}
-            idPrefix={`${config.slug}-filter`}
-            fields={searchFields}
-            onSearch={applySearch}
-            isSearching={isSearching}
-            hasSearched={hasSearched}
-            appliedValues={{
-              search:
-                "search" in appliedFilters
-                  ? appliedFilters.search
-                  : undefined,
-            }}
-            searchLabel="Buscar"
-            searchTooltip={`Buscar ${config.title.toLowerCase()}`}
-            loadingLabel={`Carregando ${config.title.toLowerCase()}...`}
-          />
-        )}
 
         {showStaleBanner && <StaleDataBanner message={errMessage} />}
 
@@ -206,7 +157,7 @@ export function CatalogListView<T extends { id: string }>({
               emptyHint="Não há itens neste catálogo."
               onPageChange={setPageOffset}
               onLimitChange={setLimit}
-              onClearFilters={config.supportsSearch ? clearFilters : undefined}
+              onClearFilters={clearFilters}
             >
               <CatalogCardRows
                 items={listing.items}
@@ -226,7 +177,7 @@ export function CatalogListView<T extends { id: string }>({
               emptyHint="Não há itens neste catálogo."
               onPageChange={setPageOffset}
               onLimitChange={setLimit}
-              onClearFilters={config.supportsSearch ? clearFilters : undefined}
+              onClearFilters={clearFilters}
             >
               <CatalogTableRows
                 items={listing.items}

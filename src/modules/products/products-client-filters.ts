@@ -1,8 +1,8 @@
 import type { ProductsDateFilters } from "@/app/(app_routes)/products/_components/products-constants"
-import type { ProductEnterprise, ProductStatus } from "@/modules/products/products.schema"
+import type { ProductEnterprise, ProductEnterpriseStatus } from "@/modules/products/products.schema"
 
 export type ProductsClientFilterCriteria = {
-  status?: ProductStatus
+  status?: ProductEnterpriseStatus
   controlsBatch?: boolean
   locacao?: string
   dateFilters: ProductsDateFilters

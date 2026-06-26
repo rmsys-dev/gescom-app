@@ -8,6 +8,7 @@ import {
   ProfileEditActions,
   ProfileField,
 } from "@/app/(app_routes)/profile/_components/profile-field"
+import { Input } from "@/components/ui/input"
 import {
   useCepsQuery,
   useCitiesQuery,
@@ -27,12 +28,18 @@ function formatCepMask(value: string): string {
   return `${digits.slice(0, 5)}-${digits.slice(5)}`
 }
 
+/**
+ * Campos do formulário de endereço de usuário.
+ * countryId/stateId/cityId são apenas para navegação em cascata — não enviados ao backend.
+ */
 export function UserAddressFormFields({
   editing,
   countryId,
   stateId,
   cityId,
   cepId,
+  number,
+  complement,
   adressType,
   displayCountry,
   displayState,
@@ -43,6 +50,8 @@ export function UserAddressFormFields({
   onStateChange,
   onCityChange,
   onCepChange,
+  onNumberChange,
+  onComplementChange,
   onAdressTypeChange,
 }: {
   editing: boolean
@@ -50,6 +59,8 @@ export function UserAddressFormFields({
   stateId: string
   cityId: string
   cepId: string
+  number: string
+  complement: string
   adressType: UserAddressType
   displayCountry: string | null | undefined
   displayState: string | null | undefined
@@ -60,6 +71,8 @@ export function UserAddressFormFields({
   onStateChange: (value: string) => void
   onCityChange: (value: string) => void
   onCepChange: (value: string) => void
+  onNumberChange: (value: string) => void
+  onComplementChange: (value: string) => void
   onAdressTypeChange: (value: UserAddressType) => void
 }) {
   const countriesQuery = useCountriesQuery(editing)
@@ -149,6 +162,48 @@ export function UserAddressFormFields({
         editPlaceholder="Selecione o CEP..."
         editDisabled={!cityId}
       />
+      {editing && (
+        <>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-medium text-muted-foreground">Número</span>
+            <Input
+              value={number}
+              onChange={(e) => onNumberChange(e.target.value)}
+              placeholder="Ex.: 123, S/N"
+              maxLength={255}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-medium text-muted-foreground">Complemento (opcional)</span>
+            <Input
+              value={complement}
+              onChange={(e) => onComplementChange(e.target.value)}
+              placeholder="Ex.: Apto 42, Bloco B"
+              maxLength={255}
+            />
+          </div>
+        </>
+      )}
+      {!editing && number && (
+        <ProfileField
+          label="Número"
+          value={number}
+          icon={MapPin}
+          editing={false}
+          editValue={number}
+          onEditChange={() => undefined}
+        />
+      )}
+      {!editing && complement && (
+        <ProfileField
+          label="Complemento"
+          value={complement}
+          icon={MapPin}
+          editing={false}
+          editValue={complement}
+          onEditChange={() => undefined}
+        />
+      )}
       <ProfileField
         label="Tipo"
         value={displayType}
@@ -185,22 +240,30 @@ export function UserAddressCreateForm({
   const [stateId, setStateId] = useState("")
   const [cityId, setCityId] = useState("")
   const [cepId, setCepId] = useState("")
+  const [number, setNumber] = useState("")
+  const [complement, setComplement] = useState("")
   const [adressType, setAdressType] = useState<UserAddressType>("PRINCIPAL")
 
   async function handleSave() {
-    if (!countryId || !stateId || !cityId || !cepId) {
-      toast.error("Preencha país, estado, cidade e CEP.")
+    if (!cepId) {
+      toast.error("Selecione o CEP.")
+      return
+    }
+    if (!number.trim()) {
+      toast.error("Informe o número do endereço.")
       return
     }
 
     try {
-      await createMutation.mutateAsync({
-        countryId,
-        stateId,
-        cityId,
-        cepId,
-        adressType,
-      })
+      const payload: {
+        cepId: string
+        number: string
+        complement?: string
+        adressType: UserAddressType
+      } = { cepId, number: number.trim(), adressType }
+      if (complement.trim()) payload.complement = complement.trim()
+
+      await createMutation.mutateAsync(payload)
       onSaved()
     } catch {
       /* erros de mutação tratados globalmente pelo QueryClient */
@@ -216,11 +279,13 @@ export function UserAddressCreateForm({
         stateId={stateId}
         cityId={cityId}
         cepId={cepId}
+        number={number}
+        complement={complement}
         adressType={adressType}
-        displayCountry={countryId}
-        displayState={stateId}
-        displayCity={cityId}
-        displayCep={cepId}
+        displayCountry={null}
+        displayState={null}
+        displayCity={null}
+        displayCep={null}
         displayType={getUserAddressTypeLabel(adressType)}
         onCountryChange={(value) => {
           setCountryId(value)
@@ -238,6 +303,8 @@ export function UserAddressCreateForm({
           setCepId("")
         }}
         onCepChange={setCepId}
+        onNumberChange={setNumber}
+        onComplementChange={setComplement}
         onAdressTypeChange={setAdressType}
       />
       <ProfileEditActions

@@ -64,7 +64,7 @@ const normalizedHousingTypeSchema = housingTypeInputSchema.transform((v) =>
   v === "PROPRIO" ? "PRÓPRIO" : v
 ) as z.ZodType<HousingType>
 
-export const creditTypeSchema = z.enum(["MENSAL", "GERAL"])
+export const creditTypeSchema = z.enum(["CREDITO", "DEBITO", "OUTRO"])
 export type CreditType = z.infer<typeof creditTypeSchema>
 
 export const accessModeSchema = z.enum(["self", "directory"])
@@ -91,9 +91,8 @@ export type PersonalInfo = z.infer<typeof personalInfoSchema>
 export const userAddressSchema = z.object({
   id: z.uuid(),
   cepId: z.uuid(),
-  countryId: z.uuid(),
-  stateId: z.uuid(),
-  cityId: z.uuid(),
+  number: z.string(),
+  complement: z.string().nullable(),
   adressType: userAddressTypeSchema,
   createdAt: z.string().optional(),
   updatedAt: z.string().nullable().optional(),
@@ -213,27 +212,24 @@ export const patchPersonalInfoRequestSchema = z
 
 export const postUserAddressRequestSchema = z.strictObject({
   cepId: z.uuid(),
-  countryId: z.uuid(),
-  stateId: z.uuid(),
-  cityId: z.uuid(),
+  number: z.string().trim().min(1).max(255),
+  complement: z.string().trim().min(1).max(255).optional(),
   adressType: userAddressTypeSchema,
 })
 
 export const patchUserAddressRequestSchema = z
   .strictObject({
     cepId: z.uuid().optional(),
-    countryId: z.uuid().optional(),
-    stateId: z.uuid().optional(),
-    cityId: z.uuid().optional(),
+    number: z.string().trim().min(1).max(255).optional(),
+    complement: z.string().trim().min(1).max(255).nullable().optional(),
     adressType: userAddressTypeSchema.optional(),
     softDelete: z.literal(true).optional(),
   })
   .refine(
     (d) =>
       d.cepId !== undefined ||
-      d.countryId !== undefined ||
-      d.stateId !== undefined ||
-      d.cityId !== undefined ||
+      d.number !== undefined ||
+      d.complement !== undefined ||
       d.adressType !== undefined ||
       d.softDelete === true,
     { message: "Informe ao menos um campo." }

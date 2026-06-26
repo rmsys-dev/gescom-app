@@ -132,13 +132,15 @@ export function getUserContactTypeLabel(value: string): string {
 }
 
 const CREDIT_TYPE_LABELS: Record<CreditType, string> = {
-  MENSAL: "Mensal",
-  GERAL: "Geral",
+  CREDITO: "Crédito",
+  DEBITO: "Débito",
+  OUTRO: "Outro",
 }
 
 export const CREDIT_TYPE_OPTIONS: { value: CreditType; label: string }[] = [
-  { value: "MENSAL", label: "Mensal" },
-  { value: "GERAL", label: "Geral" },
+  { value: "CREDITO", label: "Crédito" },
+  { value: "DEBITO", label: "Débito" },
+  { value: "OUTRO", label: "Outro" },
 ]
 
 export function getCreditTypeLabel(value: string | null | undefined): string {

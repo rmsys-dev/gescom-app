@@ -58,8 +58,6 @@ export const cepSchema = z.object({
   id: z.uuid(),
   cepNumber: z.string(),
   address: z.string(),
-  number: z.string(),
-  complement: z.string().nullable(),
   neighborhood: z.string(),
   cityId: z.uuid(),
   createdAt: z.string(),

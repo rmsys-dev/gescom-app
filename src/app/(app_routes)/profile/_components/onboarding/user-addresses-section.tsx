@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { MapPin, Plus, Trash2 } from "lucide-react"
+import { Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { ConfirmSoftDeleteDialog } from "@/components/global/dialogs/confirm-soft-delete-dialog"
@@ -85,15 +85,15 @@ export function UserAddressesSection({
         </CardTitle>
         <CardDescription>
           {isEditingSection
-            ? "Edite ou adicione endereços com país, estado, cidade e CEP"
-            : "Endereços com país, estado, cidade e CEP"}
+            ? "Edite ou adicione endereços com CEP, número e complemento"
+            : "Endereços com CEP, número e complemento"}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {addresses.length === 0 && !isCreating ? (
           <UserOnboardingEmpty
             title="Sem endereços cadastrados."
-            description="Adicione um endereço com país, estado, cidade e CEP."
+            description="Adicione um endereço com CEP e número."
           />
         ) : (
           <ul className="space-y-4">
@@ -110,10 +110,10 @@ export function UserAddressesSection({
                     editingTarget?.mode === "edit" &&
                     editingTarget.address.id === address.id
                   }
-                  displayCountry={loadingLabel ?? display.countryName}
-                  displayState={loadingLabel ?? display.stateLabel}
-                  displayCity={loadingLabel ?? display.cityName}
-                  displayCep={loadingLabel ?? display.cepSummary}
+                  displayCountry={(loadingLabel ?? display.countryName) ?? null}
+                  displayState={(loadingLabel ?? display.stateLabel) ?? null}
+                  displayCity={(loadingLabel ?? display.cityName) ?? null}
+                  displayCep={(loadingLabel ?? display.cepSummary) ?? null}
                   onStartEdit={() =>
                     setEditingTarget({ mode: "edit", address })
                   }
@@ -221,19 +221,24 @@ function AddressListItem({
     memberId
   )
 
-  const [countryId, setCountryId] = useState(address.countryId)
-  const [stateId, setStateId] = useState(address.stateId)
-  const [cityId, setCityId] = useState(address.cityId)
+  /** Seletores de cascata — apenas para navegação, não enviados ao backend */
+  const [countryId, setCountryId] = useState("")
+  const [stateId, setStateId] = useState("")
+  const [cityId, setCityId] = useState("")
   const [cepId, setCepId] = useState(address.cepId)
+  const [number, setNumber] = useState(address.number ?? "")
+  const [complement, setComplement] = useState(address.complement ?? "")
   const [adressType, setAdressType] = useState<UserAddressType>(
     address.adressType
   )
 
   const resetDraft = () => {
-    setCountryId(address.countryId)
-    setStateId(address.stateId)
-    setCityId(address.cityId)
+    setCountryId("")
+    setStateId("")
+    setCityId("")
     setCepId(address.cepId)
+    setNumber(address.number ?? "")
+    setComplement(address.complement ?? "")
     setAdressType(address.adressType)
   }
 
@@ -248,23 +253,26 @@ function AddressListItem({
   }
 
   async function handleSave() {
-    if (!countryId || !stateId || !cityId || !cepId) {
-      toast.error("Preencha país, estado, cidade e CEP.")
+    if (!cepId) {
+      toast.error("Selecione o CEP.")
+      return
+    }
+    if (!number.trim()) {
+      toast.error("Informe o número do endereço.")
       return
     }
 
     const input: {
-      countryId?: string
-      stateId?: string
-      cityId?: string
       cepId?: string
+      number?: string
+      complement?: string | null
       adressType?: UserAddressType
     } = {}
 
-    if (countryId !== address.countryId) input.countryId = countryId
-    if (stateId !== address.stateId) input.stateId = stateId
-    if (cityId !== address.cityId) input.cityId = cityId
     if (cepId !== address.cepId) input.cepId = cepId
+    if (number.trim() !== (address.number ?? "")) input.number = number.trim()
+    const newComplement = complement.trim() || null
+    if (newComplement !== address.complement) input.complement = newComplement
     if (adressType !== address.adressType) input.adressType = adressType
 
     if (Object.keys(input).length === 0) {
@@ -309,6 +317,8 @@ function AddressListItem({
         stateId={stateId}
         cityId={cityId}
         cepId={cepId}
+        number={number}
+        complement={complement}
         adressType={adressType}
         displayCountry={displayCountry}
         displayState={displayState}
@@ -331,6 +341,8 @@ function AddressListItem({
           setCepId("")
         }}
         onCepChange={setCepId}
+        onNumberChange={setNumber}
+        onComplementChange={setComplement}
         onAdressTypeChange={setAdressType}
       />
 

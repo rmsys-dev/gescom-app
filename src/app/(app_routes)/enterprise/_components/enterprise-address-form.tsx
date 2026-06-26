@@ -4,6 +4,7 @@ import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -18,7 +19,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import type { Cep } from "@/modules/addresses/addresses.schema"
 import {
   useCepsQuery,
   useCitiesQuery,
@@ -55,10 +55,13 @@ type EnterpriseAddressFormProps = {
 }
 
 type AddressFormState = {
+  /** Apenas para navegação em cascata — não enviado ao backend */
   countryId: string
   stateId: string
   cityId: string
   cepId: string
+  number: string
+  complement: string
   adressType: EnterpriseAddressType
 }
 
@@ -69,10 +72,12 @@ function getInitialAddressFormState(
 ): AddressFormState {
   if (mode === "edit" && editing) {
     return {
-      countryId: editing.countryId,
-      stateId: editing.stateId,
-      cityId: editing.cityId,
+      countryId: "",
+      stateId: "",
+      cityId: "",
       cepId: editing.cepId,
+      number: editing.number ?? "",
+      complement: editing.complement ?? "",
       adressType: editing.adressType as EnterpriseAddressType,
     }
   }
@@ -86,6 +91,8 @@ function getInitialAddressFormState(
     stateId: "",
     cityId: "",
     cepId: "",
+    number: "",
+    complement: "",
     adressType: defaultType,
   }
 }
@@ -119,7 +126,7 @@ export function EnterpriseAddressForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[min(90vh,40rem)] overflow-y-auto sm:max-w-md">
+      <DialogContent className="max-h-[min(90vh,44rem)] overflow-y-auto sm:max-w-md">
         {open ? (
           <EnterpriseAddressFormContent
             key={getFormContentKey(mode, editing, session)}
@@ -158,18 +165,19 @@ function EnterpriseAddressFormContent({
   const [stateId, setStateId] = useState(initial.stateId)
   const [cityId, setCityId] = useState(initial.cityId)
   const [cepId, setCepId] = useState(initial.cepId)
+  const [number, setNumber] = useState(initial.number)
+  const [complement, setComplement] = useState(initial.complement)
   const [adressType, setAdressType] = useState(initial.adressType)
-  const [cepSearch, setCepSearch] = useState("")
 
   const countriesQuery = useCountriesQuery(true)
   const statesQuery = useStatesQuery(countryId || undefined, true)
   const citiesQuery = useCitiesQuery(stateId || undefined, true)
-  const cepsQuery = useCepsQuery(cityId || undefined, cepSearch)
+  const cepsQuery = useCepsQuery(cityId || undefined, "")
 
-  const selectedCep: Cep | undefined = useMemo(() => {
-    const items = cepsQuery.data ?? []
-    return items.find((c) => c.id === cepId)
-  }, [cepsQuery.data, cepId])
+  const selectedCep = useMemo(
+    () => (cepsQuery.data ?? []).find((c) => c.id === cepId),
+    [cepsQuery.data, cepId]
+  )
 
   const addressTypeOptions = useMemo(() => {
     const principal = findPrincipalEnterpriseAddress(addresses)
@@ -199,37 +207,30 @@ function EnterpriseAddressFormContent({
   function handleCityChange(value: string) {
     setCityId(value)
     setCepId("")
-    setCepSearch("")
   }
 
   function buildPatchInput(): PatchEnterpriseAddressRequest | null {
     if (!editing) return null
 
     const input: PatchEnterpriseAddressRequest = {}
-    const geoChanged =
-      countryId !== editing.countryId ||
-      stateId !== editing.stateId ||
-      cityId !== editing.cityId ||
-      cepId !== editing.cepId
 
-    if (geoChanged) {
-      input.countryId = countryId
-      input.stateId = stateId
-      input.cityId = cityId
-      input.cepId = cepId
-    }
-
-    if (adressType !== editing.adressType) {
-      input.adressType = adressType
-    }
+    if (cepId && cepId !== editing.cepId) input.cepId = cepId
+    if (number.trim() && number.trim() !== editing.number) input.number = number.trim()
+    const newComplement = complement.trim() || null
+    if (newComplement !== editing.complement) input.complement = newComplement
+    if (adressType !== editing.adressType) input.adressType = adressType
 
     return Object.keys(input).length > 0 ? input : null
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (!countryId || !stateId || !cityId || !cepId) {
-      toast.error("Preencha país, estado, cidade e CEP.")
+    if (!cepId) {
+      toast.error("Selecione o CEP.")
+      return
+    }
+    if (!number.trim()) {
+      toast.error("Informe o número do endereço.")
       return
     }
 
@@ -246,13 +247,13 @@ function EnterpriseAddressFormContent({
 
     try {
       if (mode === "create") {
-        await createMutation.mutateAsync({
-          countryId,
-          stateId,
-          cityId,
+        const payload: { cepId: string; number: string; complement?: string; adressType: EnterpriseAddressType } = {
           cepId,
+          number: number.trim(),
           adressType,
-        })
+        }
+        if (complement.trim()) payload.complement = complement.trim()
+        await createMutation.mutateAsync(payload)
       } else if (editing) {
         const input = buildPatchInput()
         if (!input) {
@@ -283,7 +284,7 @@ function EnterpriseAddressFormContent({
           {mode === "create" ? "Novo endereço" : "Editar endereço"}
         </DialogTitle>
         <DialogDescription>
-          Selecione país, estado, cidade e CEP do catálogo.
+          Selecione país, estado, cidade e CEP para localizar o logradouro.
         </DialogDescription>
       </DialogHeader>
       <form onSubmit={handleSubmit} className="mt-6">
@@ -385,20 +386,33 @@ function EnterpriseAddressFormContent({
               <p>
                 <span className="font-medium text-foreground">Logradouro:</span>{" "}
                 {selectedCep.address}
-                {selectedCep.number ? `, ${selectedCep.number}` : ""}
               </p>
               <p>
                 <span className="font-medium text-foreground">Bairro:</span>{" "}
                 {selectedCep.neighborhood}
               </p>
-              {selectedCep.complement && (
-                <p>
-                  <span className="font-medium text-foreground">Complemento:</span>{" "}
-                  {selectedCep.complement}
-                </p>
-              )}
             </div>
           )}
+
+          <Field>
+            <FieldLabel>Número</FieldLabel>
+            <Input
+              value={number}
+              onChange={(e) => setNumber(e.target.value)}
+              placeholder="Ex.: 123, S/N"
+              maxLength={255}
+            />
+          </Field>
+
+          <Field>
+            <FieldLabel>Complemento (opcional)</FieldLabel>
+            <Input
+              value={complement}
+              onChange={(e) => setComplement(e.target.value)}
+              placeholder="Ex.: Apto 42, Bloco B"
+              maxLength={255}
+            />
+          </Field>
 
           <Field>
             <FieldLabel>Tipo de endereço</FieldLabel>

@@ -10,9 +10,8 @@ export type EnterpriseAddressType = z.infer<typeof enterpriseAddressTypeSchema>
 
 export const createEnterpriseAddressRequestSchema = z.strictObject({
   cepId: z.uuid(),
-  countryId: z.uuid(),
-  stateId: z.uuid(),
-  cityId: z.uuid(),
+  number: z.string().trim().min(1).max(255),
+  complement: z.string().trim().min(1).max(255).optional(),
   adressType: enterpriseAddressTypeSchema,
 })
 
@@ -23,18 +22,16 @@ export type CreateEnterpriseAddressRequest = z.infer<
 export const patchEnterpriseAddressRequestSchema = z
   .strictObject({
     cepId: z.uuid().optional(),
-    countryId: z.uuid().optional(),
-    stateId: z.uuid().optional(),
-    cityId: z.uuid().optional(),
+    number: z.string().trim().min(1).max(255).optional(),
+    complement: z.string().trim().min(1).max(255).nullable().optional(),
     adressType: enterpriseAddressTypeSchema.optional(),
     softDelete: z.literal(true).optional(),
   })
   .refine(
     (data) =>
       data.cepId !== undefined ||
-      data.countryId !== undefined ||
-      data.stateId !== undefined ||
-      data.cityId !== undefined ||
+      data.number !== undefined ||
+      data.complement !== undefined ||
       data.adressType !== undefined ||
       data.softDelete === true,
     { message: "Informe ao menos um campo para alterar." }
